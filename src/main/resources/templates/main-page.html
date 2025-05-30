@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Main page</title>
+    <link href="/global-style/header-style.css" rel="stylesheet" />
+    <link href="/global-style/footer-style.css" rel="stylesheet" />
+    <link href="/global-style/burger-menu-style.css" rel="stylesheet">
+    <link href="/main-page-style/news-style.css" rel="stylesheet">
+</head>
+<header class="header">
+
+    <div class="header-top">
+        <button class="user-btn">
+            <img src="/icons/user-icon.png" alt="User Icon" class="user-icon" />
+            <span class="user-name">User</span>
+        </button>
+
+        <div class="project-title">BANK PROJECT</div>
+
+        <div class="menu-container">
+            <button class="menu-toggle" id="menu-toggle">
+                <img src="/icons/burger-menu-icon.png" alt="Menu" />
+            </button>
+
+            <ul class="dropdown-menu" id="dropdown-menu">
+                <li class="menu-header">Меню</li>
+                <li>
+                    <a href="#">
+                        <img src ="/icons/reviews-icon.png" alt="Review" class = "menu-icon"/>
+                        Отзывы о нашем банке
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src ="/icons/check-mark-icon.png" alt="Balance" class = "menu-icon"/>
+                        Переводы и пополнение баланса
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src ="/icons/support-icon.png" alt="Support" class = "menu-icon"/>
+                        Поддержка
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src ="/icons/card-icon.png" alt="Bank card" class = "menu-icon"/>
+                        Заказать банковскую карту
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src ="/icons/account-icon.png" alt="New account" class = "menu-icon"/>
+                        Открыть новый счет
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src ="/icons/theme-icon.png" alt="Theme" class = "menu-icon"/>
+                        Поменять тему
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <script src="/global-style/burger-menu.js"></script>
+
+    </div>
+    <div class="currency-bar">
+        <span>$ = 93.24 ₽</span>
+        <span>€ = 101.35 ₽</span>
+        <span>£ = 117.78 ₽</span>
+    </div>
+</header>
+
+<body>
+
+    <div class="news-container">
+        <div class="news-item">
+            <div class="news-title">Вы потратили 10 000₽ в апреле</div>
+            <div class="news-details">
+                В апреле вы чаще всего тратили деньги в категориях: еда, подписки и транспорт.
+            </div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-title">Вы потратили 10 000₽ в апреле</div>
+            <div class="news-details">
+                В апреле вы чаще всего тратили деньги в категориях: еда, подписки и транспорт.
+            </div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-title">Вы потратили 10 000₽ в апреле</div>
+            <div class="news-details">
+                В апреле вы чаще всего тратили деньги в категориях: еда, подписки и транспорт.
+            </div>
+        </div>
+
+        <div class="news-item">
+            <div class="news-title">Совет: откройте накопительный счет</div>
+            <div class="news-details">
+                Накопительный счет поможет сохранить ваши средства и заработать процент.
+            </div>
+        </div>
+    </div>
+
+    <div class="global-news-container">
+        <div class="global-news-item">
+            <div class = "news-title">Новость</div>
+            <div class = "news-overview">Описание</div>
+            <div class = "news-details">Полное описание новости</div>
+        </div>
+    </div>
+
+    <script src="/main-page-style/news-expand.js"></script>
+
+</body>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-section">
+            <h2 class="footer-title">BANK PROJECT</h2>
+            <p class="footer-text">Ваш цифровой банк будущего. Управляйте деньгами умно и удобно.</p>
+        </div>
+
+        <div class="footer-section">
+            <h3 class="footer-heading">Навигация</h3>
+            <ul class="footer-list">
+                <li><a href="#">Профиль</a></li>
+                <li><a href="#">Главная</a></li>
+                <li><a href="#">Счета</a></li>
+                <li><a href="#">Карты</a></li>
+                <li><a href="#">Поддержка</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3 class="footer-heading">Наша команда</h3>
+            <ul class="footer-list">
+                <li>Кирилл Зенкин — Архитектор</li>
+                <li>Кирилл Зенкин — Backend</li>
+                <li>Кирилл Зенкин — UI/UX</li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3 class="footer-heading">Контакты</h3>
+            <ul class="footer-list">
+                <li><a href="mailto:werdewrs555@gmail.com">support@gmail.com</a></li>
+                <li><a href="t.me/pepegazxcc">Telegram</a></li>
+                <li><a href="https://github.com/pepegazxc">GitHub</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © 2025 BANK PROJECT. Все права защищены.
+    </div>
+</footer>
+</html>
