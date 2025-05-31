@@ -3,6 +3,7 @@
     background-color: white;
     border-bottom: 1px solid #ccc;
     font-family: sans-serif;
+    text-decoration: none;
 }
 
 .header-top {
@@ -10,6 +11,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 20px;
+    text-decoration: none;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    text-decoration: none;
 }
 
 .user-btn {
@@ -37,9 +47,10 @@
 .project-title {
     font-size: 25px;
     font-weight: bold;
-    background-position: center;
-    width: 250px;
+    width: auto;
     height: 30px;
+    text-decoration: none;
+    color: black;
 }
 
 .currency-bar {
@@ -53,4 +64,20 @@
     justify-content: center;
     gap: 20px;
 
+}
+
+.back-title {
+    text-decoration: none;
+    color: black;
+}
+
+.back-title:hover {
+    text-decoration: none;
+}
+
+.support-footer-message{
+    color: white;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    background: none;
 }

@@ -7,18 +7,19 @@
     <link href="/global-style/header-style.css" rel="stylesheet" />
     <link href="/global-style/footer-style.css" rel="stylesheet" />
     <link href="/global-style/burger-menu-style.css" rel="stylesheet">
-    <link href="/user-info-style.css" rel="stylesheet">
-    <link href="/back-button.css" rel="stylesheet">
+    <link href="/user-page-style/user-info-style.css" rel="stylesheet">
 </head>
 <header class="header">
 
     <div class="header-top">
-        <a href="main" class="back-button">
-            <img src="/icons/left-arrow-icon.png" alt="Arrow Icon" class="left-arrow-icon" />
-            <span class="back-text">Вернуться на главную</span>
+        <a href="home" class = "user-btn">
+            <img src="/icons/user-icon.png" alt="User Icon" class="user-icon" />
+            <span class="user-name">User</span>
         </a>
 
-        <div class="project-title">BANK PROJECT</div>
+        <a href="main" class ="back-title">
+            <div class="project-title">BANK PROJECT</div>
+        </a>
 
         <div class="menu-container">
             <button class="menu-toggle" id="menu-toggle">
@@ -40,7 +41,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="support">
                         <img src ="/icons/support-icon.png" alt="Support" class = "menu-icon"/>
                         Поддержка
                     </a>
@@ -129,7 +130,7 @@
     </div>
 </div>
 
-<script src = "/card-data.js"></script>
+<script src = "/user-page-style/card-data.js"></script>
 </body>
 
 <footer class="footer">
@@ -147,7 +148,7 @@
                 <li><a href="main">Главная</a></li>
                 <li><a href="#">Счета</a></li>
                 <li><a href="#">Карты</a></li>
-                <li><a href="#">Поддержка</a></li>
+                <li><a href="support">Поддержка</a></li>
             </ul>
         </div>
 
