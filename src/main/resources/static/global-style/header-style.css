@@ -13,11 +13,13 @@
 }
 
 .user-btn {
+    text-decoration: none;
     display: flex;
     align-items: center;
     border: none;
     background: none;
     cursor: pointer;
+    color: black;
 }
 
 .user-icon {
@@ -35,6 +37,9 @@
 .project-title {
     font-size: 25px;
     font-weight: bold;
+    background-position: center;
+    width: 250px;
+    height: 30px;
 }
 
 .currency-bar {
@@ -47,4 +52,5 @@
     display: flex;
     justify-content: center;
     gap: 20px;
+
 }

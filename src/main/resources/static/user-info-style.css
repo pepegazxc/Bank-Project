@@ -1,0 +1,85 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #fdfdfd;
+}
+
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+    gap: 20px;
+}
+
+.column {
+    flex: 1;
+    padding: 20px;
+    position: relative;
+}
+
+.column:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 10%;
+    right: 0;
+    width: 1px;
+    height: 80%;
+    background-color: #ccc;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.user-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.name-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    margin: 0;
+    font-size: 18px;
+}
+
+.user-username {
+    color: gray;
+    margin-top: 4px;
+}
+
+.contact-box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #fafafa;
+    margin-bottom: 20px;
+}
+
+.settings-icon img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.section-title {
+    margin-bottom: 20px;
+}
+
+.card-balance-box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #fafafa;
+}
+
+
