@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home page</title>
+    <title>Reviews page</title>
     <link href="/global-style/header-style.css" rel="stylesheet" />
     <link href="/global-style/footer-style.css" rel="stylesheet" />
     <link href="/global-style/burger-menu-style.css" rel="stylesheet">
-    <link href="/user-page-style/user-info-style.css" rel="stylesheet">
+    <link href="/reviews-page-style/reviews-style.css" rel="stylesheet">
 </head>
 <header class="header">
 
@@ -77,62 +76,32 @@
     </div>
 </header>
 <body>
-<div class="main-container">
-
-    <div class="column left-column">
-        <div class="user-info">
-            <img src="/icons/user-icon.png" alt="User Photo" class="user-photo">
-            <div class="name-block">
-                <h2 class="user-name">Иван Иванов</h2>
-                <p class="user-username">@ivanivanov</p>
-            </div>
-        </div>
-
-        <div class="contact-box">
-            <p><strong>Телефон:</strong> +7 900 123-45-67</p>
-            <p><strong>Почта:</strong> user@mail.com</p>
-            <p><strong>Почтовый индекс:</strong> 13232</p>
-            <p><strong>Доп. информация</strong></p>
-        </div>
-
-        <div class="settings-icon">
-            <img src="/icons/settings-icon.png" alt="Настройки">
-        </div>
+<h1>Отзывы наших клиентов</h1>
+<div class="reviews">
+    <div class="review">
+        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
+        <h3>User name <span class="stars">Stars</span></h3>
+        <p>review body</p>
     </div>
-
-
-    <div class="column middle-column">
-        <h2 class="section-title">Ваши карты и счета:</h2>
-
-        <h4>Баланс вашей карты:</h4>
-        <div class="card-balance-box">
-            <p><strong>Баланс:</strong> 12 345 ₽</p>
-        </div>
-        <h4>Баланс вашего сберегательного счета:</h4>
-        <div class="card-balance-box">
-            <p><strong>Баланс:</strong> 12 345 ₽</p>
-        </div>
-        <h4>Баланс вашего вклада:</h4>
-        <div class="card-balance-box">
-            <p><strong>Баланс:</strong> 12 345 ₽</p>
-        </div>
-    </div>
-
-    <div class="column right-column">
-        <h2 class="section-title">Информация о карте</h2>
-
-        <p id="card-number">• Номер карты: **** **** **** ****</p>
-        <p id="card-type">• Тип: ****</p>
-        <p id="card-status">• Статус: ****</p>
-        <p id="card-expiry">• Срок действия: **/**</p>
-
-        <button class = "card-button" id="toggle-card-info">Показать информацию</button>
+    <div class="review">
+        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
+        <h3>User name <span class="stars">Stars</span></h3>
+        <p>review body</p>
     </div>
 </div>
-
-<script src = "/user-page-style/card-data.js"></script>
+<div class = "reviews">
+    <div class="review">
+        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
+        <h3>User name <span class="stars">Stars</span></h3>
+        <p>review body</p>
+    </div>
+    <div class="review">
+        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
+        <h3>User name <span class="stars">Stars</span></h3>
+        <p>review body</p>
+    </div>
+</div>
 </body>
-
 <footer class="footer">
     <div class="footer-container">
 
@@ -144,12 +113,12 @@
         <div class="footer-section">
             <h3 class="footer-heading">Навигация</h3>
             <ul class="footer-list">
-                <li><a href="home">Профиль <- Сейчас вы здесь!</a></li>
+                <li><a href="home">Профиль</a></li>
                 <li><a href="main">Главная</a></li>
                 <li><a href="#">Счета</a></li>
                 <li><a href="#">Карты</a></li>
                 <li><a href="support">Поддержка</a></li>
-                <li><a href="reviews">Отзывы</a></li>
+                <li><a href="reviews">Отзывы <- Сейчас вы здесь!</a></li>
             </ul>
         </div>
 

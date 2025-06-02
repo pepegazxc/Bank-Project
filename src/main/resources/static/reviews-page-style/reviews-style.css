@@ -1,0 +1,37 @@
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.reviews {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+}
+
+.review {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 45%;
+    margin: 10px;
+}
+
+.review:nth-child(even) {
+    transform: translateY(40px);
+}
+
+.review h3 {
+    margin-top: 0;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stars {
+    color: #f5b301;
+    font-size: 16px;
+}
