@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Reviews page</title>
+    <title>Replenishment page</title>
     <link href="/global-style/header-style.css" rel="stylesheet" />
     <link href="/global-style/footer-style.css" rel="stylesheet" />
     <link href="/global-style/burger-menu-style.css" rel="stylesheet">
-    <link href="/reviews-page-style/reviews-style.css" rel="stylesheet">
+    <link href="/replenishment-page-style/replenishment-page-style.css" rel="stylesheet">
 </head>
 <header class="header">
 
@@ -70,39 +70,68 @@
 
     </div>
     <div class="currency-bar">
-        <span>$ = 93.24 ₽</span>
-        <span>€ = 101.35 ₽</span>
-        <span>£ = 117.78 ₽</span>
+        <span class="support-footer-message">Перевод и пополнение баланса</span>
     </div>
 </header>
 <body>
-<h1>Отзывы наших клиентов</h1>
-<div class="reviews">
-    <div class="review">
-        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
-        <h3>User name <span class="stars">Stars</span></h3>
-        <p>review body</p>
+<div class="two-columns">
+    <div class="column first-column">
+        <div class="last-contacts">
+            <span class="last-contacts-text">Контакты которым вы переводили в последнее время чаще всего</span>
+            <div class="last-contacts-icons">
+                <img src="/icons/user-icon.png" alt="User icon">
+                <img src="/icons/user-icon.png" alt="User icon">
+                <img src="/icons/user-icon.png" alt="User icon">
+                <img src="/icons/user-icon.png" alt="User icon">
+            </div>
+        </div>
+
+        <div class="transfer-between-accounts">
+            <span class="transfer-between-accounts-text">Перевод между счетами</span>
+            <div class="transfer-row">
+                <div class="transfer-container">
+                    <span class="transfer-container-text">First account</span>
+                    <input type="text" class="transfer-box" placeholder="Value">
+                </div>
+                <img class="arrow-icon" src="/icons/right-arrow.png" alt="Arrow icon">
+                <div class="transfer-container">
+                    <span class="transfer-container-text">Second account</span>
+                    <input type="text" class="transfer-box" placeholder="Value">
+                </div>
+            </div>
+            <div class="transfer-confirmation-button">
+                <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
+            </div>
+        </div>
     </div>
-    <div class="review">
-        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
-        <h3>User name <span class="stars">Stars</span></h3>
-        <p>review body</p>
+
+    <div class="column second-column">
+        <span class="last-contacts-text">Выберите способ перевода</span>
+        <div class="transfer-type-container">
+            <div class="transfer-by-phone-number">
+                По номеру телефона
+                <input type="text" class="input-box" placeholder="Введите номер телефона">
+                <input type="number" class="enter-value-container" placeholder="Сумма">
+                <div class="transfer-confirmation-button">
+                    <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
+                </div>
+            </div>
+
+            <div class="transfer-by-card-number">
+                По номеру карты
+                <input type="text" class="input-box" placeholder="Введите номер карты">
+                <input type="number" class="enter-value-container" placeholder="Сумма">
+                <div class="transfer-confirmation-button">
+                    <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<div class = "reviews">
-    <div class="review">
-        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
-        <h3>User name <span class="stars">Stars</span></h3>
-        <p>review body</p>
-    </div>
-    <div class="review">
-        <img src = "/icons/user-icon.png" alt="User icon" class = user-icon>
-        <h3>User name <span class="stars">Stars</span></h3>
-        <p>review body</p>
-    </div>
-</div>
+
+
 </body>
-<footer class="footer">
+<footer class="footer" id = "page-footer">
     <div class="footer-container">
 
         <div class="footer-section">
@@ -115,10 +144,10 @@
             <ul class="footer-list">
                 <li><a href="home">Профиль</a></li>
                 <li><a href="main">Главная</a></li>
-                <li><a href="replenishment">Пополнение</a></li>
+                <li><a href="replenishment">Пополнение <- Сейчас вы здесь!</a></li>
                 <li><a href="#">Карты</a></li>
                 <li><a href="support">Поддержка</a></li>
-                <li><a href="reviews">Отзывы <- Сейчас вы здесь!</a></li>
+                <li><a href="reviews">Отзывы</a></li>
             </ul>
         </div>
 
@@ -146,4 +175,6 @@
         © 2025 BANK PROJECT. Все права защищены.
     </div>
 </footer>
+
+
 </html>
