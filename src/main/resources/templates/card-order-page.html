@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Replenishment page</title>
+    <title>Order card</title>
     <link href="/global-style/header-style.css" rel="stylesheet" />
     <link href="/global-style/footer-style.css" rel="stylesheet" />
     <link href="/global-style/burger-menu-style.css" rel="stylesheet">
-    <link href="/replenishment-page-style/replenishment-page-style.css" rel="stylesheet">
+    <link href="/card-order-page-style/card-order-style.css" rel="stylesheet">
 </head>
 <header class="header">
 
@@ -70,68 +70,59 @@
 
     </div>
     <div class="currency-bar">
-        <span class="support-footer-message">Перевод и пополнение баланса</span>
+        <span>$ = 93.24 ₽</span>
+        <span>€ = 101.35 ₽</span>
+        <span>£ = 117.78 ₽</span>
     </div>
 </header>
 <body>
-<div class="two-columns">
-    <div class="column first-column">
-        <div class="last-contacts">
-            <span class="last-contacts-text">Контакты которым вы переводили в последнее время чаще всего</span>
-            <div class="last-contacts-icons">
-                <img src="/icons/user-icon.png" alt="User icon">
-                <img src="/icons/user-icon.png" alt="User icon">
-                <img src="/icons/user-icon.png" alt="User icon">
-                <img src="/icons/user-icon.png" alt="User icon">
-            </div>
-        </div>
 
-        <div class="transfer-between-accounts">
-            <span class="transfer-between-accounts-text">Перевод между счетами</span>
-            <div class="transfer-row">
-                <div class="transfer-container">
-                    <span class="transfer-container-text">First account</span>
-                    <input type="text" class="transfer-box" placeholder="Value">
-                </div>
-                <img class="arrow-icon" src="/icons/right-arrow.png" alt="Arrow icon">
-                <div class="transfer-container">
-                    <span class="transfer-container-text">Second account</span>
-                    <input type="text" class="transfer-box" placeholder="Value">
-                </div>
-            </div>
-            <div class="transfer-confirmation-button">
-                <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
-            </div>
+<div class = "two-rows">
+    <div class = "first-column">
+        <div class = "card-button" id = "click-card1"
+             data-info = "info"
+             data-link = "card-type-1">
+            <span>Card</span>
+            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
+        </div>
+        <div class = "card-button" id = "click-card2"
+             data-info = "info"
+             data-link = "card-type-2">
+            <span>Card</span>
+            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
+        </div>
+        <div class = "card-button" id = "click-card3"
+            data-info = "info"
+            data-link = "card-type-3">
+            <span>Card</span>
+            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
+        </div>
+        <div class = "card-button" id = "click-card4"
+             data-info = "info"
+             data-link = "card-type-4">
+            <span>Card</span>
+            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
         </div>
     </div>
+    <hr style="border: none; border-top: 2px solid #444444;">
 
-    <div class="column second-column">
-        <span class="last-contacts-text">Выберите способ перевода</span>
-        <div class="transfer-type-container">
-            <div class="transfer-by-phone-number">
-                По номеру телефона
-                <input type="text" class="input-box" placeholder="Введите номер телефона">
-                <input type="number" class="enter-value-container" placeholder="Сумма">
-                <div class="transfer-confirmation-button">
-                    <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
-                </div>
+    <div class = "second-column">
+        <div class="card-section">
+            <div class="card-info-container">
+                <span class="card-info-text">Подробнее о карте</span>
+                <div class="card-info">Card info</div>
             </div>
 
-            <div class="transfer-by-card-number">
-                По номеру карты
-                <input type="text" class="input-box" placeholder="Введите номер карты">
-                <input type="number" class="enter-value-container" placeholder="Сумма">
-                <div class="transfer-confirmation-button">
-                    <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
-                </div>
-            </div>
+            <a href="#" class="apply-for-a-card-container">
+                <div class="apply-for-a-card-text">Хотите оформить карту?</div>
+            </a>
         </div>
+
     </div>
 </div>
 
-
 </body>
-<footer class="footer" id = "page-footer">
+<footer class="footer">
     <div class="footer-container">
 
         <div class="footer-section">
@@ -144,8 +135,8 @@
             <ul class="footer-list">
                 <li><a href="home">Профиль</a></li>
                 <li><a href="main">Главная</a></li>
-                <li><a href="replenishment">Пополнение <- Сейчас вы здесь!</a></li>
-                <li><a href="card-order">Карты</a></li>
+                <li><a href="replenishment">Пополнение</a></li>
+                <li><a href="card-order">Карты <- Сейчас вы здесь!</a></li>
                 <li><a href="support">Поддержка</a></li>
                 <li><a href="reviews">Отзывы</a></li>
             </ul>
@@ -176,6 +167,4 @@
     </div>
     <script src="/global-style/footer-script.js"></script>
 </footer>
-
-
 </html>
