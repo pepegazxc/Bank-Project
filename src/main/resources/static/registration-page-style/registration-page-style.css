@@ -52,28 +52,28 @@ select:focus {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
-.card-type-select {
-    background-color: #fff;
-    cursor: pointer;
+.login-button{
+    background-position: center;
 }
 
-.order-button {
+.registration-button {
     display: inline-block;
     margin: 30px auto;
     padding: 12px 24px;
     border: 2px solid rgba(50, 50, 50, 0.69);
     border-radius: 8px;
     background-color: transparent;
-    color: rgba(50, 50, 50, 0.69);
+    color: rgba(50, 50, 50, 0.9);
     font-size: 16px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
 }
-
-.order-button:hover {
-    background-color: rgb(255, 255, 255);
-    color: rgba(50, 50, 50, 0.69);
+.registration-button:hover {
+        background-color: #ffffff;
+        color: rgba(50, 50, 50, 0.9);
 }
+
+
 
