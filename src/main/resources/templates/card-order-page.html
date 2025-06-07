@@ -76,51 +76,26 @@
     </div>
 </header>
 <body>
+<div class="first-column">
+    <div class="card-button" data-id="card1"><span>Card1</span><img src="/icons/order-card.png" class="order-card-icon" alt="Card icon"></div>
+    <div class="card-button" data-id="card2"><span>Card2</span><img src="/icons/order-card.png" class="order-card-icon" alt="Card icon"></div>
+    <div class="card-button" data-id="card3"><span>Card3</span><img src="/icons/order-card.png" class="order-card-icon" alt="Card icon"></div>
+    <div class="card-button" data-id="card4"><span>Card4</span><img src="/icons/order-card.png" class="order-card-icon" alt="Card icon"></div>
+</div>
 
-<div class = "two-rows">
-    <div class = "first-column">
-        <div class = "card-button" id = "click-card1"
-             data-info = "info"
-             data-link = "card-type-1">
-            <span>Card</span>
-            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
+<div class="second-column">
+    <div class="card-section">
+        <div class="card-info-container">
+            <span class="card-info-text">Подробнее о карте: <span class ="card-name">-</span></span>
+            <div class="card-info">Card info</div>
         </div>
-        <div class = "card-button" id = "click-card2"
-             data-info = "info"
-             data-link = "card-type-2">
-            <span>Card</span>
-            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
-        </div>
-        <div class = "card-button" id = "click-card3"
-            data-info = "info"
-            data-link = "card-type-3">
-            <span>Card</span>
-            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
-        </div>
-        <div class = "card-button" id = "click-card4"
-             data-info = "info"
-             data-link = "card-type-4">
-            <span>Card</span>
-            <img src = "/icons/order-card.png" class = "order-card-icon" alt="Card order icon">
-        </div>
-    </div>
-    <hr style="border: none; border-top: 2px solid #444444;">
-
-    <div class = "second-column">
-        <div class="card-section">
-            <div class="card-info-container">
-                <span class="card-info-text">Подробнее о карте</span>
-                <div class="card-info">Card info</div>
-            </div>
-
-            <a href="#" class="apply-for-a-card-container">
-                <div class="apply-for-a-card-text">Хотите оформить карту?</div>
-            </a>
-        </div>
-
+        <a href="card-order-blank" class="apply-for-a-card-container">
+            <div class="apply-for-a-card-text">Хотите оформить карту?</div>
+        </a>
     </div>
 </div>
 
+<script src ="/card-order-page-style/card-info-expand.js"></script>
 </body>
 <footer class="footer">
     <div class="footer-container">
