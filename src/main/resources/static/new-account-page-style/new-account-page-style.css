@@ -5,7 +5,7 @@
     margin: 40px auto;
 }
 
-.card-button {
+.account-button {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,7 +19,7 @@
     margin: 50px;
 }
 
-.order-card-icon {
+.order-account-icon {
     background: none;
     object-fit: contain;
     width: 200px;
@@ -33,14 +33,14 @@
     margin: 40px auto;
 }
 
-.card-section {
+.account-section {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 20px;
     flex-wrap: wrap;
 }
-.card-info-container {
+.account-info-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -53,7 +53,7 @@
     margin-bottom: 20px;
 }
 
-.card-info-text {
+.account-info-text {
     font-weight: bold;
     font-size: 18px;
     border: 2px solid rgba(50, 50, 50, 0.69);
@@ -63,7 +63,7 @@
     background-color: #ffffff;
 }
 
-.card-info {
+.account-info {
     padding: 12px;
     border: 1px solid rgba(50, 50, 50, 0.9);
     border-radius: 8px;
@@ -72,7 +72,7 @@
     line-height: 1.5;
 }
 
-.apply-for-a-card-container {
+.apply-for-a-account-container {
     display: inline-block;
     padding: 12px 20px;
     border: 2px solid rgba(50, 50, 50, 0.69);
@@ -84,12 +84,12 @@
     margin-left: 20px;
 }
 
-.apply-for-a-card-container:hover {
+.apply-for-a-account-container:hover {
     background-color: #4caf50;
     color: rgba(50, 50, 50, 0.9);
 }
 
-.apply-for-a-card-text {
+.apply-for-a-account-text {
     font-size: 16px;
     font-weight: 500;
 }
