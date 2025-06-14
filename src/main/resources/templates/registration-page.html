@@ -9,46 +9,48 @@
 <div class="main-container">
     <div class="project-name">BANK PROJECT</div>
 
-    <div class="fields">
-
+    <form th:action="@{/registration}" method="post">
+        <div class="fields">
         <label>
             <span>Имя</span>
-            <input type="text" class="input-name" placeholder="Введите имя">
+            <input type="text" name="name" class="input-name" placeholder="Введите имя">
         </label>
-
         <label>
             <span>Фамилия</span>
-            <input type="text" class="input-surname" placeholder="Введите фамилию">
+            <input type="text" name="surname" class="input-surname" placeholder="Введите фамилию">
         </label>
-
         <label>
             <span>Отчество (если есть)</span>
-            <input type="text" class="input-patronymic" placeholder="Введите отчество">
+            <input type="text" name="patronymic" class="input-patronymic" placeholder="Введите отчество">
         </label>
-
         <label>
             <span>User name (обязательно)</span>
-            <input type="text" class="input-username" placeholder="ivanov123">
+            <input type="text" name="userName" class="input-username" placeholder="ivanov123">
         </label>
-
         <label>
             <span>Телефон</span>
-            <input type="tel" class="input-phone" placeholder="+7 (___) ___-__-__">
+            <input type="tel" name="phoneNumber" class="input-phone" placeholder="+7 (___) ___-__-__">
         </label>
-
         <label>
             <span>Email</span>
-            <input type="email" class="input-email" placeholder="example@mail.com">
+            <input type="email" name="email" class="input-email" placeholder="example@mail.com">
         </label>
-
         <label>
             <span>Почтовый индекс</span>
-            <input type="text" class="input-index" placeholder="ваш почтовый индекс">
+            <input type="text" name="postalCode" class="input-index" placeholder="ваш почтовый индекс">
         </label>
-
-        <div style="text-align: center">
-            <div class = "registration-button">Зарегистрироваться</div>
+            <label>
+                <span>Пароль</span>
+                <input type="password" name="password" class="input-password" placeholder="придумайте пароль">
+            </label>
         </div>
+        <div th:if="${errors}" class="alt-link">
+            <p th:text="${errors}"></p>
+        </div>
+        <div style="text-align: center">
+            <button class = "registration-button" type="submit">Зарегистрироваться</button>
+        </div>
+    </form>
 
         <div style="text-align: center">
             <a class="login-button" href = "login">Уже есть аккаунт?</a>
