@@ -9,26 +9,27 @@
 <div class="main-container">
     <div class="project-name">BANK PROJECT</div>
 
+    <form th:action="@{/login}" method="post">
     <div class="fields">
-
         <label>
             <span>User name</span>
-            <input type="text" class="input-user-name" placeholder="user name">
+            <input type="text" class="input-user-name" name="userName" placeholder="user name">
         </label>
 
         <label>
-            <span>Email</span>
-            <input type="email" class="input-email" placeholder="example@mail.com">
+            <span>Пароль</span>
+            <input type="password" class="input-password" name="password" placeholder="введите свой пароль">
         </label>
 
         <div style="text-align: center">
-            <div class = "login-button">Войти</div>
+            <button type="submit" class = "login-button">Войти</button>
         </div>
 
         <div style="text-align: center">
             <a class="registration-button" href = "registration">Нет аккаунта?</a>
         </div>
     </div>
+    </form>
 </div>
 </body>
 </html>
