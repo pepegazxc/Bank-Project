@@ -4,6 +4,7 @@ import bank_project.DTO.LoginRequest;
 import bank_project.DTO.RegistrationRequest;
 import bank_project.Entity.UserEntity;
 import bank_project.Repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -12,9 +13,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void loginExistUser(LoginRequest loginRequest) {
@@ -37,7 +40,7 @@ public class UserService {
                 .phoneNumber(registrationRequest.getPhoneNumber())
                 .email(registrationRequest.getEmail())
                 .passport(registrationRequest.getPassport())
-                .password(registrationRequest.getPassword())
+                .password(passwordEncoder.encode(registrationRequest.getPassword()))
                 .postalCode(registrationRequest.getPostalCode())
                 //ВРЕМЕННОЕ РЕШЕНИЕ
                 .token(UUID.randomUUID().toString())
