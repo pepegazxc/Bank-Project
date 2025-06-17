@@ -1,19 +1,31 @@
 package bank_project.Service;
 
+import bank_project.DTO.LoginRequest;
 import bank_project.DTO.RegistrationRequest;
 import bank_project.Entity.UserEntity;
-import bank_project.Repository.UserRegistrationRepository;
+import bank_project.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class UserRegistrationService {
+public class UserService {
 
-    private final UserRegistrationRepository userRegistrationRepository;
+    private final UserRepository userRepository;
 
-    public UserRegistrationService(UserRegistrationRepository userRegistrationRepository) {
-        this.userRegistrationRepository = userRegistrationRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public void loginExistUser(LoginRequest loginRequest) {
+        UserEntity user = new UserEntity.Builder()
+                .userName(loginRequest.getUserName())
+                .password(loginRequest.getPassword())
+                .build();
+        userRepository.findByUserNameAndPassword(
+                loginRequest.getUserName(),
+                loginRequest.getPassword()
+        );
     }
 
     public void registerNewUser(RegistrationRequest registrationRequest) {
@@ -31,6 +43,6 @@ public class UserRegistrationService {
                 .token(UUID.randomUUID().toString())
                 .build();
 
-        userRegistrationRepository.save(user);
+        userRepository.save(user);
     }
 }

@@ -1,7 +1,7 @@
 package bank_project.Controller;
 
 import bank_project.DTO.RegistrationRequest;
-import bank_project.Service.UserRegistrationService;
+import bank_project.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class RegistrationPageController {
 
-    private final UserRegistrationService userRegistrationService;
+    private final UserService userService;
 
-    public RegistrationPageController(UserRegistrationService userRegistrationService) {
-        this.userRegistrationService = userRegistrationService;
+    public RegistrationPageController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/registration")
@@ -29,7 +29,7 @@ public class RegistrationPageController {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "registration-page";
         }
-        userRegistrationService.registerNewUser(request);
+        userService.registerNewUser(request);
         return "registration-page";
     }
 }

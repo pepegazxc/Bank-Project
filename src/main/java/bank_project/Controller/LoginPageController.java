@@ -1,7 +1,7 @@
 package bank_project.Controller;
 
 import bank_project.DTO.LoginRequest;
-import bank_project.Service.UserLoginService;
+import bank_project.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class LoginPageController {
 
-    private final UserLoginService userLoginService;
+    private final UserService userService;
 
-    public LoginPageController(UserLoginService userLoginService) {
-        this.userLoginService = userLoginService;
+    public LoginPageController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/login")
@@ -27,7 +27,7 @@ public class LoginPageController {
             model.addAttribute("loginError", result.getAllErrors());
             return "login-page";
         }
-        userLoginService.loginExistUser(request);
+        userService.loginExistUser(request);
         return "login-page";
     }
 }
