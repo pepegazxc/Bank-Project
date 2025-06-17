@@ -26,8 +26,9 @@ public class LoginPageController {
         if (result.hasErrors()) {
             model.addAttribute("loginError", result.getAllErrors());
             return "login-page";
+        }else if (userService.loginExistUser(request)) {
+            return"login-page";
         }
-        userService.loginExistUser(request);
-        return "login-page";
+        return "";
     }
 }
