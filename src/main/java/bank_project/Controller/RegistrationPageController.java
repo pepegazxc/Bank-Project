@@ -1,6 +1,7 @@
 package bank_project.Controller;
 
 import bank_project.DTO.RegistrationRequest;
+import bank_project.Service.AutoAuthService;
 import bank_project.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class RegistrationPageController {
 
+    private final AutoAuthService autoAuthService;
     private final UserService userService;
 
-    public RegistrationPageController(UserService userService) {
+    public RegistrationPageController(AutoAuthService autoAuthService, UserService userService) {
+        this.autoAuthService = autoAuthService;
         this.userService = userService;
     }
 
@@ -30,6 +33,7 @@ public class RegistrationPageController {
             return "registration-page";
         }
         userService.registerNewUser(request);
-        return "registration-page";
+        autoAuthService.autoAuth(request.getUserName(), request.getPassword());
+        return "redirect:/main";
     }
 }

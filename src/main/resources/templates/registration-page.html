@@ -50,6 +50,7 @@
         <div style="text-align: center">
             <button class = "registration-button" type="submit">Зарегистрироваться</button>
         </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     </form>
 
         <div style="text-align: center">
