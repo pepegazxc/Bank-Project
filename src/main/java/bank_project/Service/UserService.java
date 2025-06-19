@@ -1,17 +1,18 @@
 package bank_project.Service;
 
-import bank_project.DTO.LoginRequest;
 import bank_project.DTO.RegistrationRequest;
 import bank_project.Entity.UserEntity;
 import bank_project.Repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -21,25 +22,13 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Boolean loginExistUser(LoginRequest loginRequest) {
-        String userName = loginRequest.getUserName();
-        String password = loginRequest.getPassword();
 
-        Optional<UserEntity> user = userRepository.findByUserName(userName);
-
-        if (user.isEmpty()) {
-            return false;
-        }
-
-        UserEntity userEntity = user.get();
-
-        boolean isMatch = passwordEncoder.matches(
-                password,
-                userEntity.getPassword()
-        );
-
-        return isMatch;
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username" + userName + "not found"));
     }
+
 
     public void registerNewUser(RegistrationRequest registrationRequest) {
         UserEntity user = new UserEntity.Builder()
@@ -58,4 +47,5 @@ public class UserService {
 
         userRepository.save(user);
     }
+
 }

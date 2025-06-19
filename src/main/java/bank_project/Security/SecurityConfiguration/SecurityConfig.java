@@ -1,9 +1,14 @@
 package bank_project.Security.SecurityConfiguration;
 
+import bank_project.Repository.UserRepository;
+import bank_project.Service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -18,9 +23,28 @@ public class SecurityConfig {
                         .requestMatchers("/style/**", "/icons/**").permitAll())
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/main")
+                        .usernameParameter("userName")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/main", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
                 );
 
         return http.build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new Argon2PasswordEncoder(
+                16,
+                32,
+                1,
+                65536,
+                3
+        );
+    }
+
 }

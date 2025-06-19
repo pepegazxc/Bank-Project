@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -13,12 +13,12 @@
     <div class="fields">
         <label>
             <span>User name</span>
-            <input type="text" class="input-user-name" name="userName" placeholder="user name">
+            <input type="text" class="input-user-name" name="userName" placeholder="user name" required>
         </label>
 
         <label>
             <span>Пароль</span>
-            <input type="password" class="input-password" name="password" placeholder="введите свой пароль">
+            <input type="password" class="input-password" name="password" placeholder="введите свой пароль" required>
         </label>
 
         <div style="text-align: center">
@@ -28,7 +28,11 @@
         <div style="text-align: center">
             <a class="registration-button" href = "registration">Нет аккаунта?</a>
         </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     </div>
+        <div th:if="${param.error}" style="color: red; text-align: center">
+            Неверный логин или пароль
+        </div>
     </form>
 </div>
 </body>
