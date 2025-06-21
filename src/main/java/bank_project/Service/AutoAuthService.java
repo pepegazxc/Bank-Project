@@ -15,9 +15,10 @@ public class AutoAuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public void autoAuth(String name, String password) {
+
+    public void autoAuth(String userName, String password) {
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(name, password));
+                new UsernamePasswordAuthenticationToken(userName, password));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

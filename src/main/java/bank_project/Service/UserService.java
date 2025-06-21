@@ -16,10 +16,12 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisService redisService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RedisService redisService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.redisService = redisService;
     }
 
 
@@ -28,7 +30,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username" + userName + "not found"));
     }
-
 
     public void registerNewUser(RegistrationRequest registrationRequest) {
         UserEntity user = new UserEntity.Builder()
@@ -46,6 +47,7 @@ public class UserService implements UserDetailsService {
                 .build();
 
         userRepository.save(user);
+        redisService.addUserCacheAfterRegistration(user.getUsername());
     }
 
 }

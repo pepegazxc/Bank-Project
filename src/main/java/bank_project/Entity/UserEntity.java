@@ -1,12 +1,13 @@
 package bank_project.Entity;
 
-import io.lettuce.core.dynamic.annotation.CommandNaming;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "user")
-public class UserEntity implements UserDetails {
+public class UserEntity implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
