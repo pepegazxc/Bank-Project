@@ -18,11 +18,13 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
+    private final CipherService cipherService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RedisService redisService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RedisService redisService, CipherService cipherService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.redisService = redisService;
+        this.cipherService = cipherService;
     }
 
 
@@ -42,9 +44,8 @@ public class UserService implements UserDetailsService {
                 .surname(registrationRequest.getSurname())
                 .patronymic(registrationRequest.getPatronymic())
                 .userName(registrationRequest.getUserName())
-                .phoneNumber(registrationRequest.getPhoneNumber())
-                .email(registrationRequest.getEmail())
-                .passport(registrationRequest.getPassport())
+                .phoneNumber(cipherService.encrypt(registrationRequest.getPhoneNumber()))
+                .email(cipherService.encrypt(registrationRequest.getEmail()))
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
                 .postalCode(registrationRequest.getPostalCode())
                 //ВРЕМЕННОЕ РЕШЕНИЕ
