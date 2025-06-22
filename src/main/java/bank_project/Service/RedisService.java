@@ -18,7 +18,7 @@ public class RedisService {
         this.userRepository = userRepository;
     }
 
-    public void addUserCacheAfterRegistration(String userName) {
+    public void addUserCache(String userName) {
         UserEntity savedUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new RuntimeException("User not found after save"));
 

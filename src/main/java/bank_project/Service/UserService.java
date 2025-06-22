@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -26,11 +27,15 @@ public class UserService implements UserDetailsService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        return userRepository.findByUserName(userName)
+        UserEntity user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username" + userName + "not found"));
+        redisService.addUserCache(userName);
+        return user;
     }
 
+    @Transactional
     public void registerNewUser(RegistrationRequest registrationRequest) {
         UserEntity user = new UserEntity.Builder()
                 .name(registrationRequest.getName())
@@ -47,7 +52,7 @@ public class UserService implements UserDetailsService {
                 .build();
 
         userRepository.save(user);
-        redisService.addUserCacheAfterRegistration(user.getUsername());
+        redisService.addUserCache(user.getUsername());
     }
 
 }
