@@ -35,6 +35,7 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username" + userName + "not found"));
+        sessionTokenService.assignTokenToLoggedUser(userName);
         redisService.addUserCache(userName);
         return user;
     }
