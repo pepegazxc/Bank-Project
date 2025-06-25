@@ -19,12 +19,14 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
     private final CipherService cipherService;
+    private final SessionTokenService sessionTokenService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RedisService redisService, CipherService cipherService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RedisService redisService, CipherService cipherService, SessionTokenService sessionTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.redisService = redisService;
         this.cipherService = cipherService;
+        this.sessionTokenService = sessionTokenService;
     }
 
 
@@ -48,8 +50,7 @@ public class UserService implements UserDetailsService {
                 .email(cipherService.encrypt(registrationRequest.getEmail()))
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
                 .postalCode(registrationRequest.getPostalCode())
-                //ВРЕМЕННОЕ РЕШЕНИЕ
-                .token(UUID.randomUUID().toString())
+                .token(sessionTokenService.hashToken())
                 .build();
 
         userRepository.save(user);
