@@ -16,7 +16,7 @@ public class AccountsEntity {
     private String account;
 
     @Column(name = "percent_per_month")
-    private String percentPerMonth;
+    private Float percentPerMonth;
 
     public static class Builder {
         AccountsEntity accountsEntity = new AccountsEntity();
@@ -26,7 +26,7 @@ public class AccountsEntity {
             return this;
         }
 
-        public Builder percentPerMonth(String percentPerMonth) {
+        public Builder percentPerMonth(Float percentPerMonth) {
             accountsEntity.percentPerMonth = percentPerMonth;
             return this;
         }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "user_account")
 @Getter
@@ -21,7 +23,7 @@ public class UserAccountEntity {
     @JoinColumn(name = "account_id")
     private AccountsEntity account;
 
-    private String balance;
+    private BigDecimal balance;
 
     @Column(name = "custom_goal")
     private String customGoal;
@@ -32,4 +34,24 @@ public class UserAccountEntity {
 
     @Column(name = "cipher_number")
     private String number;
+
+    public static class Builder {
+        UserAccountEntity account = new UserAccountEntity();
+
+        public Builder balance(BigDecimal balance) {
+            account.balance = balance;
+            return this;
+        }
+        public Builder customGoal(String customGoal) {
+            account.customGoal = customGoal;
+            return this;
+        }
+        public Builder number(String number) {
+            account.number = number;
+            return this;
+        }
+        public UserAccountEntity build() {
+            return account;
+        }
+    }
 }

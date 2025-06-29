@@ -20,7 +20,7 @@ public class CardsEntity {
     private String lawPerMonth;
 
     @Column(name = "cashback_percent")
-    private String cashBackPercent;
+    private Float cashBackPercent;
 
     @Column(name = "card_info")
     private String cardInfo;
@@ -36,7 +36,7 @@ public class CardsEntity {
             cardsEntity.lawPerMonth = lawPerMonth;
             return this;
         }
-        public Builder cashBackPercent(String cashBackPercent) {
+        public Builder cashBackPercent(Float cashBackPercent) {
             cardsEntity.cashBackPercent = cashBackPercent;
             return this;
         }

@@ -22,7 +22,7 @@ public class UserContactEntity {
     @Column(name = "contact_name")
     private String contactName;
 
-    @Column(name = "cipher_contact_indentifier")
+    @Column(name = "cipher_contact_identifier")
     private String contactIdentifier;
 
     @Column(name = "contact_type")
@@ -30,4 +30,28 @@ public class UserContactEntity {
 
     @Column(name = "last_interaction")
     private Timestamp lastInteraction;
+
+    public static class Builder {
+        UserContactEntity userContactEntity = new UserContactEntity();
+
+        public Builder contactName(String contactName) {
+            userContactEntity.contactName = contactName;
+            return this;
+        }
+        public Builder contactIdentifier(String contactIdentifier) {
+            userContactEntity.contactIdentifier = contactIdentifier;
+            return this;
+        }
+        public Builder contactType(String contactType) {
+            userContactEntity.contactType = contactType;
+            return this;
+        }
+        public Builder lastInteraction(Timestamp lastInteraction) {
+            userContactEntity.lastInteraction = lastInteraction;
+            return this;
+        }
+        public UserContactEntity build() {
+            return userContactEntity;
+        }
+    }
 }
