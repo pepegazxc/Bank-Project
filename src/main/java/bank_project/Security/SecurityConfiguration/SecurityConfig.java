@@ -19,7 +19,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/registration", "/login", "/main").permitAll()
-                        .requestMatchers("/style/**", "/icons/**").permitAll())
+                        .requestMatchers("/style/**", "/icons/**").permitAll()
+                        .anyRequest().hasAuthority("USER")
+                )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("userName")
