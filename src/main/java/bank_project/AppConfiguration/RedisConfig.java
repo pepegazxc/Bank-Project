@@ -1,5 +1,7 @@
 package bank_project.AppConfiguration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,9 @@ public class RedisConfig{
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new KotlinModule.Builder().build());
 
         GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);

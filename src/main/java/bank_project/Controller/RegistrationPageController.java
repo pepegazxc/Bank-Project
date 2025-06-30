@@ -1,6 +1,6 @@
 package bank_project.Controller;
 
-import bank_project.DTO.RegistrationRequest;
+import bank_project.DTO.RequestDto.RegistrationRequest;
 import bank_project.Service.AutoAuthService;
 import bank_project.Service.UserService;
 import jakarta.validation.Valid;

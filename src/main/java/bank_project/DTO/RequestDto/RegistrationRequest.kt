@@ -1,4 +1,4 @@
-package bank_project.DTO
+package bank_project.DTO.RequestDto
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

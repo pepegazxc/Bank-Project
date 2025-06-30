@@ -1,16 +1,14 @@
 package bank_project.Service;
 
-import bank_project.DTO.RegistrationRequest;
+import bank_project.DTO.RequestDto.RegistrationRequest;
 import bank_project.Entity.UserEntity;
-import bank_project.Repository.UserRepository;
+import bank_project.Repository.JpaRepository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {

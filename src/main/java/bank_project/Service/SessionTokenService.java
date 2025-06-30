@@ -1,7 +1,7 @@
 package bank_project.Service;
 
 import bank_project.Entity.UserEntity;
-import bank_project.Repository.TokenRepository;
+import bank_project.Repository.JpaRepository.TokenRepository;
 import bank_project.Security.SessionToken.SessionToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

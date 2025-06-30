@@ -14,7 +14,7 @@
     <div class="header-top">
         <a href="home" class = "user-btn">
             <img src="/icons/user-icon.png" alt="User Icon" class="user-icon" />
-            <span class="user-name">User</span>
+            <span class="user-name" th:text="${user.name}">User</span>
         </a>
 
         <a href="main" class ="back-title">
@@ -84,15 +84,15 @@
         <div class="user-info">
             <img src="/icons/user-icon.png" alt="User Photo" class="user-photo">
             <div class="name-block">
-                <h2 class="user-name">Иван Иванов</h2>
-                <p class="user-username">@ivanivanov</p>
+                <h2 class="user-name" th:text = "${user.name}">Имя</h2>
+                <p class="user-username" th:text = "${user.userName}">username</p>
             </div>
         </div>
 
         <div class="contact-box">
-            <p><strong>Телефон:</strong> +7 900 123-45-67</p>
-            <p><strong>Почта:</strong> user@mail.com</p>
-            <p><strong>Почтовый индекс:</strong> 13232</p>
+            <p th:text = "${user.phoneNumber}"><strong>Телефон:</strong> +7 900 123-45-67</p>
+            <p th:text = "${user.email}"><strong>Почта:</strong> user@mail.com</p>
+            <p th:text = "${user.postalCode}"><strong>Почтовый индекс:</strong> 13232</p>
             <p><strong>Доп. информация</strong></p>
         </div>
 
