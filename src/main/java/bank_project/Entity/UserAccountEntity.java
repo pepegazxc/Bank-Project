@@ -15,7 +15,7 @@ public class UserAccountEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userId;
 
@@ -37,6 +37,11 @@ public class UserAccountEntity {
 
     public static class Builder {
         UserAccountEntity account = new UserAccountEntity();
+
+        public Builder userId(UserEntity userId) {
+            account.userId = userId;
+            return this;
+        }
 
         public Builder balance(BigDecimal balance) {
             account.balance = balance;

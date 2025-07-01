@@ -1,6 +1,8 @@
 package bank_project.Service;
 
 import bank_project.DTO.RequestDto.RegistrationRequest;
+import bank_project.Entity.UserAccountEntity;
+import bank_project.Entity.UserCardEntity;
 import bank_project.Entity.UserEntity;
 import bank_project.Repository.JpaRepository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,6 +53,15 @@ public class UserService implements UserDetailsService {
                 .postalCode(registrationRequest.getPostalCode())
                 .token(sessionTokenService.hashToken())
                 .build();
+
+        UserCardEntity userCard = new UserCardEntity.Builder()
+                .userId(user).build();
+        user.getUserCard().add(userCard);
+
+        UserAccountEntity userAccount = new UserAccountEntity.Builder()
+                .userId(user).build();
+
+        user.getUserAccount().add(userAccount);
 
         userRepository.save(user);
         redisService.addUserCache(user.getUsername());

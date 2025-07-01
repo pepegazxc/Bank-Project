@@ -1,9 +1,17 @@
 package bank_project.Service;
 
+import bank_project.DTO.CacheDto.AllUserCacheDto;
+import bank_project.DTO.CacheDto.UserAccountCacheDto;
 import bank_project.DTO.CacheDto.UserCacheDto;
-import bank_project.DTO.CacheDto.UserMapper;
+import bank_project.DTO.CacheDto.UserCardCacheDto;
+import bank_project.Entity.UserAccountEntity;
 import bank_project.Entity.UserCardEntity;
+import bank_project.Mappers.UserAccountMapper;
+import bank_project.Mappers.UserCardMapper;
+import bank_project.Mappers.UserMapper;
 import bank_project.Entity.UserEntity;
+import bank_project.Repository.JpaRepository.UserAccountRepository;
+import bank_project.Repository.JpaRepository.UserCardRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
 import bank_project.Repository.RedisRepository.UserInfoRepository;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,20 +26,30 @@ public class RedisService {
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
     private final CipherService cipherService;
+    private final UserCardRepository userCardRepository;
+    private final UserAccountRepository userAccountRepository;
 
-    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService) {
+    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository) {
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
         this.cipherService = cipherService;
+        this.userCardRepository = userCardRepository;
+        this.userAccountRepository = userAccountRepository;
     }
 
     public void addUserCache(String userName) {
         UserEntity savedUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new RuntimeException("User not found after save"));
 
-        UserCacheDto cache = UserMapper.toCacheDto(savedUser);
-        redisTemplate.opsForValue().set("user:" + userName, cache);
+        Long Id = savedUser.getId();
+
+        UserCardEntity savedCard = userCardRepository.findByUserId(Id)
+                .orElseThrow(() -> new RuntimeException("Card not found after save"));
+        UserAccountEntity savedAccount = userAccountRepository.findByUserId(Id)
+                .orElseThrow(() -> new RuntimeException("Account not found after save"));
+        AllUserCacheDto data = UserMapper.toAllCacheDto(savedUser, savedCard, savedAccount);
+        redisTemplate.opsForValue().set("user:" + userName, data);
     }
 
     public UserCacheDto getUserInfo(String userName) {

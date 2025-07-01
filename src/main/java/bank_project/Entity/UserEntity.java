@@ -9,7 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -44,12 +46,17 @@ public class UserEntity implements UserDetails, Serializable {
     @Column(name = "hash_password", nullable = false)
     private String password;
 
-    //ВРЕМЕННОЕ РЕШЕНИЕ
     @Column(name = "hash_token", unique = true, nullable = false)
     private String token;
 
     @Column(name = "postal_code", nullable = false)
     private String postalCode;
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserCardEntity> userCard = new HashSet<>();
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserAccountEntity> userAccount = new HashSet<>();
 
     @Override
     public String getUsername() {

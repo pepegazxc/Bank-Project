@@ -15,7 +15,7 @@ public class UserCardEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userId;
 
@@ -41,6 +41,11 @@ public class UserCardEntity {
 
     public static class Builder {
         UserCardEntity userCardEntity = new UserCardEntity();
+
+        public Builder userId(UserEntity userId) {
+            userCardEntity.userId = userId;
+            return this;
+        }
 
         public Builder cipherNumber(String cipherNumber) {
             userCardEntity.setCipherNumber(cipherNumber);

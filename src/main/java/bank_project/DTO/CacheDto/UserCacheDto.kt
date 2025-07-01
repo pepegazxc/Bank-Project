@@ -3,6 +3,7 @@ package bank_project.DTO.CacheDto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
+import java.math.BigDecimal
 
 data class UserCacheDto @JsonCreator constructor (
     @JsonProperty("name") val name: String,
@@ -13,5 +14,6 @@ data class UserCacheDto @JsonCreator constructor (
     @JsonProperty("email") val email: String,
     @JsonProperty("passport") val passport: String?,
     @JsonProperty("token") val token: String,
-    @JsonProperty("postalCode") val postalCode: String
+    @JsonProperty("postalCode") val postalCode: String,
+
 ) : Serializable
