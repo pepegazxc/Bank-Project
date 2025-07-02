@@ -11,5 +11,5 @@ data class UserCardCacheDto @JsonCreator constructor(
     @JsonProperty("cardExpirationDate") val cardExpirationDate: String?,
     @JsonProperty("CardBalance") val cardBalance: BigDecimal?,
     @JsonProperty("cashback") val cashback: BigDecimal?,
-    @JsonProperty("isActive") val isActive: Boolean?,
+    @JsonProperty("active") val isActive: Boolean?,
 ) : Serializable

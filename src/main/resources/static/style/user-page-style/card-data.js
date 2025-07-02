@@ -2,10 +2,10 @@ const toggleBtn = document.getElementById('toggle-card-info');
 let isVisible = false;
 
 const cardData = {
-    number: '1234 5678 9012 3456',
-    type: 'Дебетовая',
-    status: 'Активна',
-    expiry: '12/27',
+    number: 'скрыто',
+    type: 'скрыто',
+    status: 'скрыто',
+    expiry: 'скрыто'
 };
 
 const elements = {
@@ -17,16 +17,16 @@ const elements = {
 
 function updateDisplay() {
     if (isVisible) {
-        elements.number.textContent = `• Номер карты: ${cardData.number}`;
-        elements.type.textContent = `• Тип: ${cardData.type}`;
-        elements.status.textContent = `• Статус: ${cardData.status}`;
-        elements.expiry.textContent = `• Срок действия: ${cardData.expiry}`;
-        toggleBtn.textContent = 'Скрыть информацию';
+        cardData.number.textContent = `• Номер карты: ${elements.number}`;
+        cardData.type.textContent = `• Тип: ${elements.type}`;
+        cardData.status.textContent = `• Статус: ${elements.status}`;
+        cardData.expiry.textContent = `• Срок действия: ${elements.expiry}`;
+        cardData.textContent = 'Скрыть информацию';
     } else {
-        elements.number.textContent = '• Номер карты: **** **** **** ****';
-        elements.type.textContent = '• Тип: ****';
-        elements.status.textContent = '• Статус: ****';
-        elements.expiry.textContent = '• Срок действия: **/**';
+        cardData.number.textContent = '• Номер карты: **** **** **** ****';
+        cardData.type.textContent = '• Тип: ****';
+        cardData.status.textContent = '• Статус: ****';
+        cardData.expiry.textContent = '• Срок действия: **/**';
         toggleBtn.textContent = 'Показать информацию';
     }
 }

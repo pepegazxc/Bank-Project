@@ -14,7 +14,7 @@
     <div class="header-top">
         <a href="home" class = "user-btn">
             <img src="/icons/user-icon.png" alt="User Icon" class="user-icon" />
-            <span class="user-name" th:text="${user.name}">User</span>
+            <span class="user-name" th:text="${user.user?.name ?: ''}">User</span>
         </a>
 
         <a href="main" class ="back-title">
@@ -80,20 +80,29 @@
 <body>
 <div class="main-container">
 
+    <div th:if="${errorMessage}">
+        <p th:text="${errorMessage}" style="color: red;"></p>
+    </div>
+
     <div class="column left-column">
         <div class="user-info">
             <img src="/icons/user-icon.png" alt="User Photo" class="user-photo">
             <div class="name-block">
-                <h2 class="user-name" th:text = "${user.name}">Имя</h2>
-                <p class="user-username" th:text = "${user.userName}">username</p>
+                <h2 class="user-name" th:text = "${user.user?.name ?: ''}">Имя</h2>
+                <p class="user-username" th:text = "${user.user?.userName ?: ''}">username</p>
             </div>
         </div>
 
         <div class="contact-box">
-            <p th:text = "${user.phoneNumber}"><strong>Телефон:</strong> +7 900 123-45-67</p>
-            <p th:text = "${user.email}"><strong>Почта:</strong> user@mail.com</p>
-            <p th:text = "${user.postalCode}"><strong>Почтовый индекс:</strong> 13232</p>
+            <p>Номер телефона:</p>
+            <p th:text = "${user.user?.phoneNumber ?: ''}"><strong>Телефон:</strong> +7 900 123-45-67</p>
+            <p>Почта:</p>
+            <p th:text = "${user.user?.email ?: ''}"><strong>Почта:</strong> user@mail.com</p>
+            <p>Почтовый индекс:</p>
+            <p th:text = "${user.user?.postalCode ?: ''}"><strong>Почтовый индекс:</strong> 13232</p>
             <p><strong>Доп. информация</strong></p>
+            <p>Паспорт:</p>
+            <p th:text = "${user.user?.passport ?: 'Пока что вы не сохранили свой паспорт'}"></p>
         </div>
 
         <div class="settings-icon">
@@ -105,29 +114,38 @@
     <div class="column middle-column">
         <h2 class="section-title">Ваши карты и счета:</h2>
 
-        <h4>Баланс вашей карты:</h4>
-        <div class="card-balance-box">
-            <p><strong>Баланс:</strong> 12 345 ₽</p>
+        <div th:if = "${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
+            <h4>Баланс вашей карты:</h4>
+            <div class="card-balance-box">
+                <p th:text = "${user.card?.cardBalance ?: 'Пока что вы не открыли карту'}"><strong>Баланс:</strong> ₽</p>
+            </div>
         </div>
-        <h4>Баланс вашего сберегательного счета:</h4>
-        <div class="card-balance-box">
-            <p><strong>Баланс:</strong> 12 345 ₽</p>
+
+        <div th:if = "${user.account != null and user.account.accountBalance != null}">
+            <h4>Баланс вашего сберегательного счета:</h4>
+            <div class="card-balance-box">
+                <p th:text = "${user.account?.accountBalance ?: 'Пока что вы не открыли счет'}"><strong>Баланс:</strong>  ₽</p>
+            </div>
         </div>
-        <h4>Баланс вашего вклада:</h4>
-        <div class="card-balance-box">
-            <p><strong>Баланс:</strong> 12 345 ₽</p>
+        <div th:unless="${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
+            <p>На данный момент у вас не оформлена карта</p>
+        </div>
+        <div th:unless="${user.account != null and user.account.accountBalance != null}">
+            <p>На данный у вас не оформлен счет</p>
         </div>
     </div>
 
     <div class="column right-column">
-        <h2 class="section-title">Информация о карте</h2>
+        <div th:if ="${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
+            <h2 class="section-title">Информация о карте</h2>
 
-        <p id="card-number">• Номер карты: **** **** **** ****</p>
-        <p id="card-type">• Тип: ****</p>
-        <p id="card-status">• Статус: ****</p>
-        <p id="card-expiry">• Срок действия: **/**</p>
+            <p id="card-number" th:data-cardNumber = "${user.card.cardBalance}">• Номер карты: **** **** **** ****</p>
+            <p id="card-type">• Тип: ****</p>
+            <p id="card-status" th:data-cardStatus = "${user.card.isActive()}">• Статус: ****</p>
+            <p id="card-expiry" th:data-cardExpirationDate = "${user.card.cardExpirationDate}">• Срок действия: **/**</p>
 
-        <button class = "card-button" id="toggle-card-info">Показать информацию</button>
+            <button class = "card-button" id="toggle-card-info">Показать информацию</button>
+        </div>
     </div>
 </div>
 

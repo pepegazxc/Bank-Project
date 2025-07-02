@@ -52,25 +52,59 @@ public class RedisService {
         redisTemplate.opsForValue().set("user:" + userName, data);
     }
 
-    public UserCacheDto getUserInfo(String userName) {
-        Optional<UserCacheDto> userCacheDto = userInfoRepository.getUserInfo(userName);
-        if (userCacheDto.isPresent()) {
-            UserCacheDto cache = userCacheDto.get();
+    public AllUserCacheDto getUserInfo(String userName) {
+        Optional<AllUserCacheDto> allCache = userInfoRepository.getUserInfo(userName);
+        if (allCache.isPresent()) {
+            AllUserCacheDto data = allCache.get();
 
-            String decryptPhoneNumber = cipherService.decrypt(cache.getPhoneNumber());
-            String decryptEmail = cipherService.decrypt(cache.getEmail());
+            UserCacheDto userCache = data.getUser();
 
-            return new UserCacheDto(
-                    cache.getName(),
-                    cache.getSurname(),
-                    cache.getPatronymic(),
-                    cache.getUserName(),
+            String decryptPhoneNumber = cipherService.decrypt(userCache.getPhoneNumber());
+            String decryptEmail = cipherService.decrypt(userCache.getEmail());
+
+            UserCacheDto user = new UserCacheDto(
+                    userCache.getName(),
+                    userCache.getSurname(),
+                    userCache.getPatronymic(),
+                    userCache.getUserName(),
                     decryptPhoneNumber,
                     decryptEmail,
-                    cache.getPassport(),
-                    cache.getToken(),
-                    cache.getPostalCode()
+                    userCache.getPassport(),
+                    userCache.getToken(),
+                    userCache.getPostalCode()
             );
+
+            UserCardCacheDto userCardCache = data.getCard();
+
+            String decryptCardNumber = cipherService.decrypt(userCardCache.getCardNumber());
+            String decryptCardThreeNumbers = cipherService.decrypt(userCardCache.getCardThreeNumbers());
+            String decryptCardExpirationDate = cipherService.decrypt(userCardCache.getCardExpirationDate());
+
+            UserCardCacheDto userCard = new UserCardCacheDto(
+                    decryptCardNumber,
+                    decryptCardThreeNumbers,
+                    decryptCardExpirationDate,
+                    userCardCache.getCardBalance(),
+                    userCardCache.getCashback(),
+                    userCardCache.isActive()
+            );
+
+            UserAccountCacheDto userAccountCache = data.getAccount();
+
+            String decryptAccountNumber = cipherService.decrypt(userAccountCache.getCipherAccountNumber());
+
+            UserAccountCacheDto userAccount = new UserAccountCacheDto(
+                    userAccountCache.getAccountBalance(),
+                    userAccountCache.getCustomGoal(),
+                    decryptAccountNumber
+            );
+
+            return new AllUserCacheDto(
+                    user,
+                    userCard,
+                    userAccount
+            );
+
         }else {
             throw new RuntimeException("User not found after getUserInfo");
         }
