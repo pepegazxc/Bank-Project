@@ -13,7 +13,7 @@
     <div class="header-top">
         <a href="home" class = "user-btn">
             <img src="/icons/user-icon.png" alt="User Icon" class="user-icon" />
-            <span class="user-name">User</span>
+            <span class="user-name" th:text = "${username ?: 'Гость'}">User</span>
         </a>
 
 

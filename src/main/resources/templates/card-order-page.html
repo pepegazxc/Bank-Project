@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Order card</title>
@@ -13,7 +13,7 @@
     <div class="header-top">
         <a href="home" class = "user-btn">
             <img src="/icons/user-icon.png" alt="User Icon" class="user-icon" />
-            <span class="user-name">User</span>
+            <span class="user-name" th:text="${username}">User</span>
         </a>
 
         <a href="main" class ="back-title">
