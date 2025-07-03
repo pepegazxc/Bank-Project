@@ -108,5 +108,10 @@ public class RedisService {
         }else {
             throw new RuntimeException("User not found after getUserInfo");
         }
+
+    }
+    public void deleteUserCache (String userName) {
+        String key = "user:" + userName;
+        redisTemplate.delete(key);
     }
 }

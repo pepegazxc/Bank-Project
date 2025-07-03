@@ -1,5 +1,6 @@
 package bank_project.Service;
 
+import bank_project.DTO.RequestDto.ChangeInfoRequest;
 import bank_project.DTO.RequestDto.RegistrationRequest;
 import bank_project.Entity.UserAccountEntity;
 import bank_project.Entity.UserCardEntity;
@@ -65,6 +66,41 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(user);
         redisService.addUserCache(user.getUsername());
+    }
+
+    @Transactional
+    public UserEntity changeUserInfo(String username, ChangeInfoRequest request){
+        redisService.deleteUserCache(username);
+
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username" + username + "not found"));
+
+        if (passwordEncoder.matches(request.getPasswordForConfirm(), savedUser.getPassword())) {
+
+            if (request.getPostalCode() != null || !request.getPostalCode().isEmpty()) {
+                savedUser.setPostalCode(request.getPostalCode());
+            }
+            if (request.getPassport() != null || !request.getPassport().isEmpty()) {
+                savedUser.setPassport(cipherService.encrypt(request.getPassport()));
+            }
+            if (request.getPhoneNumber() != null || !request.getPhoneNumber().isEmpty()) {
+                savedUser.setPhoneNumber(cipherService.encrypt(request.getPhoneNumber()));
+            }
+            if (request.getEmail() != null || !request.getEmail().isEmpty()) {
+                savedUser.setEmail(cipherService.encrypt(request.getEmail()));
+            }
+            if (request.getUserName() != null || !request.getUserName().isEmpty()) {
+                savedUser.setUserName(request.getUserName());
+            }
+            if (request.getPassword() != null || !request.getPassword().isEmpty()) {
+                savedUser.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
+
+            redisService.addUserCache(username);
+
+            return savedUser;
+        }
+        throw new UsernameNotFoundException("User with username" + username + "not found");
     }
 
 }

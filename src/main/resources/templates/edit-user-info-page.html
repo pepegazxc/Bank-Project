@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit info</title>
+</head>
+<div class="main-container">
+    <div class="project-name">BANK PROJECT</div>
+    <link href ="/style/card-order-blank-style/card-blank-style.css" rel="stylesheet">
+
+    <form th:action="@{/edit-info}" th:method="patch">
+    <div class="fields">
+
+        <label>
+            <span>Почтовый индекс</span>
+            <input type="text" name="postalCode" class="input-name" placeholder="Введите новый почтовый индекс">
+        </label>
+
+        <label>
+            <span>Паспорт</span>
+            <input type="text" name = "passport" class="input-surname" placeholder="Введите свой паспорт">
+        </label>
+
+        <label>
+            <span>Username</span>
+            <input type="text" name = "userName" class="input-patronymic" placeholder="Введите новый username">
+        </label>
+
+        <label>
+            <span>Телефон</span>
+            <input type="text" class="input-phone" name = "phoneNumber" placeholder="Введите новый номер телефона">
+        </label>
+
+        <label>
+            <span>Почта</span>
+            <input type="text" class="input-passport" name="email" placeholder="Введите новую почту">
+        </label>
+
+        <label>
+            <span>Пароль</span>
+            <input type="password" class="input-email" name = "password" placeholder="Введите новый пароль">
+        </label>
+
+        <label>
+            <span>Пароль для подтверждения</span>
+            <input type="password" class="input-address" name = "passwordForConfirm" placeholder="Введите пароль для подтверждения изменений">
+        </label>
+
+        <div style="text-align: center">
+            <button class="order-button" type="submit">Изменить</button>
+        </div>
+
+        <div style="text-align: center">
+            <a class="back-button" href = "home">← Назад</a>
+        </div>
+    </div>
+    </form>
+</div>
+
+</html>
