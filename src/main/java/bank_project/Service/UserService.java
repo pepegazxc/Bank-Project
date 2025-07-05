@@ -6,6 +6,8 @@ import bank_project.Entity.UserAccountEntity;
 import bank_project.Entity.UserCardEntity;
 import bank_project.Entity.UserEntity;
 import bank_project.Repository.JpaRepository.UserRepository;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +23,9 @@ public class UserService implements UserDetailsService {
     private final RedisService redisService;
     private final CipherService cipherService;
     private final SessionTokenService sessionTokenService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RedisService redisService, CipherService cipherService, SessionTokenService sessionTokenService) {
         this.userRepository = userRepository;
@@ -57,6 +62,7 @@ public class UserService implements UserDetailsService {
 
         UserCardEntity userCard = new UserCardEntity.Builder()
                 .userId(user).build();
+
         user.getUserCard().add(userCard);
 
         UserAccountEntity userAccount = new UserAccountEntity.Builder()
@@ -70,33 +76,32 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserEntity changeUserInfo(String username, ChangeInfoRequest request){
-        redisService.deleteUserCache(username);
-
         UserEntity savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with username" + username + "not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
+
+        redisService.deleteUserCache(savedUser);
 
         if (passwordEncoder.matches(request.getPasswordForConfirm(), savedUser.getPassword())) {
 
-            if (request.getPostalCode() != null || !request.getPostalCode().isEmpty()) {
+            if (request.getPostalCode() != null && !request.getPostalCode().isEmpty()) {
                 savedUser.setPostalCode(request.getPostalCode());
             }
-            if (request.getPassport() != null || !request.getPassport().isEmpty()) {
+            if (request.getPassport() != null && !request.getPassport().isEmpty()) {
                 savedUser.setPassport(cipherService.encrypt(request.getPassport()));
             }
-            if (request.getPhoneNumber() != null || !request.getPhoneNumber().isEmpty()) {
+            if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
                 savedUser.setPhoneNumber(cipherService.encrypt(request.getPhoneNumber()));
             }
-            if (request.getEmail() != null || !request.getEmail().isEmpty()) {
+            if (request.getEmail() != null && !request.getEmail().isEmpty()) {
                 savedUser.setEmail(cipherService.encrypt(request.getEmail()));
             }
-            if (request.getUserName() != null || !request.getUserName().isEmpty()) {
-                savedUser.setUserName(request.getUserName());
-            }
-            if (request.getPassword() != null || !request.getPassword().isEmpty()) {
+            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
                 savedUser.setPassword(passwordEncoder.encode(request.getPassword()));
             }
 
-            redisService.addUserCache(username);
+            entityManager.flush();
+
+            redisService.addUserCache(savedUser.getUsername());
 
             return savedUser;
         }

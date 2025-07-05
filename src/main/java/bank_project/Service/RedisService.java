@@ -6,10 +6,8 @@ import bank_project.DTO.CacheDto.UserCacheDto;
 import bank_project.DTO.CacheDto.UserCardCacheDto;
 import bank_project.Entity.UserAccountEntity;
 import bank_project.Entity.UserCardEntity;
-import bank_project.Mappers.UserAccountMapper;
-import bank_project.Mappers.UserCardMapper;
-import bank_project.Mappers.UserMapper;
 import bank_project.Entity.UserEntity;
+import bank_project.Mappers.UserMapper;
 import bank_project.Repository.JpaRepository.UserAccountRepository;
 import bank_project.Repository.JpaRepository.UserCardRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
@@ -61,6 +59,7 @@ public class RedisService {
 
             String decryptPhoneNumber = cipherService.decrypt(userCache.getPhoneNumber());
             String decryptEmail = cipherService.decrypt(userCache.getEmail());
+            String decryptPassport = cipherService.decrypt(userCache.getPassport());
 
             UserCacheDto user = new UserCacheDto(
                     userCache.getName(),
@@ -69,7 +68,7 @@ public class RedisService {
                     userCache.getUserName(),
                     decryptPhoneNumber,
                     decryptEmail,
-                    userCache.getPassport(),
+                    decryptPassport,
                     userCache.getToken(),
                     userCache.getPostalCode()
             );
@@ -108,10 +107,11 @@ public class RedisService {
         }else {
             throw new RuntimeException("User not found after getUserInfo");
         }
-
     }
-    public void deleteUserCache (String userName) {
-        String key = "user:" + userName;
+
+    public void deleteUserCache(UserEntity savedUser) {
+        Long Id = savedUser.getId();
+        String key = "user:" + Id;
         redisTemplate.delete(key);
     }
 }

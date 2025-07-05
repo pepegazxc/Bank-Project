@@ -1,6 +1,7 @@
 package bank_project.Controller;
 
 import bank_project.DTO.RequestDto.ChangeInfoRequest;
+import bank_project.Service.AuthContextService;
 import bank_project.Service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 public class EditUserInfoPageController {
 
     private final UserService userService;
+    private final AuthContextService authContextService;
 
-    public EditUserInfoPageController(UserService userService) {
+    public EditUserInfoPageController(UserService userService, AuthContextService authContextService) {
         this.userService = userService;
+        this.authContextService = authContextService;
     }
 
     @GetMapping("/edit-info")
@@ -26,7 +29,9 @@ public class EditUserInfoPageController {
     public String editUserInfoPage(ChangeInfoRequest request, Model model, Authentication auth) {
         try {
             String username = auth.getName();
-            userService.changeUserInfo(username, request);
+            authContextService.updateUserAuthentication(
+                    userService.changeUserInfo(username, request)
+            );
         }catch (Exception e) {
             model.addAttribute("error", e.getMessage());
         }

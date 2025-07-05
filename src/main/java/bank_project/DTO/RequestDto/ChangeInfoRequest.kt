@@ -9,8 +9,6 @@ data class ChangeInfoRequest (
     val postalCode: String?,
     @field:Size(min = 6, max = 9)
     val passport: String?,
-    @field:Size(min = 1, max = 50)
-    val userName: String?,
     @field:Email
     val email: String?,
     @field:Size(min = 8, max = 15)
