@@ -18,6 +18,9 @@ public class AccountsEntity {
     @Column(name = "percent_per_month")
     private Float percentPerMonth;
 
+    @Column(name = "account_info")
+    private String accountInfo;
+
     public static class Builder {
         AccountsEntity accountsEntity = new AccountsEntity();
 

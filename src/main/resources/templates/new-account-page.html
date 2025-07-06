@@ -78,10 +78,15 @@
 </header>
 <body>
 <div class="first-column">
-    <div class="account-button" data-id="account1"><span>Накопительный счет</span><img src="/icons/save-account-icon.png" class="order-account-icon" alt="Account icon"></div>
-    <div class="account-button" data-id="account2"><span>Вклад</span><img src="/icons/bank-deposit-icon.png" class="order-account-icon" alt="Account icon"></div>
-    <div class="account-button" data-id="account3"><span>Депозитный счет</span><img src="/icons/deposit-account-icon.png" class="order-account-icon" alt="Account icon"></div>
-    <div class="account-button" data-id="account4"><span>Бюджетный счет</span><img src="/icons/benefits-account-icon.png" class="order-account-icon" alt="Account icon"></div>
+    <div th:each="accounts, iter : ${accounts}"
+         class = "card-button"
+         th:attr="data-id ='accounts' + ${iter.index},
+                  data-name = ${accounts.accountName},
+                  data-percent=${accounts.percentPerMonth},
+                  data-info=${accounts.accountInfo}">
+        <span th:text="${accounts.accountName}">Account name</span>
+        <img src="/icons/benefits-account-icon.png" class="order-account-icon" alt="Account icon">
+    </div>
 </div>
 
 <div class="second-column">
@@ -89,6 +94,7 @@
         <div class="account-info-container">
             <span class="account-info-text">Подробнее о счете: <span class ="account-name">-</span></span>
             <div class="account-info">Account info</div>
+            <strong>Account percent:<div class="account-percent"></div></strong>
         </div>
         <a href = "account-order-blank" class="apply-for-a-account-container">
             <div class="apply-for-a-account-text">Хотите открыть новый счет?</div>

@@ -1,37 +1,22 @@
-
 document.addEventListener("DOMContentLoaded", () => {
-    const accountData = {
-        account1: {
-            name: "Накопительный счет",
-            info: "info",
-        },
-        account2: {
-            name: "Вклад",
-            info: "info",
-        },
-        account3: {
-            name: "Депозитный счет",
-            info: "info",
-        },
-        account4: {
-            name: "Бюджетный счет",
-            info: "info",
-        }
-    };
-
-    const buttons = document.querySelectorAll(".account-button");
+    const container = document.querySelector(".first-column");
+    const accountName = document.querySelector(".account-name");
     const infoText = document.querySelector(".account-info");
-    const accountNameSpan = document.querySelector(".account-name");
+    const percentInfo = document.querySelector(".account-percent");
 
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            const accountId = button.getAttribute("data-id");
-            const data = accountData[accountId];
+    container.addEventListener("click", (event) => {
+        // ищем ближайший родитель с классом card-button
+        const button = event.target.closest(".card-button");
+        if (!button) return; // если клик был вне .card-button — ничего не делаем
 
-            if (data) {
-                infoText.textContent = data.info;
-                accountNameSpan.textContent = data.name;
-            }
-        });
+        const name = button.dataset.name;
+        const info = button.dataset.info;
+        const percent = parseFloat(button.dataset.percent);
+
+        accountName.textContent = name;
+        infoText.textContent = info;
+        percentInfo.textContent = percent.toFixed(1) + "%";
     });
 });
+
+
