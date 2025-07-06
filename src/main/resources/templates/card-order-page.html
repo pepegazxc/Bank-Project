@@ -82,6 +82,8 @@
          th:attr="data-id='card' + ${iter.index},
                   data-name=${card.cardName},
                   data-info=${card.cardInfo},
+                  data-law=${card.lawPerMonth},
+                  data-cashback=${card.cashBackPercent},
                   data-link='/order-card-type-' + ${iter.index + 1}">
         <span th:text="${card.cardName}">Card Name</span>
         <img src="/icons/order-card.png" class="order-card-icon" alt="Card icon">
@@ -93,6 +95,8 @@
         <div class="card-info-container">
             <span class="card-info-text">Подробнее о карте: <span class="card-name">-</span></span>
             <div class="card-info">Card info</div>
+            <strong>Card law:<div class="card-law"></div></strong>
+            <strong>Card cashback:<div class="card-cashback"></div></strong>
         </div>
         <a href="#" class="apply-for-a-card-container">
             <div class="apply-for-a-card-text">Хотите оформить карту?</div>
