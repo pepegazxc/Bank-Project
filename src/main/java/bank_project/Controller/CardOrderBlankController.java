@@ -33,7 +33,7 @@ public class CardOrderBlankController {
         try{
             String username = auth.getName();
             cardService.openNewCard(username, cardRequest);
-            return "card-order-page";
+            return "card-order-blank";
         }catch (Exception e) {
             e.printStackTrace();
         }
