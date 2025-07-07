@@ -109,9 +109,8 @@ public class RedisService {
         }
     }
 
-    public void deleteUserCache(UserEntity savedUser) {
-        Long Id = savedUser.getId();
-        String key = "user:" + Id;
+    public void deleteUserCache(String username) {
+        String key = "user:" + username;
         redisTemplate.delete(key);
     }
 }

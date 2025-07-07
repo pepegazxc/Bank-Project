@@ -79,7 +79,7 @@ public class UserService implements UserDetailsService {
         UserEntity savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
 
-        redisService.deleteUserCache(savedUser);
+        redisService.deleteUserCache(username);
 
         if (passwordEncoder.matches(request.getPasswordForConfirm(), savedUser.getPassword())) {
 
