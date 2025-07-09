@@ -35,6 +35,6 @@ public class EditUserInfoPageController {
         }catch (Exception e) {
             model.addAttribute("error", e.getMessage());
         }
-        return "user-page";
+        return "edit-user-info-page";
     }
 }
