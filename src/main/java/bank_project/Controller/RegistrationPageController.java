@@ -3,6 +3,7 @@ package bank_project.Controller;
 import bank_project.DTO.RequestDto.RegistrationRequest;
 import bank_project.Service.AuthContextService;
 import bank_project.Service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,13 +28,13 @@ public class RegistrationPageController {
     }
 
     @PostMapping("/registration")
-    public String registerNewUser(@Valid RegistrationRequest request, BindingResult bindingResult, Model model) {
+    public String registerNewUser(@Valid RegistrationRequest request, BindingResult bindingResult, Model model, HttpServletRequest httpRequest) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "registration-page";
         }
         userService.registerNewUser(request);
-        authContextService.autoAuth(request.getUserName(), request.getPassword());
+        authContextService.autoAuth(request.getUserName(), request.getPassword(), httpRequest);
         return "redirect:/main";
     }
 }
