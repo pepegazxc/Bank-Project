@@ -11,48 +11,63 @@
 
     <div class="fields">
 
-        <label>
-            <span>Имя</span>
-            <input type="text" class="input-name" placeholder="Введите имя">
-        </label>
+        <form th:action="@{/card-order-type-3}" th:method="post">
+            <label>
+                <span>Имя</span>
+                <input type="text" name="name" class="input-name" placeholder="Введите имя">
+            </label>
 
-        <label>
-            <span>Фамилия</span>
-            <input type="text" class="input-surname" placeholder="Введите фамилию">
-        </label>
+            <label>
+                <span>Фамилия</span>
+                <input type="text" name="surname" class="input-surname" placeholder="Введите фамилию">
+            </label>
 
-        <label>
-            <span>Отчество (если есть)</span>
-            <input type="text" class="input-patronymic" placeholder="Введите отчество">
-        </label>
+            <label>
+                <span>Отчество (если есть)</span>
+                <input type="text" name="patronymic" class="input-patronymic" placeholder="Введите отчество">
+            </label>
 
-        <label>
-            <span>Телефон</span>
-            <input type="tel" class="input-phone" placeholder="+7 (___) ___-__-__">
-        </label>
+            <label>
+                <span>Телефон</span>
+                <input type="text" name="phoneNumber" class="input-phone" placeholder="+7 (___) ___-__-__">
+            </label>
 
-        <label>
-            <span>Паспорт</span>
-            <input type="text" class="input-passport" placeholder="Серия и номер">
-        </label>
+            <label>
+                <span>Паспорт</span>
+                <input type="text" name="passport" class="input-passport" placeholder="Серия и номер">
+            </label>
 
-        <label>
-            <span>Email</span>
-            <input type="email" class="input-email" placeholder="example@mail.com">
-        </label>
+            <label>
+                <span>Email</span>
+                <input type="email" name="email" class="input-email" placeholder="example@mail.com">
+            </label>
 
-        <label>
-            <span>Тип карты: Виртуальная</span>
-        </label>
-
-        <div style="text-align: center">
-            <div class="order-button">Заказать</div>
-        </div>
+            <label>
+                <span>Адрес доставки</span>
+                <input type="text" name="address" class="input-address" placeholder="Город, улица, дом, квартира">
+            </label>
 
 
-        <div style="text-align: center">
-            <a class="back-button" href = "card-order">← Назад</a>
-        </div>
+            <label>
+                <span >Тип карты: Виртуальная</span>
+                <input type="hidden" name = "cardType" value="Virtual"></input>
+            </label>
+
+            <div style="text-align: center">
+                <button type="submit" class="order-button">Заказать</button>
+            </div>
+
+            <div style="text-align: center">
+                <a class="back-button" href = "card-order">← Назад</a>
+            </div>
+
+            <div style="text-align: center; color: red">
+                <div th:if="${error}" class="alt-link">
+                    <p th:text="${error}"></p>
+                </div>
+            </div>
+        </form>
+
     </div>
 </div>
 

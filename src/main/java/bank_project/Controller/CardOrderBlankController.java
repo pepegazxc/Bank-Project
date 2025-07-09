@@ -43,12 +43,76 @@ public class CardOrderBlankController {
     @GetMapping("/order-card-type-4")
     public String cardType4() {return "card-order-blank-type-4";}
 
+    @PostMapping("/card-order-type-4")
+    public String cardOrderTypeFour(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "card-order-blank-type-4";
+        }
+        try{
+            String username = auth.getName();
+            cardService.openNewCard(username, cardRequest);
+            return "card-order-blank";
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "card-order-blank-type-4";
+    }
+
     @GetMapping("/order-card-type-3")
     public String cardType3() {return "card-order-blank-type-3";}
+
+    @PostMapping("/card-order-type-3")
+    public String cardOrderTypeThree(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "card-order-blank-type-3";
+        }
+        try{
+            String username = auth.getName();
+            cardService.openNewCard(username, cardRequest);
+            return "card-order-blank-type-3";
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "card-order-blank-type-3";
+    }
 
     @GetMapping("/order-card-type-2")
     public String cardType2() {return "card-order-blank-type-2";}
 
+    @PostMapping("/card-order-type-2")
+    public String cardOrderTypeTwo(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "card-order-blank-type-2";
+        }
+        try{
+            String username = auth.getName();
+            cardService.openNewCard(username, cardRequest);
+            return "card-order-blank-type-2";
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "card-order-blank-type-2";
+    }
+
     @GetMapping("/order-card-type-1")
     public String cardType1() {return "card-order-blank-type-1";}
+
+    @PostMapping("/card-order-type-1")
+    public String cardOrderTypeOne(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "card-order-blank-type-1";
+        }
+        try{
+            String username = auth.getName();
+            cardService.openNewCard(username, cardRequest);
+            return "card-order-blank-type-1";
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "card-order-blank-type-1";
+    }
 }
