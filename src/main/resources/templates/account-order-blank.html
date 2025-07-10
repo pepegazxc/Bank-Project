@@ -9,39 +9,45 @@
 <div class="main-container">
     <div class="project-name">BANK PROJECT</div>
 
+    <form th:action="@{/account-order-blank}" th:method="post">
     <div class="fields">
 
         <label>
             <span>Есть ли у вас цель?</span>
             <select class="aim-type-select">
-                <option value="">Выберите счет</option>
-                <option value="forTravel">Накопить на путешествие</option>
-                <option value="forHealth">Накопить на лечение</option>
-                <option value="forGift">Накопить на подарок</option>
-                <option value="other">Другое...</option>
+                <option  value="">Выберите цель</option>
+                <option type = "text" name = "goal" value="forTravel">Накопить на путешествие</option>
+                <option type = "text" name = "goal" value="forHealth">Накопить на лечение</option>
+                <option type = "text" name = "goal" value="forGift">Накопить на подарок</option>
+                <option type = "text" name = "goal">Другое...</option>
             </select>
+        </label>
+
+        <label>
+            <span>У вас есть цель который нету в нашем списке?</span>
+            <input class = account-type-select name = "customGoal" type = "text" placeholder="Если нету никакой цели оставьте это поле пустым">
         </label>
 
         <label>
             <span>Тип счета</span>
             <select class="account-type-select">
-                <option value="">Выберите счет</option>
-                <option value="saveAccount">Накопительный</option>
-                <option value="bankDeposit">Вклад</option>
-                <option value="deposit">Депозитный</option>
-                <option value="benefit">Бюджетный</option>
+                <option type = "text" name = "accountType" value="">Выберите счет</option>
+                <option type = "text" name = "accountType"  value="Saving account">Накопительный</option>
+                <option type = "text" name = "accountType" value="Deposit">Вклад</option>
+                <option type = "text" name = "accountType" value="Deposit account">Депозитный</option>
+                <option type = "text" name = "accountType" value="Budget account">Бюджетный</option>
             </select>
         </label>
 
         <div style="text-align: center">
-            <div class="order-button">Открыть</div>
+            <button type="submit" class="order-button">Открыть</div>
         </div>
 
         <div style="text-align: center">
             <a class="back-button" href = "new-account">← Назад</a>
         </div>
 
+    </form>
     </div>
-</div>
 </body>
 </html>

@@ -22,7 +22,7 @@ public class UserAccountEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "account_id")
-    private AccountsEntity account;
+    private AccountsEntity accountId;
 
     private BigDecimal balance;
 
