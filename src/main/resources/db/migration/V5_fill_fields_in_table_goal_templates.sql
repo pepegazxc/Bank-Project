@@ -1,4 +1,3 @@
-INSERT INTO goal_templates (goal_name) VALUES ('Saving account'),
-                                              ('Deposit'),
-                                              ('Deposit account'),
-                                              ('Budget account')
+INSERT INTO goal_templates (goal_name) VALUES ('Travel'),
+                                              ('Health'),
+                                              ('Gift')
