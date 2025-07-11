@@ -85,6 +85,7 @@ public class RedisService {
                     decryptCardExpirationDate,
                     userCardCache.getCardBalance(),
                     userCardCache.getCashback(),
+                    userCardCache.getCardTypeId(),
                     userCardCache.isActive()
             );
 
@@ -94,6 +95,7 @@ public class RedisService {
 
             UserAccountCacheDto userAccount = new UserAccountCacheDto(
                     userAccountCache.getAccountBalance(),
+                    userAccountCache.getAccountName(),
                     userAccountCache.getCustomGoal(),
                     decryptAccountNumber
             );

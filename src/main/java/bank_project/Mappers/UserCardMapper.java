@@ -11,6 +11,7 @@ public class UserCardMapper {
                 card.getCipherExpirationDate(),
                 card.getBalance(),
                 card.getCashback(),
+                card.getCardId(),
                 card.getIsActive()
         );
     }

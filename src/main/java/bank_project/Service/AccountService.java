@@ -87,16 +87,20 @@ public class AccountService {
                 }
 
                 if (savedAccount.getGoalTempId() == null) {
-                    if (request.getGoal() != null && request.getCustomGoal() == null) {
+                    if (request.getGoal() != null) {
                         GoalTemplatesEntity goal = goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
                                 .orElseThrow(() -> new RuntimeException("Goal not found"));
 
                         savedAccount.setGoalTempId(goal);
                     }
+
                 }
-                if (request.getCustomGoal() != null && request.getGoal() == null) {
-                    savedAccount.setCustomGoal(request.getCustomGoal());
+                if(savedAccount.getCustomGoal() == null) {
+                    if (request.getCustomGoal() != null) {
+                        savedAccount.setCustomGoal(request.getCustomGoal());
+                    }
                 }
+
 
                 entityManager.flush();
 
