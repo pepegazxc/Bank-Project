@@ -4,7 +4,6 @@ import bank_project.DTO.RequestDto.AccountRequest;
 import bank_project.Service.AccountService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -23,7 +22,7 @@ public class AccountOrderBlankPageController {
     }
 
     @PostMapping("/account-order-blank")
-    public String accountOrderBlankPage(Authentication authentication, Model model, AccountRequest request) {
+    public String accountOrderBlankPage(Authentication authentication, AccountRequest request) {
         String username = authentication.getName();
         try{
             accountService.openNewAccount(request,username);

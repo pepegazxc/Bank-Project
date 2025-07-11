@@ -66,9 +66,6 @@ public class AccountService {
 
         Long userId = savedUser.getId();
 
-        GoalTemplatesEntity goal = goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
-                .orElseThrow(() -> new RuntimeException("Goal not found"));
-
         AccountsEntity accounts = accountRepository.findAccountIdByAccount(request.getAccountType())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
@@ -76,8 +73,8 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         while(true) {
-            String accountNumber = "52" + String.format("%014d", Math.abs(random.nextLong()) % 1_000_000_000_000_00L );
-            if (userAccountRepository.findByNumber(cipher.encrypt(accountNumber)).isEmpty()){
+            String accountNumber = "52" + String.format("%014d", Math.abs(random.nextLong()) % 1_000_000_000_000_00L);
+            if (userAccountRepository.findByNumber(cipher.encrypt(accountNumber)).isEmpty()) {
 
                 if (savedAccount.getNumber() == null) {
                     savedAccount.setNumber(cipher.encrypt(accountNumber));
@@ -88,11 +85,17 @@ public class AccountService {
                 if (savedAccount.getBalance() == null) {
                     savedAccount.setBalance(BigDecimal.valueOf(0.0));
                 }
-                if (savedAccount.getCustomGoal() == null) {
-                    savedAccount.setCustomGoal(request.getCustomGoal());
-                }
+
                 if (savedAccount.getGoalTempId() == null) {
-                    savedAccount.setGoalTempId(goal);
+                    if (request.getGoal() != null && request.getCustomGoal() == null) {
+                        GoalTemplatesEntity goal = goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
+                                .orElseThrow(() -> new RuntimeException("Goal not found"));
+
+                        savedAccount.setGoalTempId(goal);
+                    }
+                }
+                if (request.getCustomGoal() != null && request.getGoal() == null) {
+                    savedAccount.setCustomGoal(request.getCustomGoal());
                 }
 
                 entityManager.flush();

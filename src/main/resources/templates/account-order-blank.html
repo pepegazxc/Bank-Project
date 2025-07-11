@@ -14,12 +14,12 @@
 
         <label>
             <span>Есть ли у вас цель?</span>
-            <select class="aim-type-select">
+            <select name = "goal" class="aim-type-select">
                 <option  value="">Выберите цель</option>
-                <option type = "text" name = "goal" value="Travel">Накопить на путешествие</option>
-                <option type = "text" name = "goal" value="Health">Накопить на лечение</option>
-                <option type = "text" name = "goal" value="Gift">Накопить на подарок</option>
-                <option type = "text" name = "goal">Другое...</option>
+                <option   value="Travel">Накопить на путешествие</option>
+                <option   value="Health">Накопить на лечение</option>
+                <option   value="Gift">Накопить на подарок</option>
+                <option  >Другое...</option>
             </select>
         </label>
 
@@ -30,24 +30,25 @@
 
         <label>
             <span>Тип счета</span>
-            <select class="account-type-select">
-                <option type = "text" name = "accountType" value="">Выберите счет</option>
-                <option type = "text" name = "accountType"  value="Saving account">Накопительный</option>
-                <option type = "text" name = "accountType" value="Deposit">Вклад</option>
-                <option type = "text" name = "accountType" value="Deposit account">Депозитный</option>
-                <option type = "text" name = "accountType" value="Budget account">Бюджетный</option>
+            <select  name = "accountType" class="account-type-select">
+                <option  value="">Выберите счет</option>
+                <option  value="Saving account">Накопительный</option>
+                <option value="Deposit">Вклад</option>
+                <option  value="Deposit account">Депозитный</option>
+                <option  value="Budget account">Бюджетный</option>
             </select>
         </label>
 
         <div style="text-align: center">
-            <button type="submit" class="order-button">Открыть</div>
+            <button type="submit" class="order-button">Открыть</button>
         </div>
 
         <div style="text-align: center">
             <a class="back-button" href = "new-account">← Назад</a>
         </div>
-
-    </form>
     </div>
+    </form>
+</div>
+
 </body>
 </html>
