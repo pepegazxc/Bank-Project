@@ -110,6 +110,37 @@ public class CardService {
             }
 
         }
+    }
 
+    @Transactional
+    public UserCardEntity deleteCard(String username){
+        redisService.deleteUserCache(username);
+
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Long userId = savedUser.getId();
+
+        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        savedCard.setIsActive(false);
+
+        if (!savedCard.getIsActive()) {
+            savedCard.setCipherThreeNumbers(null);
+            savedCard.setCipherExpirationDate(null);
+            savedCard.setCardId(null);
+            savedCard.setCashback(null);
+            savedCard.setCipherNumber(null);
+            savedCard.setCipherExpirationDate(null);
+            savedCard.setBalance(null);
+            savedCard.setIsActive(null);
+        }
+
+        entityManager.flush();
+
+        redisService.addUserCache(username);
+
+        return savedCard;
     }
 }

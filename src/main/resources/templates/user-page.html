@@ -121,6 +121,15 @@
             <div class="card-balance-box">
                 <p th:text = "${user.card?.cardBalance ?: 'Пока что вы не открыли карту'}"><strong>Баланс:</strong> ₽</p>
             </div>
+            <form th:method="delete" th:action="@{/home}">
+                <button type = "submit" class = "delete-card-button">Деактивировать карту</button>
+            </form>
+            <div th:if="${cardDeleted}">
+                <p th:text="${cardDeleted}" style="color: red;"></p>
+            </div>
+            <div th:unless="${cardDeleted}">
+                <p th:text="${errorMessageCard}" style="color: red;"></p>
+            </div>
         </div>
 
         <div th:if = "${user.account != null and user.account.accountBalance != null}">
