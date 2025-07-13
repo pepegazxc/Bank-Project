@@ -113,38 +113,47 @@
     </div>
 
 
-    <div class="column middle-column">
-        <h2 class="section-title">Ваши карты и счета:</h2>
+        <div class="column middle-column">
+            <h2 class="section-title">Ваши карты и счета:</h2>
 
-        <div th:if = "${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
-            <h4>Баланс вашей карты:</h4>
-            <div class="card-balance-box">
-                <p th:text = "${user.card?.cardBalance ?: 'Пока что вы не открыли карту'}"><strong>Баланс:</strong> ₽</p>
+            <div th:if = "${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
+                <h4>Баланс вашей карты:</h4>
+                <div class="card-balance-box">
+                    <p th:text = "${user.card?.cardBalance ?: 'Пока что вы не открыли карту'}"><strong>Баланс:</strong> ₽</p>
+                </div>
+                <form th:method="delete" th:action="@{/home/delete-card}">
+                    <button type = "submit" class = "delete-card-button">Деактивировать карту</button>
+                </form>
+                <div th:if="${cardDeleted}">
+                    <p th:text="${cardDeleted}" style="color: red;"></p>
+                </div>
+                <div th:unless="${cardDeleted}">
+                    <p th:text="${errorMessageCard}" style="color: red;"></p>
+                </div>
             </div>
-            <form th:method="delete" th:action="@{/home}">
-                <button type = "submit" class = "delete-card-button">Деактивировать карту</button>
-            </form>
-            <div th:if="${cardDeleted}">
-                <p th:text="${cardDeleted}" style="color: red;"></p>
-            </div>
-            <div th:unless="${cardDeleted}">
-                <p th:text="${errorMessageCard}" style="color: red;"></p>
-            </div>
-        </div>
 
-        <div th:if = "${user.account != null and user.account.accountBalance != null}">
-            <h4>Баланс вашего сберегательного счета:</h4>
-            <div class="card-balance-box">
-                <p th:text = "${user.account?.accountBalance ?: 'Пока что вы не открыли счет'}"><strong>Баланс:</strong>  ₽</p>
+            <div th:if = "${user.account != null and user.account.accountBalance != null}">
+                <h4>Баланс вашего сберегательного счета:</h4>
+                <div class="card-balance-box">
+                    <p th:text = "${user.account?.accountBalance ?: 'Пока что вы не открыли счет'}"><strong>Баланс:</strong>  ₽</p>
+                </div>
+                <form th:method="delete" th:action="@{/home/delete-account}">
+                    <button type = "submit" class = "delete-account-button">Деактивировать счет</button>
+                </form>
+                <div th:if="${accountDeleted}">
+                    <p th:text="${accountDeleted}" style="color: red;"></p>
+                </div>
+                <div th:unless="${accountDeleted}">
+                    <p th:text="${errorMessageAccount}" style="color: red;"></p>
+                </div>
+            </div>
+            <div th:unless="${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
+                <p>На данный момент у вас не оформлена карта</p>
+            </div>
+            <div th:unless="${user.account != null and user.account.accountBalance != null}">
+                <p>На данный у вас не оформлен счет</p>
             </div>
         </div>
-        <div th:unless="${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
-            <p>На данный момент у вас не оформлена карта</p>
-        </div>
-        <div th:unless="${user.account != null and user.account.accountBalance != null}">
-            <p>На данный у вас не оформлен счет</p>
-        </div>
-    </div>
 
     <div class="column right-column">
         <div th:if ="${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">

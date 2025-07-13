@@ -1,6 +1,7 @@
 package bank_project.Controller;
 
 import bank_project.DTO.CacheDto.AllUserCacheDto;
+import bank_project.Service.AccountService;
 import bank_project.Service.CardService;
 import bank_project.Service.RedisService;
 import org.springframework.security.core.Authentication;
@@ -14,10 +15,12 @@ public class UserPageController {
 
     private final RedisService redisService;
     private final CardService cardService;
+    private final AccountService accountService;
 
-    public UserPageController(RedisService redisService, CardService cardService) {
+    public UserPageController(RedisService redisService, CardService cardService, AccountService accountService) {
         this.redisService = redisService;
         this.cardService = cardService;
+        this.accountService = accountService;
     }
 
     @GetMapping("/home")
@@ -35,7 +38,7 @@ public class UserPageController {
         }
     }
 
-    @DeleteMapping("/home")
+    @DeleteMapping("/home/delete-card")
     public String deleteCard(Authentication auth, Model model) {
         String username = auth.getName();
         try {
@@ -44,6 +47,19 @@ public class UserPageController {
             return "redirect:/home";
         }catch(Exception e) {
             model.addAttribute("errorMessageCard", e.getMessage());
+        }
+        return "user-page";
+    }
+
+    @DeleteMapping("/home/delete-account")
+    public String deleteAccount (Authentication auth, Model model) {
+        String username = auth.getName();
+        try{
+            accountService.deleteAccount(username);
+            model.addAttribute("accountDeleted", "Аккаунт успешно удален!");
+            return "redirect:/home";
+        }catch(Exception e) {
+            model.addAttribute("errorMessageAccount", e.getMessage());
         }
         return "user-page";
     }

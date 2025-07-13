@@ -75,7 +75,6 @@ public class AccountService {
         while(true) {
             String accountNumber = "52" + String.format("%014d", Math.abs(random.nextLong()) % 1_000_000_000_000_00L);
             if (userAccountRepository.findByNumber(cipher.encrypt(accountNumber)).isEmpty()) {
-
                 if (savedAccount.getNumber() == null) {
                     savedAccount.setNumber(cipher.encrypt(accountNumber));
                 }
@@ -85,7 +84,6 @@ public class AccountService {
                 if (savedAccount.getBalance() == null) {
                     savedAccount.setBalance(BigDecimal.valueOf(0.0));
                 }
-
                 if (savedAccount.getGoalTempId() == null) {
                     if (request.getGoal() != null) {
                         GoalTemplatesEntity goal = goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
@@ -93,7 +91,6 @@ public class AccountService {
 
                         savedAccount.setGoalTempId(goal);
                     }
-
                 }
                 if(savedAccount.getCustomGoal() == null) {
                     if (request.getCustomGoal() != null) {
@@ -101,14 +98,35 @@ public class AccountService {
                     }
                 }
 
-
                 entityManager.flush();
-
                 redisService.addUserCache(username);
 
                 return savedAccount;
             }
-
         }
+    }
+
+    @Transactional
+    public UserAccountEntity deleteAccount(String username){
+        redisService.deleteUserCache(username);
+
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Long userId = savedUser.getId();
+
+        UserAccountEntity savedAccount = userAccountRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        savedAccount.setAccountId(null);
+        savedAccount.setBalance(null);
+        savedAccount.setGoalTempId(null);
+        savedAccount.setCustomGoal(null);
+        savedAccount.setNumber(null);
+
+        entityManager.flush();
+        redisService.addUserCache(username);
+
+        return savedAccount;
     }
 }
