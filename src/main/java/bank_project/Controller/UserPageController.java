@@ -4,6 +4,7 @@ import bank_project.DTO.CacheDto.AllUserCacheDto;
 import bank_project.Service.AccountService;
 import bank_project.Service.CardService;
 import bank_project.Service.RedisService;
+import bank_project.Service.SessionTokenService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +17,13 @@ public class UserPageController {
     private final RedisService redisService;
     private final CardService cardService;
     private final AccountService accountService;
+    private final SessionTokenService sessionTokenService;
 
-    public UserPageController(RedisService redisService, CardService cardService, AccountService accountService) {
+    public UserPageController(RedisService redisService, CardService cardService, AccountService accountService, SessionTokenService sessionTokenService) {
         this.redisService = redisService;
         this.cardService = cardService;
         this.accountService = accountService;
+        this.sessionTokenService = sessionTokenService;
     }
 
     @GetMapping("/home")
@@ -42,6 +45,7 @@ public class UserPageController {
     public String deleteCard(Authentication auth, Model model) {
         String username = auth.getName();
         try {
+            sessionTokenService.checkToken(username);
             cardService.deleteCard(username);
             model.addAttribute("cardDeleted", "Карта успешно деактивирована!");
             return "redirect:/home";
@@ -55,6 +59,7 @@ public class UserPageController {
     public String deleteAccount (Authentication auth, Model model) {
         String username = auth.getName();
         try{
+            sessionTokenService.checkToken(username);
             accountService.deleteAccount(username);
             model.addAttribute("accountDeleted", "Аккаунт успешно удален!");
             return "redirect:/home";

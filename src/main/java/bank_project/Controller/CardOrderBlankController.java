@@ -2,6 +2,7 @@ package bank_project.Controller;
 
 import bank_project.DTO.RequestDto.CardRequest;
 import bank_project.Service.CardService;
+import bank_project.Service.SessionTokenService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class CardOrderBlankController {
 
     private final CardService cardService;
+    private final SessionTokenService sessionTokenService;
 
-    public CardOrderBlankController(CardService cardService) {
+    public CardOrderBlankController(CardService cardService, SessionTokenService sessionTokenService) {
         this.cardService = cardService;
+        this.sessionTokenService = sessionTokenService;
     }
 
     @GetMapping("/card-order-blank")
@@ -30,8 +33,9 @@ public class CardOrderBlankController {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank";
         }
+        String username = auth.getName();
         try{
-            String username = auth.getName();
+            sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
             return "card-order-blank";
         }catch (Exception e) {
@@ -49,8 +53,9 @@ public class CardOrderBlankController {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-4";
         }
+        String username = auth.getName();
         try{
-            String username = auth.getName();
+            sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
             return "card-order-blank";
         }catch (Exception e) {
@@ -68,8 +73,9 @@ public class CardOrderBlankController {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-3";
         }
+        String username = auth.getName();
         try{
-            String username = auth.getName();
+            sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
             return "card-order-blank-type-3";
         }catch (Exception e) {
@@ -87,8 +93,9 @@ public class CardOrderBlankController {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-2";
         }
+        String username = auth.getName();
         try{
-            String username = auth.getName();
+            sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
             return "card-order-blank-type-2";
         }catch (Exception e) {
@@ -106,8 +113,9 @@ public class CardOrderBlankController {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-1";
         }
+        String username = auth.getName();
         try{
-            String username = auth.getName();
+            sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
             return "card-order-blank-type-1";
         }catch (Exception e) {
