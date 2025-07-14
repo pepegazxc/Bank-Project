@@ -159,8 +159,8 @@
         <div th:if ="${user.card != null and user.card.cardNumber != null and !user.card.cardNumber.isEmpty()}">
             <h2 class="section-title">Информация о карте</h2>
 
-            <p id="card-number" th:data-cardNumber = "${user.card.cardBalance}">• Номер карты: **** **** **** ****</p>
-            <p id="card-type">• Тип: ****</p>
+            <p id="card-number" th:data-cardNumber = "${user.card.cardNumber}">• Номер карты: **** **** **** ****</p>
+            <p id="card-type" th:data-cardType = "${user.card.cardTypeId.id}">• Тип: ****</p>
             <p id="card-status" th:data-cardStatus = "${user.card.isActive()}">• Статус: ****</p>
             <p id="card-expiry" th:data-cardExpirationDate = "${user.card.cardExpirationDate}">• Срок действия: **/**</p>
 
