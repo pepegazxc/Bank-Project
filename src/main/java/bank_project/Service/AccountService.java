@@ -29,17 +29,19 @@ public class AccountService {
     private final RedisService redisService;
     private final CipherService cipher;
     private final GoalTemplateRepository goalTemplateRepository;
+    private final SessionTokenService sessionTokenService;
 
     @Autowired
     private EntityManager entityManager;
 
-    public AccountService(AccountRepository accountRepository, UserAccountRepository userAccountRepository, UserRepository userRepository, RedisService redisService, CipherService cipher, GoalTemplateRepository goalTemplateRepository) {
+    public AccountService(AccountRepository accountRepository, UserAccountRepository userAccountRepository, UserRepository userRepository, RedisService redisService, CipherService cipher, GoalTemplateRepository goalTemplateRepository, SessionTokenService sessionTokenService) {
         this.accountRepository = accountRepository;
         this.userAccountRepository = userAccountRepository;
         this.userRepository = userRepository;
         this.redisService = redisService;
         this.cipher = cipher;
         this.goalTemplateRepository = goalTemplateRepository;
+        this.sessionTokenService = sessionTokenService;
     }
 
     public List<ViewAccountDto> getAllAccounts() {
@@ -57,6 +59,8 @@ public class AccountService {
 
     @Transactional
     public UserAccountEntity openNewAccount(AccountRequest request, String username) {
+        sessionTokenService.checkToken(username);
+
         Random random = new Random();
 
         redisService.deleteUserCache(username);
@@ -108,6 +112,8 @@ public class AccountService {
 
     @Transactional
     public UserAccountEntity deleteAccount(String username){
+        sessionTokenService.checkToken(username);
+
         redisService.deleteUserCache(username);
 
         UserEntity savedUser = userRepository.findByUserName(username)

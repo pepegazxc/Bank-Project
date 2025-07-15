@@ -2,7 +2,6 @@ package bank_project.Controller;
 
 import bank_project.DTO.RequestDto.ChangeInfoRequest;
 import bank_project.Service.AuthContextService;
-import bank_project.Service.SessionTokenService;
 import bank_project.Service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -15,12 +14,10 @@ public class EditUserInfoPageController {
 
     private final UserService userService;
     private final AuthContextService authContextService;
-    private final SessionTokenService sessionTokenService;
 
-    public EditUserInfoPageController(UserService userService, AuthContextService authContextService, SessionTokenService sessionTokenService) {
+    public EditUserInfoPageController(UserService userService, AuthContextService authContextService) {
         this.userService = userService;
         this.authContextService = authContextService;
-        this.sessionTokenService = sessionTokenService;
     }
 
     @GetMapping("/edit-info")
@@ -32,13 +29,12 @@ public class EditUserInfoPageController {
     public String editUserInfoPage(ChangeInfoRequest request, Model model, Authentication auth) {
         String username = auth.getName();
         try {
-            sessionTokenService.checkToken(username);
             authContextService.updateUserAuthentication(
                     userService.changeUserInfo(username, request)
             );
         }catch (Exception e) {
             model.addAttribute("error", e.getMessage());
         }
-        return "edit-user-info-page";
+        return "redirect:/home";
     }
 }

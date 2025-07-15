@@ -1,9 +1,10 @@
 package bank_project.Service;
 
+import bank_project.DTO.CacheDto.AllUserCacheDto;
 import bank_project.Entity.UserEntity;
 import bank_project.Repository.JpaRepository.TokenRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
-import bank_project.Repository.RedisRepository.UserTokenRepository;
+import bank_project.Repository.RedisRepository.UserInfoRepository;
 import bank_project.Security.SessionToken.SessionToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,15 +17,13 @@ public class SessionTokenService {
     private final SessionToken sessionToken;
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
-    private final UserTokenRepository userTokenRepository;
-    private final UserRepository userRepository;
+    private final UserInfoRepository userInfoRepository;
 
-    public SessionTokenService(SessionToken sessionToken, PasswordEncoder passwordEncoder, TokenRepository tokenRepository, UserTokenRepository userTokenRepository, UserRepository userRepository) {
+    public SessionTokenService(SessionToken sessionToken, PasswordEncoder passwordEncoder, TokenRepository tokenRepository, UserInfoRepository userInfoRepository) {
         this.sessionToken = sessionToken;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
-        this.userTokenRepository = userTokenRepository;
-        this.userRepository = userRepository;
+        this.userInfoRepository = userInfoRepository;
     }
 
     public String hashToken(){
@@ -35,16 +34,22 @@ public class SessionTokenService {
         return tokenRepository.findTokenByUserName(userName);
     }
 
-    public Boolean checkToken(String username){
-        UserEntity savedUser = userRepository.findByUserName(username)
+    public void checkToken(String username){
+        UserEntity savedUser = tokenRepository.findTokenByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         String dbToken = savedUser.getToken();
-        String redisToken = userTokenRepository.findUserToken(username);
+        AllUserCacheDto cache = userInfoRepository.getUserInfo(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (dbToken.equals(redisToken)){
-            return true;
+        if (cache != null) {
+            String redisToken = cache.getUser().getToken();
+
+            if (dbToken.equals(redisToken)) {
+                return;
+            } else {
+                throw new RuntimeException("Invalid Token");
+            }
         }
-        throw new RuntimeException("Invalid Token");
     }
 }

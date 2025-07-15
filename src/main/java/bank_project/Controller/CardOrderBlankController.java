@@ -37,7 +37,7 @@ public class CardOrderBlankController {
         try{
             sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
-            return "card-order-blank";
+            return "redirect:/home";
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,7 +57,7 @@ public class CardOrderBlankController {
         try{
             sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
-            return "card-order-blank";
+            return "redirect:/home";
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,7 +77,7 @@ public class CardOrderBlankController {
         try{
             sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
-            return "card-order-blank-type-3";
+            return "redirect:/home";
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,7 +97,7 @@ public class CardOrderBlankController {
         try{
             sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
-            return "card-order-blank-type-2";
+            return "redirect:/home";
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,7 +117,7 @@ public class CardOrderBlankController {
         try{
             sessionTokenService.checkToken(username);
             cardService.openNewCard(username, cardRequest);
-            return "card-order-blank-type-1";
+            return "redirect:/home";
         }catch (Exception e) {
             e.printStackTrace();
         }

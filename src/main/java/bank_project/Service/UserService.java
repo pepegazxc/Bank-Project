@@ -77,6 +77,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserEntity changeUserInfo(String username, ChangeInfoRequest request){
+        sessionTokenService.checkToken(username);
+
         UserEntity savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
 

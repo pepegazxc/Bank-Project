@@ -26,16 +26,18 @@ public class CardService {
     private final UserRepository userRepository;
     private final CipherService cipher;
     private final RedisService redisService;
+    private final SessionTokenService sessionTokenService;
 
     @Autowired
     private EntityManager entityManager;
 
-    public CardService(CardRepository cardRepository, UserCardRepository userCardRepository, UserRepository userRepository, CipherService cipher, RedisService redisService) {
+    public CardService(CardRepository cardRepository, UserCardRepository userCardRepository, UserRepository userRepository, CipherService cipher, RedisService redisService, SessionTokenService sessionTokenService) {
         this.cardRepository = cardRepository;
         this.userCardRepository = userCardRepository;
         this.userRepository = userRepository;
         this.cipher = cipher;
         this.redisService = redisService;
+        this.sessionTokenService = sessionTokenService;
     }
 
     public List<ViewCardDto> getAllCards(){
@@ -52,6 +54,8 @@ public class CardService {
 
     @Transactional
     public UserCardEntity openNewCard(String username, CardRequest cardRequest){
+        sessionTokenService.checkToken(username);
+
         Random rand = new Random();
 
         redisService.deleteUserCache(username);
@@ -114,6 +118,8 @@ public class CardService {
 
     @Transactional
     public UserCardEntity deleteCard(String username){
+        sessionTokenService.checkToken(username);
+
         redisService.deleteUserCache(username);
 
         UserEntity savedUser = userRepository.findByUserName(username)

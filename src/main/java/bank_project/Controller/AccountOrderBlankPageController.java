@@ -26,7 +26,7 @@ public class AccountOrderBlankPageController {
         String username = authentication.getName();
         try{
             accountService.openNewAccount(request,username);
-            return "account-order-blank";
+            return "redirect:/home";
         }catch (Exception e){
             e.printStackTrace();
         }

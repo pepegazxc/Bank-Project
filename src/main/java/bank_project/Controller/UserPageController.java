@@ -17,13 +17,11 @@ public class UserPageController {
     private final RedisService redisService;
     private final CardService cardService;
     private final AccountService accountService;
-    private final SessionTokenService sessionTokenService;
 
-    public UserPageController(RedisService redisService, CardService cardService, AccountService accountService, SessionTokenService sessionTokenService) {
+    public UserPageController(RedisService redisService, CardService cardService, AccountService accountService) {
         this.redisService = redisService;
         this.cardService = cardService;
         this.accountService = accountService;
-        this.sessionTokenService = sessionTokenService;
     }
 
     @GetMapping("/home")
@@ -45,27 +43,25 @@ public class UserPageController {
     public String deleteCard(Authentication auth, Model model) {
         String username = auth.getName();
         try {
-            sessionTokenService.checkToken(username);
             cardService.deleteCard(username);
             model.addAttribute("cardDeleted", "Карта успешно деактивирована!");
             return "redirect:/home";
         }catch(Exception e) {
             model.addAttribute("errorMessageCard", e.getMessage());
+            return "redirect:/home";
         }
-        return "user-page";
     }
 
     @DeleteMapping("/home/delete-account")
     public String deleteAccount (Authentication auth, Model model) {
         String username = auth.getName();
         try{
-            sessionTokenService.checkToken(username);
             accountService.deleteAccount(username);
             model.addAttribute("accountDeleted", "Аккаунт успешно удален!");
             return "redirect:/home";
         }catch(Exception e) {
             model.addAttribute("errorMessageAccount", e.getMessage());
+            return "redirect:/home";
         }
-        return "user-page";
     }
 }
