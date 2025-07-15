@@ -11,6 +11,7 @@ import bank_project.Repository.JpaRepository.GoalTemplateRepository;
 import bank_project.Repository.JpaRepository.UserAccountRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AccountService {
 
     private final AccountRepository accountRepository;
@@ -103,6 +105,8 @@ public class AccountService {
                 }
 
                 entityManager.flush();
+                log.info("User {} has opened new account", username);
+
                 redisService.addUserCache(username);
 
                 return savedAccount;
@@ -131,6 +135,8 @@ public class AccountService {
         savedAccount.setNumber(null);
 
         entityManager.flush();
+        log.info("User {} has deleted account", username);
+
         redisService.addUserCache(username);
 
         return savedAccount;

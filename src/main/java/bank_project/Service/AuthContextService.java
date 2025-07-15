@@ -4,6 +4,7 @@ import bank_project.Entity.UserEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class AuthContextService {
 
     private final AuthenticationManager authenticationManager;
@@ -35,6 +37,7 @@ public class AuthContextService {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext()
         );
+        log.info("User {} authenticated", userName);
     }
 
     public void updateUserAuthentication(UserEntity savedUser) {
@@ -47,5 +50,6 @@ public class AuthContextService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(auth);
+        log.info("User {} authentication has updated", savedUser.getUsername());
     }
 }

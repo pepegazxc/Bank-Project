@@ -12,12 +12,14 @@ import bank_project.Repository.JpaRepository.UserAccountRepository;
 import bank_project.Repository.JpaRepository.UserCardRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
 import bank_project.Repository.RedisRepository.UserInfoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class RedisService {
 
     private final RedisTemplate redisTemplate;
@@ -47,7 +49,10 @@ public class RedisService {
         UserAccountEntity savedAccount = userAccountRepository.findByUserId(Id)
                 .orElseThrow(() -> new RuntimeException("Account not found after save"));
         AllUserCacheDto data = UserMapper.toAllCacheDto(savedUser, savedCard, savedAccount);
+
         redisTemplate.opsForValue().set("user:" + userName, data);
+
+        log.info("User {} has added info in cache", userName);
     }
 
     public AllUserCacheDto getUserInfo(String userName) {
@@ -114,5 +119,7 @@ public class RedisService {
     public void deleteUserCache(String username) {
         String key = "user:" + username;
         redisTemplate.delete(key);
+
+        log.info("User {} has deleted info in cache", username);
     }
 }

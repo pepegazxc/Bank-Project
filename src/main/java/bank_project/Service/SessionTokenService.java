@@ -6,12 +6,14 @@ import bank_project.Repository.JpaRepository.TokenRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
 import bank_project.Repository.RedisRepository.UserInfoRepository;
 import bank_project.Security.SessionToken.SessionToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class SessionTokenService {
 
     private final SessionToken sessionToken;
@@ -46,6 +48,7 @@ public class SessionTokenService {
             String redisToken = cache.getUser().getToken();
 
             if (dbToken.equals(redisToken)) {
+                log.info("User {} token validation successful", username);
                 return;
             } else {
                 throw new RuntimeException("Invalid Token");

@@ -9,6 +9,7 @@ import bank_project.Repository.JpaRepository.CardRepository;
 import bank_project.Repository.JpaRepository.UserCardRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CardService {
     private final CardRepository cardRepository;
     private final UserCardRepository userCardRepository;
@@ -107,6 +109,7 @@ public class CardService {
                 }
 
                 entityManager.flush();
+                log.info("User {} has opened new card", username);
 
                 redisService.addUserCache(username);
 
@@ -144,6 +147,7 @@ public class CardService {
         }
 
         entityManager.flush();
+        log.info("User {} has deleted card", username);
 
         redisService.addUserCache(username);
 
