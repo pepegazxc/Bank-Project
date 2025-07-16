@@ -87,21 +87,46 @@
         </div>
 
         <div class="transfer-between-accounts">
-            <span class="transfer-between-accounts-text">Перевод между счетами</span>
-            <div class="transfer-row">
-                <div class="transfer-container">
-                    <span class="transfer-container-text">First account</span>
-                    <input type="text" class="transfer-box" placeholder="Value">
+            <form th:action = "@{/replenishment/transfer/between-card-and-account}" th:method="patch">
+                <span class="transfer-between-accounts-text">Перевод между счетом и картой</span>
+                <div class="transfer-row">
+                    <div class="transfer-container">
+                        <span class="transfer-container-text">Карта</span>
+                        <input type="text" name = "toAccountCache" class="transfer-box" placeholder="Value">
+                    </div>
+                    <img class="arrow-icon" src="/icons/right-arrow.png" alt="Arrow icon">
+                    <div class="transfer-container">
+                        <span class="transfer-container-text">Счет</span>
+                    </div>
                 </div>
-                <img class="arrow-icon" src="/icons/right-arrow.png" alt="Arrow icon">
-                <div class="transfer-container">
-                    <span class="transfer-container-text">Second account</span>
-                    <input type="text" class="transfer-box" placeholder="Value">
+                <button type="submit" class="transfer-confirmation-button">
+                    <img src="/icons/check-mark-icon.png"  alt="Check mark"> Перевести
+                </button>
+            </form>
+            <div></div>
+
+            <form th:action = "@{/replenishment/transfer/between-account-and-card}" th:method="patch">
+                <span class="transfer-between-accounts-text">Перевод между счетом и картой</span>
+                <div class="transfer-row">
+                 <div class="transfer-container">
+                        <span class="transfer-container-text">Счет</span>
+                     <input type="text" name = "toCardCache" class="transfer-box" placeholder="Введите сумму">
+                    </div>
+                    <img class="arrow-icon" src="/icons/right-arrow.png" alt="Arrow icon">
+                    <div class="transfer-container">
+                        <span class="transfer-container-text">Карта</span>
+                    </div>
                 </div>
-            </div>
-            <div class="transfer-confirmation-button">
-                <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
-            </div>
+                <button type="submit" class="transfer-confirmation-button">
+                    <img src="/icons/check-mark-icon.png"  alt="Check mark"> Перевести
+                </button>
+                <div th:if="${errors}">
+                    <p th:text="${errors}" style="color: red;"></p>
+                </div>
+                <div th:unless="${errors}">
+                    <p th:text="${success}" style="color: red;"></p>
+                </div>
+            </form>
         </div>
     </div>
 
