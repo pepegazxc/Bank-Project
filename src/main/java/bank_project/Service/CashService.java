@@ -61,6 +61,7 @@ public class CashService{
 
         BigDecimal newAccountBalance = savedAccount.getBalance().subtract(request.getToCardCache());
         savedAccount.setBalance(newAccountBalance);
+
         BigDecimal newCardBalance = savedCard.getBalance().add(request.getToCardCache());
         savedCard.setBalance(newCardBalance);
 
@@ -69,5 +70,40 @@ public class CashService{
 
         redisService.addUserCache(username);
 
+    }
+
+    @Transactional
+    public void betweenCardAndAccount(BetweenAccountsCacheRequest request, String username){
+        sessionTokenService.checkToken(username);
+
+        redisService.deleteUserCache(username);
+
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Long userId = savedUser.getId();
+
+        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
+        UserAccountEntity savedAccount = userAccountRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
+
+        if (request.getToAccountCache() == null || request.getToAccountCache().compareTo(BigDecimal.ZERO) <= 0){
+            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+        }
+        if (savedCard.getBalance().compareTo(request.getToAccountCache()) < 0) {
+            throw new RuntimeException("Not enough balance on account");
+        }
+
+        BigDecimal newAccountBalance = savedCard.getBalance().subtract(request.getToAccountCache());
+        savedCard.setBalance(newAccountBalance);
+
+        BigDecimal newCardBalance = savedAccount.getBalance().add(request.getToAccountCache());
+        savedAccount.setBalance(newCardBalance);
+
+        entityManager.flush();
+        log.info("User {} has transferred money between from card to account", username);
+
+        redisService.addUserCache(username);
     }
 }

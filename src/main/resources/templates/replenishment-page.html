@@ -102,6 +102,12 @@
                 <button type="submit" class="transfer-confirmation-button">
                     <img src="/icons/check-mark-icon.png"  alt="Check mark"> Перевести
                 </button>
+                <div th:if="${errors}">
+                    <p th:text="${errors}" style="color: red;"></p>
+                </div>
+                <div th:unless="${errors}">
+                    <p th:text="${success}" style="color: red;"></p>
+                </div>
             </form>
             <div></div>
 

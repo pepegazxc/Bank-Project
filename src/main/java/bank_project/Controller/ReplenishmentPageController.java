@@ -45,7 +45,19 @@ public class ReplenishmentPageController {
     }
 
     @PatchMapping("/replenishment/transfer/between-card-and-account")
-    public String transferBetweenCardAndAccount(Authentication auth, Model model) {
+    public String transferBetweenCardAndAccount(@Valid BetweenAccountsCacheRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "replenishment-page";
+        }
+        String username = auth.getName();
+        try{
+            cashService.betweenCardAndAccount(request, username);
+            model.addAttribute("success", "Операция прошла успешно");
+            return "redirect:/replenishment";
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return "redirect:/replenishment";
     }
 }
