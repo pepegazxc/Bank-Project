@@ -1,6 +1,7 @@
 package bank_project.Controller;
 
-import bank_project.DTO.RequestDto.TransferRequestDto.BetweenAccountsCacheRequest;
+import bank_project.DTO.RequestDto.TransferRequestDto.BetweenAccountsCashRequest;
+import bank_project.DTO.RequestDto.TransferRequestDto.BetweenUsersCashRequest;
 import bank_project.Service.CashService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,7 @@ public class ReplenishmentPageController {
     }
 
     @PatchMapping("/replenishment/transfer/between-account-and-card")
-    public String transferBetweenAccountAndCard(@Valid BetweenAccountsCacheRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+    public String transferBetweenAccountAndCard(@Valid BetweenAccountsCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "replenishment-page";
@@ -45,7 +46,7 @@ public class ReplenishmentPageController {
     }
 
     @PatchMapping("/replenishment/transfer/between-card-and-account")
-    public String transferBetweenCardAndAccount(@Valid BetweenAccountsCacheRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+    public String transferBetweenCardAndAccount(@Valid BetweenAccountsCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "replenishment-page";
@@ -53,6 +54,23 @@ public class ReplenishmentPageController {
         String username = auth.getName();
         try{
             cashService.betweenCardAndAccount(request, username);
+            model.addAttribute("success", "Операция прошла успешно");
+            return "redirect:/replenishment";
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return "redirect:/replenishment";
+    }
+
+    @PatchMapping("/replenishment/transer/between-users/with-phoneNumber")
+    public String transferBetweenUsersWithPhoneNumber(@Valid BetweenUsersCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "replenishment-page";
+        }
+        String username = auth.getName();
+        try{
+            cashService.betweenUsersWithPhone(request, username);
             model.addAttribute("success", "Операция прошла успешно");
             return "redirect:/replenishment";
         }catch (Exception e){

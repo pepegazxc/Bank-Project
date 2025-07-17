@@ -139,14 +139,17 @@
     <div class="column second-column">
         <span class="last-contacts-text">Выберите способ перевода</span>
         <div class="transfer-type-container">
-            <div class="transfer-by-phone-number">
-                По номеру телефона
-                <input type="text" class="input-box" placeholder="Введите номер телефона">
-                <input type="text" class="enter-value-container" placeholder="Сумма">
-                <div class="transfer-confirmation-button">
-                    <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
+
+            <form th:method="patch" th:action = "@{/replenishment/transer/between-users/with-phoneNumber}">
+                <div class="transfer-by-phone-number">
+                    По номеру телефона
+                    <input type="text" name="phoneNumber" class="input-box" placeholder="Введите номер телефона">
+                    <input type="text" name="value" class="enter-value-container" placeholder="Сумма">
+                    <button type = "submit" class="transfer-confirmation-button">
+                        <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
+                    </button>
                 </div>
-            </div>
+            </form>
 
             <div class="transfer-by-card-number">
                 По номеру карты

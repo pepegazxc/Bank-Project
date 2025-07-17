@@ -1,6 +1,7 @@
 package bank_project.Service;
 
-import bank_project.DTO.RequestDto.TransferRequestDto.BetweenAccountsCacheRequest;
+import bank_project.DTO.RequestDto.TransferRequestDto.BetweenAccountsCashRequest;
+import bank_project.DTO.RequestDto.TransferRequestDto.BetweenUsersCashRequest;
 import bank_project.Entity.UserAccountEntity;
 import bank_project.Entity.UserCardEntity;
 import bank_project.Entity.UserEntity;
@@ -24,20 +25,22 @@ public class CashService{
     private final UserAccountRepository userAccountRepository;
     private final SessionTokenService sessionTokenService;
     private final RedisService redisService;
+    private final CipherService cipherService;
 
     @Autowired
     private EntityManager entityManager;
 
-    public CashService(UserRepository userRepository, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, SessionTokenService sessionTokenService, RedisService redisService) {
+    public CashService(UserRepository userRepository, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, SessionTokenService sessionTokenService, RedisService redisService, CipherService cipherService) {
         this.userRepository = userRepository;
         this.userCardRepository = userCardRepository;
         this.userAccountRepository = userAccountRepository;
         this.sessionTokenService = sessionTokenService;
         this.redisService = redisService;
+        this.cipherService = cipherService;
     }
 
     @Transactional
-    public void betweenAccountAndCard(BetweenAccountsCacheRequest request, String username){
+    public void betweenAccountAndCard(BetweenAccountsCashRequest request, String username){
         sessionTokenService.checkToken(username);
 
         redisService.deleteUserCache(username);
@@ -73,7 +76,7 @@ public class CashService{
     }
 
     @Transactional
-    public void betweenCardAndAccount(BetweenAccountsCacheRequest request, String username){
+    public void betweenCardAndAccount(BetweenAccountsCashRequest request, String username){
         sessionTokenService.checkToken(username);
 
         redisService.deleteUserCache(username);
@@ -105,5 +108,51 @@ public class CashService{
         log.info("User {} has transferred money between from card to account", username);
 
         redisService.addUserCache(username);
+    }
+
+    @Transactional
+    public void betweenUsersWithPhone(BetweenUsersCashRequest request, String username){
+        sessionTokenService.checkToken(username);
+
+        redisService.deleteUserCache(username);
+
+        if(request.getPhoneNumber() == null) {
+            throw new RuntimeException("You must provide a phone number");
+        }
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity recipientUser = userRepository.findByPhoneNumber(cipherService.encrypt(request.getPhoneNumber()))
+                .orElseThrow(() -> new RuntimeException("Cant find recipient user"));
+
+        Long userId = savedUser.getId();
+        Long recipientUserId = recipientUser.getId();
+
+        if (recipientUserId.equals(userId)) {
+            throw new RuntimeException("Cant transfer money to yourself");
+        }
+
+        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
+        UserCardEntity recipientCard = userCardRepository.findByUserId(recipientUserId)
+                .orElseThrow(() -> new RuntimeException("Cant find recipient card"));
+
+        if (request.getValue() == null || request.getValue().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+        }
+        if(savedCard.getBalance().compareTo(request.getValue()) < 0) {
+            throw new RuntimeException("Not enough balance on card");
+        }
+
+        BigDecimal newCardUserBalance = savedCard.getBalance().subtract(request.getValue());
+        savedCard.setBalance(newCardUserBalance);
+
+        BigDecimal newRecipientCardBalance = recipientCard.getBalance().add(request.getValue());
+        recipientCard.setBalance(newRecipientCardBalance);
+
+        entityManager.flush();
+        log.info("User {} has transferred money to {}", username, recipientUser.getUsername());
+
+        redisService.addUserCache(recipientUser.getUsername());
+
     }
 }
