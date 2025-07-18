@@ -121,8 +121,7 @@ public class CashService{
         }
         UserEntity savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        UserEntity recipientUser = userRepository.findByPhoneNumber(cipherService.encrypt(request.getPhoneNumber()))
-                .orElseThrow(() -> new RuntimeException("Cant find recipient user"));
+        UserEntity recipientUser = findUserByDecryptPhoneNumber(request);
 
         Long userId = savedUser.getId();
         Long recipientUserId = recipientUser.getId();
@@ -152,7 +151,20 @@ public class CashService{
         entityManager.flush();
         log.info("User {} has transferred money to {}", username, recipientUser.getUsername());
 
-        redisService.addUserCache(recipientUser.getUsername());
+        redisService.addUserCache(username);
 
+    }
+
+    private UserEntity findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){
+        return userRepository.findAll().stream()
+                .filter(user -> {
+                    try{
+                        return cipherService.decrypt(user.getPhoneNumber()).equals(request.getPhoneNumber());
+                    }catch(Exception e){
+                        return false;
+                    }
+                        })
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Recipient user not found by phone number"));
     }
 }
