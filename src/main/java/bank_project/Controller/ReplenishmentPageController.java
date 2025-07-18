@@ -62,7 +62,7 @@ public class ReplenishmentPageController {
         return "redirect:/replenishment";
     }
 
-    @PatchMapping("/replenishment/transer/between-users/with-phoneNumber")
+    @PatchMapping("/replenishment/transfer/between-users/with-phoneNumber")
     public String transferBetweenUsersWithPhoneNumber(@Valid BetweenUsersCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
@@ -71,6 +71,23 @@ public class ReplenishmentPageController {
         String username = auth.getName();
         try{
             cashService.betweenUsersWithPhone(request, username);
+            model.addAttribute("success", "Операция прошла успешно");
+            return "redirect:/replenishment";
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return "redirect:/replenishment";
+    }
+
+    @PatchMapping("/replenishment/transfer/between-users/with-cardNumber")
+    public String transferBetweenUsersWithCardNumber(@Valid BetweenUsersCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "replenishment-page";
+        }
+        String username = auth.getName();
+        try{
+            cashService.betweenUserWithCard(request, username);
             model.addAttribute("success", "Операция прошла успешно");
             return "redirect:/replenishment";
         }catch (Exception e){

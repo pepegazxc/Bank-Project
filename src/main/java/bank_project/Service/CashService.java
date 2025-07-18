@@ -149,10 +149,46 @@ public class CashService{
         recipientCard.setBalance(newRecipientCardBalance);
 
         entityManager.flush();
-        log.info("User {} has transferred money to {}", username, recipientUser.getUsername());
+        log.info("User {} has transferred money to {} with phone number", username, recipientUser.getUsername());
 
         redisService.addUserCache(username);
+    }
 
+    @Transactional
+    public void betweenUserWithCard(BetweenUsersCashRequest request, String username){
+        sessionTokenService.checkToken(username);
+
+        redisService.deleteUserCache(username);
+
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserCardEntity recipientUser = findUserByDecryptCardNumber(request);
+
+        Long userId = savedUser.getId();
+
+        if (recipientUser.getUserId().equals(userId)) {
+            throw new RuntimeException("Cant transfer money to yourself");
+        }
+
+        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
+
+        if (request.getValue() == null || request.getValue().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+        }
+        if (savedCard.getBalance().compareTo(request.getValue()) < 0) {
+            throw new RuntimeException("Not enough balance on card");
+        }
+
+        BigDecimal newCardUserBalance = savedCard.getBalance().subtract(request.getValue());
+        savedCard.setBalance(newCardUserBalance);
+        BigDecimal newCardRecipientBalance = recipientUser.getBalance().add(request.getValue());
+        recipientUser.setBalance(newCardRecipientBalance);
+
+        entityManager.flush();
+        log.info("User {} has transferred money to user {} with card", username, recipientUser.getUserId().getUsername());
+
+        redisService.addUserCache(username);
     }
 
     private UserEntity findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){
@@ -163,8 +199,22 @@ public class CashService{
                     }catch(Exception e){
                         return false;
                     }
-                        })
+                })
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Recipient user not found by phone number"));
+    }
+
+    private UserCardEntity findUserByDecryptCardNumber(BetweenUsersCashRequest request){
+        return userCardRepository.findAll().stream()
+                .filter(card ->
+                {
+                    try{
+                        return cipherService.decrypt(card.getCipherNumber()).equals(request.getCardNumber());
+                    }catch(Exception e){
+                        return false;
+                    }
+                })
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Card not found by card number"));
     }
 }

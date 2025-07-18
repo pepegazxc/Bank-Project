@@ -140,7 +140,7 @@
         <span class="last-contacts-text">Выберите способ перевода</span>
         <div class="transfer-type-container">
 
-            <form th:method="patch" th:action = "@{/replenishment/transer/between-users/with-phoneNumber}">
+            <form th:method="patch" th:action = "@{/replenishment/transfer/between-users/with-phoneNumber}">
                 <div class="transfer-by-phone-number">
                     По номеру телефона
                     <input type="text" name="phoneNumber" class="input-box" placeholder="Введите номер телефона">
@@ -151,14 +151,22 @@
                 </div>
             </form>
 
-            <div class="transfer-by-card-number">
-                По номеру карты
-                <input type="text" class="input-box" placeholder="Введите номер карты">
-                <input type="text" class="enter-value-container" placeholder="Сумма">
-                <div class="transfer-confirmation-button">
-                    <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
+            <form th:method="patch" th:action = "@{/replenishment/transfer/between-users/with-cardNumber}">
+                <div class="transfer-by-card-number">
+                    По номеру карты
+                    <input type="text" name = "cardNumber" class="input-box" placeholder="Введите номер карты">
+                    <input type="text" name = "value" class="enter-value-container" placeholder="Сумма">
+                    <button type="submit" class="transfer-confirmation-button">
+                        <img src="/icons/check-mark-icon.png" alt="Check mark"> Перевести
+                    </button>
                 </div>
-            </div>
+                <div th:if="${errors}">
+                    <p th:text="${errors}" style="color: red;"></p>
+                </div>
+                <div th:unless="${errors}">
+                    <p th:text="${success}" style="color: red;"></p>
+                </div>
+            </form>
         </div>
     </div>
 </div>
