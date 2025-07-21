@@ -5,6 +5,7 @@ import bank_project.DTO.RequestDto.TransferRequestDto.BetweenUsersCashRequest;
 import bank_project.Entity.UserAccountEntity;
 import bank_project.Entity.UserCardEntity;
 import bank_project.Entity.UserEntity;
+import bank_project.Entity.UserOperationHistoryEntity;
 import bank_project.Repository.JpaRepository.UserAccountRepository;
 import bank_project.Repository.JpaRepository.UserCardRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
@@ -27,21 +28,27 @@ public class CashService{
     private final RedisService redisService;
     private final CipherService cipherService;
 
+    private final OperationHistoryService operationHistoryService;
+
     @Autowired
     private EntityManager entityManager;
 
-    public CashService(UserRepository userRepository, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, SessionTokenService sessionTokenService, RedisService redisService, CipherService cipherService) {
+    public CashService(UserRepository userRepository, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, SessionTokenService sessionTokenService, RedisService redisService, CipherService cipherService, OperationHistoryService operationHistoryService) {
         this.userRepository = userRepository;
         this.userCardRepository = userCardRepository;
         this.userAccountRepository = userAccountRepository;
         this.sessionTokenService = sessionTokenService;
         this.redisService = redisService;
         this.cipherService = cipherService;
+        this.operationHistoryService = operationHistoryService;
     }
 
     @Transactional
     public void betweenAccountAndCard(BetweenAccountsCashRequest request, String username){
         sessionTokenService.checkToken(username);
+
+        UserOperationHistoryEntity.OperationType operationType =
+                UserOperationHistoryEntity.OperationType.AccountToCard;
 
         redisService.deleteUserCache(username);
 
@@ -73,11 +80,16 @@ public class CashService{
 
         redisService.addUserCache(username);
 
+        operationHistoryService.saveUserOperation(savedUser, operationType, request.getToCardCache());
+
     }
 
     @Transactional
     public void betweenCardAndAccount(BetweenAccountsCashRequest request, String username){
         sessionTokenService.checkToken(username);
+
+        UserOperationHistoryEntity.OperationType operationType =
+                UserOperationHistoryEntity.OperationType.CardToAccount;
 
         redisService.deleteUserCache(username);
 
@@ -108,11 +120,16 @@ public class CashService{
         log.info("User {} has transferred money between from card to account", username);
 
         redisService.addUserCache(username);
+
+        operationHistoryService.saveUserOperation(savedUser, operationType, request.getToAccountCache());
     }
 
     @Transactional
     public void betweenUsersWithPhone(BetweenUsersCashRequest request, String username){
         sessionTokenService.checkToken(username);
+
+        UserOperationHistoryEntity.OperationType operationType =
+                UserOperationHistoryEntity.OperationType.PhoneNumber;
 
         redisService.deleteUserCache(username);
 
@@ -152,11 +169,16 @@ public class CashService{
         log.info("User {} has transferred money to {} with phone number", username, recipientUser.getUsername());
 
         redisService.addUserCache(username);
+
+        operationHistoryService.saveUserOperation(savedUser, operationType, request.getValue());
     }
 
     @Transactional
     public void betweenUserWithCard(BetweenUsersCashRequest request, String username){
         sessionTokenService.checkToken(username);
+
+        UserOperationHistoryEntity.OperationType operationType =
+                UserOperationHistoryEntity.OperationType.CardNumber;
 
         redisService.deleteUserCache(username);
 
@@ -189,6 +211,8 @@ public class CashService{
         log.info("User {} has transferred money to user {} with card", username, recipientUser.getUserId().getUsername());
 
         redisService.addUserCache(username);
+
+        operationHistoryService.saveUserOperation(savedUser, operationType, request.getValue());
     }
 
     private UserEntity findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){
