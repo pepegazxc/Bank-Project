@@ -15,10 +15,8 @@ import java.time.Instant;
 @Service
 @Slf4j
 public class OperationHistoryService {
-
     @Autowired
     private EntityManager em;
-
 
     @Transactional
     public void saveUserOperation(UserEntity userId, UserOperationHistoryEntity.OperationType operationType, BigDecimal amount) {

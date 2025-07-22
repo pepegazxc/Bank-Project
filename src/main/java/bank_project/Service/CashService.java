@@ -82,6 +82,7 @@ public class CashService{
 
         operationHistoryService.saveUserOperation(savedUser, operationType, request.getToCardCache());
 
+        redisService.addUserHistory(username);
     }
 
     @Transactional
@@ -122,6 +123,8 @@ public class CashService{
         redisService.addUserCache(username);
 
         operationHistoryService.saveUserOperation(savedUser, operationType, request.getToAccountCache());
+
+        redisService.addUserHistory(username);
     }
 
     @Transactional
@@ -171,6 +174,8 @@ public class CashService{
         redisService.addUserCache(username);
 
         operationHistoryService.saveUserOperation(savedUser, operationType, request.getValue());
+
+        redisService.addUserHistory(username);
     }
 
     @Transactional
@@ -213,6 +218,8 @@ public class CashService{
         redisService.addUserCache(username);
 
         operationHistoryService.saveUserOperation(savedUser, operationType, request.getValue());
+
+        redisService.addUserHistory(username);
     }
 
     private UserEntity findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){

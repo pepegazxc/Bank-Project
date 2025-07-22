@@ -1,17 +1,18 @@
 package bank_project.Service;
 
-import bank_project.DTO.CacheDto.AllUserCacheDto;
-import bank_project.DTO.CacheDto.UserAccountCacheDto;
-import bank_project.DTO.CacheDto.UserCacheDto;
-import bank_project.DTO.CacheDto.UserCardCacheDto;
+import bank_project.DTO.CacheDto.*;
 import bank_project.Entity.UserAccountEntity;
 import bank_project.Entity.UserCardEntity;
 import bank_project.Entity.UserEntity;
+import bank_project.Entity.UserOperationHistoryEntity;
+import bank_project.Mappers.UserHistoryMapper;
 import bank_project.Mappers.UserMapper;
 import bank_project.Repository.JpaRepository.UserAccountRepository;
 import bank_project.Repository.JpaRepository.UserCardRepository;
+import bank_project.Repository.JpaRepository.UserHistoryRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
 import bank_project.Repository.RedisRepository.UserInfoRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,14 +29,16 @@ public class RedisService {
     private final CipherService cipherService;
     private final UserCardRepository userCardRepository;
     private final UserAccountRepository userAccountRepository;
+    private final UserHistoryRepository userHistoryRepository;
 
-    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository) {
+    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, UserHistoryRepository userHistoryRepository) {
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
         this.cipherService = cipherService;
         this.userCardRepository = userCardRepository;
         this.userAccountRepository = userAccountRepository;
+        this.userHistoryRepository = userHistoryRepository;
     }
 
     public void addUserCache(String userName) {
@@ -121,5 +124,19 @@ public class RedisService {
         redisTemplate.delete(key);
 
         log.info("User {} has deleted info in cache", username);
+    }
+
+    public void addUserHistory(String username) {
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found after save"));
+
+        UserOperationHistoryEntity savedHistory = userHistoryRepository.findTopByUserIdOrderByIdDesc(savedUser)
+                .orElseThrow(() -> new RuntimeException("History not found after save"));
+
+        UserOperationHistoryCacheDto historyCache = UserHistoryMapper.toHistoryDto(savedHistory);
+
+        String key = "user:operationHistory:" + username;
+        redisTemplate.opsForList().leftPush(key, historyCache);
+        redisTemplate.opsForList().trim(key, 0, 49);
     }
 }
