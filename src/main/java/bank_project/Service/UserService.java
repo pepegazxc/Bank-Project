@@ -50,6 +50,7 @@ public class UserService implements UserDetailsService {
         log.info("Logged user: {} received session token", user.getUsername());
 
         redisService.addUserCache(userName);
+        redisService.loadUserHistory(userName);
 
         return user;
     }
@@ -82,6 +83,7 @@ public class UserService implements UserDetailsService {
         log.info("User {} has registered", user.getUsername());
 
         redisService.addUserCache(user.getUsername());
+        redisService.loadUserHistory(user.getUsername());
     }
 
     @Transactional

@@ -17,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -138,5 +140,28 @@ public class RedisService {
         String key = "user:operationHistory:" + username;
         redisTemplate.opsForList().leftPush(key, historyCache);
         redisTemplate.opsForList().trim(key, 0, 49);
+    }
+
+    public void loadUserHistory(String username) {
+        UserEntity savedUser = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found after save"));
+
+        List<UserOperationHistoryEntity> historyList = userHistoryRepository.findAllByUserId(savedUser)
+                .orElseThrow(() -> new RuntimeException("History not found after save"));
+
+        if (!historyList.isEmpty()) {
+            List<UserOperationHistoryCacheDto> cache = historyList.stream()
+                    .map(UserHistoryMapper::toHistoryDto)
+                    .collect(Collectors.toList());
+
+
+            String key = "user:operationHistory:" + username;
+
+            for (UserOperationHistoryCacheDto history : cache) {
+                redisTemplate.opsForList().rightPush(key, history);
+            }
+
+            redisTemplate.opsForList().trim(key, Math.max(0, cache.size() - 50), cache.size() - 1);
+        }
     }
 }

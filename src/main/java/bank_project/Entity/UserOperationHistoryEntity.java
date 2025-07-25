@@ -24,6 +24,7 @@ public class UserOperationHistoryEntity {
     @JoinColumn(name = "contact_id")
     private UserContactEntity contactId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "operation_type")
     private OperationType operationType;
 

@@ -13,6 +13,5 @@ import java.util.Optional;
 public interface UserHistoryRepository extends JpaRepository<UserOperationHistoryEntity, Long> {
     Optional<UserOperationHistoryEntity> findTopByUserIdOrderByIdDesc(UserEntity userId);
 
-    @Query(value = "SELECT * FROM user_operation_history WHERE user_id = ?1", nativeQuery = true)
-    Optional<List<UserOperationHistoryEntity>> findAllByUserId(Long userId);
+    Optional<List<UserOperationHistoryEntity>> findAllByUserId(UserEntity userId);
 }
