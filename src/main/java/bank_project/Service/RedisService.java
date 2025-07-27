@@ -11,13 +11,14 @@ import bank_project.Repository.JpaRepository.UserAccountRepository;
 import bank_project.Repository.JpaRepository.UserCardRepository;
 import bank_project.Repository.JpaRepository.UserHistoryRepository;
 import bank_project.Repository.JpaRepository.UserRepository;
+import bank_project.Repository.RedisRepository.UserHistoryCacheRepository;
 import bank_project.Repository.RedisRepository.UserInfoRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,10 @@ public class RedisService {
     private final UserCardRepository userCardRepository;
     private final UserAccountRepository userAccountRepository;
     private final UserHistoryRepository userHistoryRepository;
+    private final SessionTokenService sessionTokenService;
+    private final UserHistoryCacheRepository userHistoryCacheRepository;
 
-    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, UserHistoryRepository userHistoryRepository) {
+    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, UserHistoryRepository userHistoryRepository, SessionTokenService sessionTokenService, UserHistoryCacheRepository userHistoryCacheRepository) {
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
@@ -41,6 +44,8 @@ public class RedisService {
         this.userCardRepository = userCardRepository;
         this.userAccountRepository = userAccountRepository;
         this.userHistoryRepository = userHistoryRepository;
+        this.sessionTokenService = sessionTokenService;
+        this.userHistoryCacheRepository = userHistoryCacheRepository;
     }
 
     public void addUserCache(String userName) {
@@ -61,6 +66,8 @@ public class RedisService {
     }
 
     public AllUserCacheDto getUserInfo(String userName) {
+        sessionTokenService.checkToken(userName);
+
         Optional<AllUserCacheDto> allCache = userInfoRepository.getUserInfo(userName);
         if (allCache.isPresent()) {
             AllUserCacheDto data = allCache.get();
@@ -163,5 +170,23 @@ public class RedisService {
 
             redisTemplate.opsForList().trim(key, Math.max(0, cache.size() - 50), cache.size() - 1);
         }
+    }
+
+    public List<UserOperationHistoryCacheDto> getOperationHistory(String username) {
+        sessionTokenService.checkToken(username);
+
+        List<UserOperationHistoryCacheDto>  cache = userHistoryCacheRepository.getUserOperationHistory(username)
+                .orElseThrow(() -> new RuntimeException("History not found after save"));
+
+        List<UserOperationHistoryCacheDto> result = cache.stream()
+                .filter(Objects::nonNull)
+                .toList();
+
+        if(result.isEmpty()) {
+            throw new RuntimeException("History not found after save");
+        }
+
+        return result;
+
     }
 }

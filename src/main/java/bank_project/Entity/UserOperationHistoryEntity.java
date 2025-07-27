@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_operations_history")
@@ -30,7 +30,7 @@ public class UserOperationHistoryEntity {
 
     private BigDecimal amount;
 
-    private Timestamp time;
+    private LocalDateTime time;
 
     public static class Builder {
         UserOperationHistoryEntity userOperationHistoryEntity = new UserOperationHistoryEntity();
@@ -53,7 +53,7 @@ public class UserOperationHistoryEntity {
             userOperationHistoryEntity.setAmount(amount);
             return this;
         }
-        public Builder time(Timestamp time) {
+        public Builder time(LocalDateTime time) {
             userOperationHistoryEntity.setTime(time);
             return this;
         }

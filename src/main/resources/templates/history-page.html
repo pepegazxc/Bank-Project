@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Operation history</title>
+    <link href = "/style/history-page-style/history-page-style.css" rel="stylesheet">
+</head>
+<body>
+<div class="main-container">
+    <div class="project-name">BANK PROJECT</div>
+
+    <div class="history-container">
+        <div class="column">
+            <div class="column-title">Контакт</div>
+            <div th:each="item : ${history}" class="column-item" th:text="${item.contactId} ?: '—'"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">Сумма</div>
+            <div th:each="item : ${history}" class="column-item" th:text="${item.amount} ?: '—'"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">Время</div>
+            <div th:each="item : ${history}" class="column-item" th:text="${item.time} ?: '—'"></div>
+        </div>
+        <div class="column">
+            <div class="column-title">Тип операции</div>
+            <div th:each="item : ${history}" class="column-item" th:text="${item.operationType} ?: '—'"></div>
+        </div>
+    </div>
+
+    <div style="text-align: center">
+        <a class="back-button" href="main">← Назад</a>
+    </div>
+
+    <div th:if="${error}" style="color: red; text-align: center; margin-top: 10px;">
+        <p th:text="${error}"></p>
+    </div>
+</div>
+</body>
+</html>

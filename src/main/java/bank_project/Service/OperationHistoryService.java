@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -25,7 +25,7 @@ public class OperationHistoryService {
                 .userId(userId)
                 .operationType(operationType)
                 .amount(amount)
-                .time(Timestamp.from(Instant.now()))
+                .time(LocalDateTime.from(Instant.now()))
                 .build();
 
         em.persist(operationHistory);
