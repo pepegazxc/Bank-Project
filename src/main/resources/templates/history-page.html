@@ -12,7 +12,7 @@
     <div class="history-container">
         <div class="column">
             <div class="column-title">Контакт</div>
-            <div th:each="item : ${history}" class="column-item" th:text="${item.contactId} ?: '—'"></div>
+            <div th:each="item : ${history}" class="column-item" th:text="${item.contactId.contactType} ?: '—'"></div>
         </div>
         <div class="column">
             <div class="column-title">Сумма</div>

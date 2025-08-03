@@ -1,6 +1,8 @@
 package bank_project.AppConfiguration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +31,12 @@ public class RedisConfig{
 
         ObjectMapper om = new ObjectMapper();
         om.registerModule(new KotlinModule.Builder().build());
+        om.registerModule(new JavaTimeModule());
+        om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer =
+                new GenericJackson2JsonRedisSerializer(om);
+
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
         redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
 
@@ -39,10 +45,20 @@ public class RedisConfig{
 
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new KotlinModule.Builder().build());
+        om.registerModule(new JavaTimeModule());
+        om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer =
+                new GenericJackson2JsonRedisSerializer(om);
+
         RedisSerializationContext.SerializationPair<String> key =
                 RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer());
         RedisSerializationContext.SerializationPair<Object> value =
-                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
+                RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer);
+
+
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(60))
                 .serializeKeysWith(key)

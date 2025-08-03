@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.security.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_contact")
@@ -29,7 +29,7 @@ public class UserContactEntity {
     private String contactType;
 
     @Column(name = "last_interaction")
-    private Timestamp lastInteraction;
+    private LocalDateTime lastInteraction;
 
     public static class Builder {
         UserContactEntity userContactEntity = new UserContactEntity();
@@ -46,7 +46,7 @@ public class UserContactEntity {
             userContactEntity.contactType = contactType;
             return this;
         }
-        public Builder lastInteraction(Timestamp lastInteraction) {
+        public Builder lastInteraction(LocalDateTime lastInteraction) {
             userContactEntity.lastInteraction = lastInteraction;
             return this;
         }
