@@ -174,13 +174,16 @@ public class RedisService {
 
     public List<UserOperationHistoryCacheDto> getOperationHistory(String username) {
         sessionTokenService.checkToken(username);
+        log.info("User {} has valid token", username);
 
         List<UserOperationHistoryCacheDto>  cache = userHistoryCacheRepository.getUserOperationHistory(username)
                 .orElseThrow(() -> new RuntimeException("History not found after save"));
+        log.info("User {} has saved history in cache" , username);
 
         List<UserOperationHistoryCacheDto> result = cache.stream()
                 .filter(Objects::nonNull)
                 .toList();
+        log.info("User {} has {} operation history in filtred cache", username, result.size());
 
         if(result.isEmpty()) {
             throw new RuntimeException("History not found after save");

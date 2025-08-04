@@ -9,22 +9,19 @@
 <div class="main-container">
     <div class="project-name">BANK PROJECT</div>
 
-    <div class="history-container">
-        <div class="column">
-            <div class="column-title">Контакт</div>
-            <div th:each="item : ${history}" class="column-item" th:text="${item.contactId.contactType} ?: '—'"></div>
-        </div>
-        <div class="column">
-            <div class="column-title">Сумма</div>
-            <div th:each="item : ${history}" class="column-item" th:text="${item.amount} ?: '—'"></div>
-        </div>
-        <div class="column">
-            <div class="column-title">Время</div>
-            <div th:each="item : ${history}" class="column-item" th:text="${item.time} ?: '—'"></div>
-        </div>
-        <div class="column">
-            <div class="column-title">Тип операции</div>
-            <div th:each="item : ${history}" class="column-item" th:text="${item.operationType} ?: '—'"></div>
+    <div class="history-header">
+        <div class="header-item">Контакт</div>
+        <div class="header-item">Сумма</div>
+        <div class="header-item">Время</div>
+        <div class="header-item">Тип операции</div>
+    </div>
+
+    <div class="history-rows">
+        <div class="row" th:each="item : ${history}">
+            <div class="column-item" th:text="${item.contactId?.contactType} ?: '—'"></div>
+            <div class="column-item" th:text="${item.amount} ?: '—'"></div>
+            <div class="column-item" th:text="${#temporals.format(item.time, 'dd.MM.yyyy HH:mm:ss')} ?: '—'"></div>
+            <div class="column-item" th:text="${item.operationType} ?: '—'"></div>
         </div>
     </div>
 
@@ -36,5 +33,6 @@
         <p th:text="${error}"></p>
     </div>
 </div>
+
 </body>
 </html>
