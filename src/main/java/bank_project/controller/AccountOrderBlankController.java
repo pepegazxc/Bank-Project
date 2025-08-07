@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class AccountOrderBlankPageController {
+public class AccountOrderBlankController {
 
     private final AccountService accountService;
 
-    public AccountOrderBlankPageController(AccountService accountService) {
+    public AccountOrderBlankController(AccountService accountService) {
         this.accountService = accountService;
     }
 

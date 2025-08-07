@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 @Table(name = "user_contact")
 @Getter
 @Setter
-public class UserContactEntity {
+public class UserContact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User userId;
 
     @Column(name = "contact_name")
     private String contactName;
@@ -32,26 +32,26 @@ public class UserContactEntity {
     private LocalDateTime lastInteraction;
 
     public static class Builder {
-        UserContactEntity userContactEntity = new UserContactEntity();
+        UserContact userContact = new UserContact();
 
         public Builder contactName(String contactName) {
-            userContactEntity.contactName = contactName;
+            userContact.contactName = contactName;
             return this;
         }
         public Builder contactIdentifier(String contactIdentifier) {
-            userContactEntity.contactIdentifier = contactIdentifier;
+            userContact.contactIdentifier = contactIdentifier;
             return this;
         }
         public Builder contactType(String contactType) {
-            userContactEntity.contactType = contactType;
+            userContact.contactType = contactType;
             return this;
         }
         public Builder lastInteraction(LocalDateTime lastInteraction) {
-            userContactEntity.lastInteraction = lastInteraction;
+            userContact.lastInteraction = lastInteraction;
             return this;
         }
-        public UserContactEntity build() {
-            return userContactEntity;
+        public UserContact build() {
+            return userContact;
         }
     }
 }

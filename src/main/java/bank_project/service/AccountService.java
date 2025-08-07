@@ -2,10 +2,10 @@ package bank_project.service;
 
 import bank_project.dto.request.AccountRequest;
 import bank_project.dto.view.ViewAccountDto;
-import bank_project.entity.AccountsEntity;
-import bank_project.entity.GoalTemplatesEntity;
+import bank_project.entity.Accounts;
+import bank_project.entity.GoalTemplates;
 import bank_project.entity.UserAccountEntity;
-import bank_project.entity.UserEntity;
+import bank_project.entity.User;
 import bank_project.repository.jpa.AccountRepository;
 import bank_project.repository.jpa.GoalTemplateRepository;
 import bank_project.repository.jpa.UserAccountRepository;
@@ -47,7 +47,7 @@ public class AccountService {
     }
 
     public List<ViewAccountDto> getAllAccounts() {
-        List<AccountsEntity> accounts = accountRepository.findAll();
+        List<Accounts> accounts = accountRepository.findAll();
 
         return accounts.stream()
                 .map(account ->
@@ -67,12 +67,12 @@ public class AccountService {
 
         redisService.deleteUserCache(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Long userId = savedUser.getId();
 
-        AccountsEntity accounts = accountRepository.findAccountIdByAccount(request.getAccountType())
+        Accounts accounts = accountRepository.findAccountIdByAccount(request.getAccountType())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         UserAccountEntity savedAccount = userAccountRepository.findByUserId(userId)
@@ -92,7 +92,7 @@ public class AccountService {
                 }
                 if (savedAccount.getGoalTempId() == null) {
                     if (request.getGoal() != null) {
-                        GoalTemplatesEntity goal = goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
+                        GoalTemplates goal = goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
                                 .orElseThrow(() -> new RuntimeException("Goal not found"));
 
                         savedAccount.setGoalTempId(goal);
@@ -120,7 +120,7 @@ public class AccountService {
 
         redisService.deleteUserCache(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Long userId = savedUser.getId();

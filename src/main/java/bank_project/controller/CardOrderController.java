@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @Controller
-public class CardOrderPageController {
+public class CardOrderController {
 
     private final CardService cardService;
 
-    public CardOrderPageController(CardService cardService) {
+    public CardOrderController(CardService cardService) {
         this.cardService = cardService;
     }
 

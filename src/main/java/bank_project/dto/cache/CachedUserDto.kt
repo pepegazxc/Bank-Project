@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 
-data class UserCacheDto @JsonCreator constructor (
+data class CachedUserDto @JsonCreator constructor (
     @JsonProperty("name") val name: String?,
     @JsonProperty("surname") val surname: String?,
     @JsonProperty("patronymic") val patronymic: String?,

@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "user")
-public class UserEntity implements UserDetails, Serializable {
+public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -95,7 +95,7 @@ public class UserEntity implements UserDetails, Serializable {
 
 
     public static class Builder{
-        UserEntity user = new UserEntity();
+        User user = new User();
 
         public Builder name(String name){
             user.name = name;
@@ -138,7 +138,7 @@ public class UserEntity implements UserDetails, Serializable {
             return this;
         }
 
-        public UserEntity build(){
+        public User build(){
             return user;
         }
     }

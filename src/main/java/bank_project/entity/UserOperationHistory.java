@@ -11,18 +11,18 @@ import java.time.LocalDateTime;
 @Table(name = "user_operations_history")
 @Getter
 @Setter
-public class UserOperationHistoryEntity {
+public class UserOperationHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "contact_id")
-    private UserContactEntity contactId;
+    private UserContact contactId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "operation_type")
@@ -33,33 +33,33 @@ public class UserOperationHistoryEntity {
     private LocalDateTime time;
 
     public static class Builder {
-        UserOperationHistoryEntity userOperationHistoryEntity = new UserOperationHistoryEntity();
+        UserOperationHistory userOperationHistory = new UserOperationHistory();
 
-        public Builder userId(UserEntity id) {
-            userOperationHistoryEntity.userId = id;
+        public Builder userId(User id) {
+            userOperationHistory.userId = id;
             return this;
         }
 
-        public Builder contactId(UserContactEntity contactId) {
-            userOperationHistoryEntity.contactId = contactId;
+        public Builder contactId(UserContact contactId) {
+            userOperationHistory.contactId = contactId;
             return this;
         }
 
         public Builder operationType(OperationType operationType) {
-            userOperationHistoryEntity.setOperationType(operationType);
+            userOperationHistory.setOperationType(operationType);
             return this;
         }
         public Builder amount(BigDecimal amount) {
-            userOperationHistoryEntity.setAmount(amount);
+            userOperationHistory.setAmount(amount);
             return this;
         }
         public Builder time(LocalDateTime time) {
-            userOperationHistoryEntity.setTime(time);
+            userOperationHistory.setTime(time);
             return this;
         }
 
-        public UserOperationHistoryEntity build() {
-            return userOperationHistoryEntity;
+        public UserOperationHistory build() {
+            return userOperationHistory;
         }
     }
 

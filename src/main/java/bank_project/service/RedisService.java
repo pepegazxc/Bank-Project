@@ -3,15 +3,15 @@ package bank_project.service;
 import bank_project.dto.cache.*;
 import bank_project.entity.UserAccountEntity;
 import bank_project.entity.UserCardEntity;
-import bank_project.entity.UserEntity;
-import bank_project.entity.UserOperationHistoryEntity;
+import bank_project.entity.User;
+import bank_project.entity.UserOperationHistory;
 import bank_project.mapper.UserHistoryMapper;
 import bank_project.mapper.UserMapper;
 import bank_project.repository.jpa.UserAccountRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserHistoryRepository;
 import bank_project.repository.jpa.UserRepository;
-import bank_project.repository.redis.UserHistoryCacheRepository;
+import bank_project.repository.redis.CachedUserHistoryRepository;
 import bank_project.repository.redis.UserInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -34,9 +34,9 @@ public class RedisService {
     private final UserAccountRepository userAccountRepository;
     private final UserHistoryRepository userHistoryRepository;
     private final SessionTokenService sessionTokenService;
-    private final UserHistoryCacheRepository userHistoryCacheRepository;
+    private final CachedUserHistoryRepository cachedUserHistoryRepository;
 
-    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, UserHistoryRepository userHistoryRepository, SessionTokenService sessionTokenService, UserHistoryCacheRepository userHistoryCacheRepository) {
+    public RedisService(RedisTemplate redisTemplate, UserRepository userRepository, UserInfoRepository userInfoRepository, CipherService cipherService, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, UserHistoryRepository userHistoryRepository, SessionTokenService sessionTokenService, CachedUserHistoryRepository cachedUserHistoryRepository) {
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.userInfoRepository = userInfoRepository;
@@ -45,11 +45,11 @@ public class RedisService {
         this.userAccountRepository = userAccountRepository;
         this.userHistoryRepository = userHistoryRepository;
         this.sessionTokenService = sessionTokenService;
-        this.userHistoryCacheRepository = userHistoryCacheRepository;
+        this.cachedUserHistoryRepository = cachedUserHistoryRepository;
     }
 
     public void addUserCache(String userName) {
-        UserEntity savedUser = userRepository.findByUserName(userName)
+        User savedUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new RuntimeException("User not found after save"));
 
         Long Id = savedUser.getId();
@@ -58,27 +58,27 @@ public class RedisService {
                 .orElseThrow(() -> new RuntimeException("Card not found after save"));
         UserAccountEntity savedAccount = userAccountRepository.findByUserId(Id)
                 .orElseThrow(() -> new RuntimeException("Account not found after save"));
-        AllUserCacheDto data = UserMapper.toAllCacheDto(savedUser, savedCard, savedAccount);
+        CachedAllUserDto data = UserMapper.toAllCacheDto(savedUser, savedCard, savedAccount);
 
         redisTemplate.opsForValue().set("user:" + userName, data);
 
         log.info("User {} has added info in cache", userName);
     }
 
-    public AllUserCacheDto getUserInfo(String userName) {
+    public CachedAllUserDto getUserInfo(String userName) {
         sessionTokenService.checkToken(userName);
 
-        Optional<AllUserCacheDto> allCache = userInfoRepository.getUserInfo(userName);
+        Optional<CachedAllUserDto> allCache = userInfoRepository.getUserInfo(userName);
         if (allCache.isPresent()) {
-            AllUserCacheDto data = allCache.get();
+            CachedAllUserDto data = allCache.get();
 
-            UserCacheDto userCache = data.getUser();
+            CachedUserDto userCache = data.getUser();
 
             String decryptPhoneNumber = cipherService.decrypt(userCache.getPhoneNumber());
             String decryptEmail = cipherService.decrypt(userCache.getEmail());
             String decryptPassport = cipherService.decrypt(userCache.getPassport());
 
-            UserCacheDto user = new UserCacheDto(
+            CachedUserDto user = new CachedUserDto(
                     userCache.getName(),
                     userCache.getSurname(),
                     userCache.getPatronymic(),
@@ -106,18 +106,18 @@ public class RedisService {
                     userCardCache.isActive()
             );
 
-            UserAccountCacheDto userAccountCache = data.getAccount();
+            CachedUserAccountDto userAccountCache = data.getAccount();
 
             String decryptAccountNumber = cipherService.decrypt(userAccountCache.getCipherAccountNumber());
 
-            UserAccountCacheDto userAccount = new UserAccountCacheDto(
+            CachedUserAccountDto userAccount = new CachedUserAccountDto(
                     userAccountCache.getAccountBalance(),
                     userAccountCache.getAccountName(),
                     userAccountCache.getCustomGoal(),
                     decryptAccountNumber
             );
 
-            return new AllUserCacheDto(
+            return new CachedAllUserDto(
                     user,
                     userCard,
                     userAccount
@@ -136,13 +136,13 @@ public class RedisService {
     }
 
     public void addUserHistory(String username) {
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found after save"));
 
-        UserOperationHistoryEntity savedHistory = userHistoryRepository.findTopByUserIdOrderByIdDesc(savedUser)
+        UserOperationHistory savedHistory = userHistoryRepository.findTopByUserIdOrderByIdDesc(savedUser)
                 .orElseThrow(() -> new RuntimeException("History not found after save"));
 
-        UserOperationHistoryCacheDto historyCache = UserHistoryMapper.toHistoryDto(savedHistory);
+        CachedUserOperationHistoryDto historyCache = UserHistoryMapper.toHistoryDto(savedHistory);
 
         String key = "user:operationHistory:" + username;
         redisTemplate.opsForList().leftPush(key, historyCache);
@@ -150,21 +150,21 @@ public class RedisService {
     }
 
     public void loadUserHistory(String username) {
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found after save"));
 
-        List<UserOperationHistoryEntity> historyList = userHistoryRepository.findAllByUserId(savedUser)
+        List<UserOperationHistory> historyList = userHistoryRepository.findAllByUserId(savedUser)
                 .orElseThrow(() -> new RuntimeException("History not found after save"));
 
         if (!historyList.isEmpty()) {
-            List<UserOperationHistoryCacheDto> cache = historyList.stream()
+            List<CachedUserOperationHistoryDto> cache = historyList.stream()
                     .map(UserHistoryMapper::toHistoryDto)
                     .collect(Collectors.toList());
 
 
             String key = "user:operationHistory:" + username;
 
-            for (UserOperationHistoryCacheDto history : cache) {
+            for (CachedUserOperationHistoryDto history : cache) {
                 redisTemplate.opsForList().rightPush(key, history);
             }
 
@@ -172,15 +172,15 @@ public class RedisService {
         }
     }
 
-    public List<UserOperationHistoryCacheDto> getOperationHistory(String username) {
+    public List<CachedUserOperationHistoryDto> getOperationHistory(String username) {
         sessionTokenService.checkToken(username);
         log.info("User {} has valid token", username);
 
-        List<UserOperationHistoryCacheDto>  cache = userHistoryCacheRepository.getUserOperationHistory(username)
+        List<CachedUserOperationHistoryDto>  cache = cachedUserHistoryRepository.getUserOperationHistory(username)
                 .orElseThrow(() -> new RuntimeException("History not found after save"));
         log.info("User {} has saved history in cache" , username);
 
-        List<UserOperationHistoryCacheDto> result = cache.stream()
+        List<CachedUserOperationHistoryDto> result = cache.stream()
                 .filter(Objects::nonNull)
                 .toList();
         log.info("User {} has {} operation history in filtred cache", username, result.size());

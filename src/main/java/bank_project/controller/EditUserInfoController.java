@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 
 @Controller
-public class EditUserInfoPageController {
+public class EditUserInfoController {
 
     private final UserService userService;
     private final AuthContextService authContextService;
 
-    public EditUserInfoPageController(UserService userService, AuthContextService authContextService) {
+    public EditUserInfoController(UserService userService, AuthContextService authContextService) {
         this.userService = userService;
         this.authContextService = authContextService;
     }

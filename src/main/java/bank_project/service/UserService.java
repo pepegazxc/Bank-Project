@@ -4,7 +4,7 @@ import bank_project.dto.request.ChangeInfoRequest;
 import bank_project.dto.request.RegistrationRequest;
 import bank_project.entity.UserAccountEntity;
 import bank_project.entity.UserCardEntity;
-import bank_project.entity.UserEntity;
+import bank_project.entity.User;
 import bank_project.repository.jpa.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findByUserName(userName)
+        User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username" + userName + "not found"));
         log.info("Logged user: {}", user.getUsername());
 
@@ -56,7 +56,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void registerNewUser(RegistrationRequest registrationRequest) {
-        UserEntity user = new UserEntity.Builder()
+        User user = new User.Builder()
                 .name(registrationRequest.getName())
                 .surname(registrationRequest.getSurname())
                 .patronymic(registrationRequest.getPatronymic())
@@ -86,10 +86,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserEntity changeUserInfo(String username, ChangeInfoRequest request){
+    public User changeUserInfo(String username, ChangeInfoRequest request){
         sessionTokenService.checkToken(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
 
         redisService.deleteUserCache(username);

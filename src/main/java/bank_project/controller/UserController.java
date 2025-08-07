@@ -1,6 +1,6 @@
 package bank_project.controller;
 
-import bank_project.dto.cache.AllUserCacheDto;
+import bank_project.dto.cache.CachedAllUserDto;
 import bank_project.service.AccountService;
 import bank_project.service.CardService;
 import bank_project.service.RedisService;
@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UserPageController {
+public class UserController {
 
     private final RedisService redisService;
     private final CardService cardService;
     private final AccountService accountService;
 
-    public UserPageController(RedisService redisService, CardService cardService, AccountService accountService) {
+    public UserController(RedisService redisService, CardService cardService, AccountService accountService) {
         this.redisService = redisService;
         this.cardService = cardService;
         this.accountService = accountService;
@@ -27,11 +27,11 @@ public class UserPageController {
     public String userPage(Authentication auth, Model model) {
         String username = auth.getName();
         try {
-            AllUserCacheDto allCache = redisService.getUserInfo(username);
+            CachedAllUserDto allCache = redisService.getUserInfo(username);
             model.addAttribute("user", allCache);
             return "user-page";
         }catch(Exception e) {
-            AllUserCacheDto emptyUser = new AllUserCacheDto(null, null, null);
+            CachedAllUserDto emptyUser = new CachedAllUserDto(null, null, null);
             model.addAttribute("user", emptyUser);
             model.addAttribute("errorMessage", "Ошибка авторизации, попробуйте перезайти: " + e.getMessage());
             return "user-page";

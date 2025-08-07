@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "accounts")
 @Getter
 @Setter
-public class AccountsEntity {
+public class Accounts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,20 +22,20 @@ public class AccountsEntity {
     private String accountInfo;
 
     public static class Builder {
-        AccountsEntity accountsEntity = new AccountsEntity();
+        Accounts accounts = new Accounts();
 
         public Builder account(String account) {
-            accountsEntity.account = account;
+            accounts.account = account;
             return this;
         }
 
         public Builder percentPerMonth(Float percentPerMonth) {
-            accountsEntity.percentPerMonth = percentPerMonth;
+            accounts.percentPerMonth = percentPerMonth;
             return this;
         }
 
-        public AccountsEntity build() {
-            return accountsEntity;
+        public Accounts build() {
+            return accounts;
         }
     }
 }

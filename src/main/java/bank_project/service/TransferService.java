@@ -4,8 +4,8 @@ import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
 import bank_project.dto.request.request.transfer.BetweenUsersCashRequest;
 import bank_project.entity.UserAccountEntity;
 import bank_project.entity.UserCardEntity;
-import bank_project.entity.UserEntity;
-import bank_project.entity.UserOperationHistoryEntity;
+import bank_project.entity.User;
+import bank_project.entity.UserOperationHistory;
 import bank_project.repository.jpa.UserAccountRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 
 @Service
 @Slf4j
-public class CashService{
+public class TransferService {
 
     private final UserRepository userRepository;
     private final UserCardRepository userCardRepository;
@@ -33,7 +33,7 @@ public class CashService{
     @Autowired
     private EntityManager entityManager;
 
-    public CashService(UserRepository userRepository, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, SessionTokenService sessionTokenService, RedisService redisService, CipherService cipherService, OperationHistoryService operationHistoryService) {
+    public TransferService(UserRepository userRepository, UserCardRepository userCardRepository, UserAccountRepository userAccountRepository, SessionTokenService sessionTokenService, RedisService redisService, CipherService cipherService, OperationHistoryService operationHistoryService) {
         this.userRepository = userRepository;
         this.userCardRepository = userCardRepository;
         this.userAccountRepository = userAccountRepository;
@@ -47,12 +47,12 @@ public class CashService{
     public void betweenAccountAndCard(BetweenAccountsCashRequest request, String username){
         sessionTokenService.checkToken(username);
 
-        UserOperationHistoryEntity.OperationType operationType =
-                UserOperationHistoryEntity.OperationType.AccountToCard;
+        UserOperationHistory.OperationType operationType =
+                UserOperationHistory.OperationType.AccountToCard;
 
         redisService.deleteUserCache(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Long userId = savedUser.getId();
@@ -89,12 +89,12 @@ public class CashService{
     public void betweenCardAndAccount(BetweenAccountsCashRequest request, String username){
         sessionTokenService.checkToken(username);
 
-        UserOperationHistoryEntity.OperationType operationType =
-                UserOperationHistoryEntity.OperationType.CardToAccount;
+        UserOperationHistory.OperationType operationType =
+                UserOperationHistory.OperationType.CardToAccount;
 
         redisService.deleteUserCache(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Long userId = savedUser.getId();
@@ -131,17 +131,17 @@ public class CashService{
     public void betweenUsersWithPhone(BetweenUsersCashRequest request, String username){
         sessionTokenService.checkToken(username);
 
-        UserOperationHistoryEntity.OperationType operationType =
-                UserOperationHistoryEntity.OperationType.PhoneNumber;
+        UserOperationHistory.OperationType operationType =
+                UserOperationHistory.OperationType.PhoneNumber;
 
         redisService.deleteUserCache(username);
 
         if(request.getPhoneNumber() == null) {
             throw new RuntimeException("You must provide a phone number");
         }
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        UserEntity recipientUser = findUserByDecryptPhoneNumber(request);
+        User recipientUser = findUserByDecryptPhoneNumber(request);
 
         Long userId = savedUser.getId();
         Long recipientUserId = recipientUser.getId();
@@ -182,12 +182,12 @@ public class CashService{
     public void betweenUserWithCard(BetweenUsersCashRequest request, String username){
         sessionTokenService.checkToken(username);
 
-        UserOperationHistoryEntity.OperationType operationType =
-                UserOperationHistoryEntity.OperationType.CardNumber;
+        UserOperationHistory.OperationType operationType =
+                UserOperationHistory.OperationType.CardNumber;
 
         redisService.deleteUserCache(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         UserCardEntity recipientUser = findUserByDecryptCardNumber(request);
 
@@ -222,7 +222,7 @@ public class CashService{
         redisService.addUserHistory(username);
     }
 
-    private UserEntity findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){
+    private User findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){
         return userRepository.findAll().stream()
                 .filter(user -> {
                     try{

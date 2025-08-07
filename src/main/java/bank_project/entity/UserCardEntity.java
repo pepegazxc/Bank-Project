@@ -18,11 +18,11 @@ public class UserCardEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "card_id")
-    private CardsEntity cardId;
+    private Cards cardId;
 
     @Column(name = "cipher_card_number")
     private String cipherNumber;
@@ -43,7 +43,7 @@ public class UserCardEntity implements Serializable {
     public static class Builder {
         UserCardEntity userCardEntity = new UserCardEntity();
 
-        public Builder userId(UserEntity userId) {
+        public Builder userId(User userId) {
             userCardEntity.userId = userId;
             return this;
         }

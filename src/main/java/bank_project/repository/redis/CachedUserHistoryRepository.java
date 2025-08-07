@@ -1,6 +1,6 @@
 package bank_project.repository.redis;
 
-import bank_project.dto.cache.UserOperationHistoryCacheDto;
+import bank_project.dto.cache.CachedUserOperationHistoryDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +14,18 @@ import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
-public class UserHistoryCacheRepository {
+public class CachedUserHistoryRepository {
 
     private final RedisTemplate redisTemplate;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    public UserHistoryCacheRepository(RedisTemplate redisTemplate) {
+    public CachedUserHistoryRepository(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public Optional<List<UserOperationHistoryCacheDto>> getUserOperationHistory(String username) {
+    public Optional<List<CachedUserOperationHistoryDto>> getUserOperationHistory(String username) {
         String key = "user:operationHistory:" + username;
         log.info("Key: {} created for user {}", key, username);
 
@@ -37,8 +37,8 @@ public class UserHistoryCacheRepository {
             throw new RuntimeException("UserOperationHistoryCacheDto is empty");
         }
 
-        List<UserOperationHistoryCacheDto> result = rawList.stream()
-                .map(item -> objectMapper.convertValue(item, UserOperationHistoryCacheDto.class))
+        List<CachedUserOperationHistoryDto> result = rawList.stream()
+                .map(item -> objectMapper.convertValue(item, CachedUserOperationHistoryDto.class))
                 .collect(Collectors.toList());
 
         log.info("Info has filtred in useriperationgistoryrepostiroy");

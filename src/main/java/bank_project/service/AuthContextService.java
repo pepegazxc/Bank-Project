@@ -1,6 +1,6 @@
 package bank_project.service;
 
-import bank_project.entity.UserEntity;
+import bank_project.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class AuthContextService {
         log.info("User {} authenticated", userName);
     }
 
-    public void updateUserAuthentication(UserEntity savedUser) {
+    public void updateUserAuthentication(User savedUser) {
         UserDetails updateUser = userDetailsService.loadUserByUsername(savedUser.getUsername());
 
         Authentication auth = new UsernamePasswordAuthenticationToken(

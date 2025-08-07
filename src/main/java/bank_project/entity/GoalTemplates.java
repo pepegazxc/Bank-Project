@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "goal_templates")
 @Getter
 @Setter
-public class GoalTemplatesEntity {
+public class GoalTemplates {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

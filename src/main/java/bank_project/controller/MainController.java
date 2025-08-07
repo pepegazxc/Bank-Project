@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class MainPageController {
+public class MainController {
 
     @GetMapping("/main")
     public String mainPage(Authentication auth, Model model) {

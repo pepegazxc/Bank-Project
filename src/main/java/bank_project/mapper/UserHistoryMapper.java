@@ -1,11 +1,11 @@
 package bank_project.mapper;
 
-import bank_project.dto.cache.UserOperationHistoryCacheDto;
-import bank_project.entity.UserOperationHistoryEntity;
+import bank_project.dto.cache.CachedUserOperationHistoryDto;
+import bank_project.entity.UserOperationHistory;
 
 public class UserHistoryMapper {
-    public static UserOperationHistoryCacheDto toHistoryDto(UserOperationHistoryEntity user) {
-        return new UserOperationHistoryCacheDto(
+    public static CachedUserOperationHistoryDto toHistoryDto(UserOperationHistory user) {
+        return new CachedUserOperationHistoryDto(
                 user.getContactId(),
                 user.getOperationType(),
                 user.getAmount(),

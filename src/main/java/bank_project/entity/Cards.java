@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "cards")
 @Getter
 @Setter
-public class CardsEntity {
+public class Cards {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,26 +26,26 @@ public class CardsEntity {
     private String cardInfo;
 
     public static class Builder {
-        CardsEntity cardsEntity = new CardsEntity();
+        Cards cards = new Cards();
 
         public Builder cardName(String cardName) {
-            cardsEntity.cardName = cardName;
+            cards.cardName = cardName;
             return this;
         }
         public Builder lawPerMonth(String lawPerMonth) {
-            cardsEntity.lawPerMonth = lawPerMonth;
+            cards.lawPerMonth = lawPerMonth;
             return this;
         }
         public Builder cashBackPercent(Float cashBackPercent) {
-            cardsEntity.cashBackPercent = cashBackPercent;
+            cards.cashBackPercent = cashBackPercent;
             return this;
         }
         public Builder cardInfo(String cardInfo) {
-            cardsEntity.cardInfo = cardInfo;
+            cards.cardInfo = cardInfo;
             return this;
         }
-        public CardsEntity build() {
-            return cardsEntity;
+        public Cards build() {
+            return cards;
         }
     }
 }

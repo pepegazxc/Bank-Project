@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class RegistrationPageController {
+public class RegistrationController {
 
     private final AuthContextService authContextService;
     private final UserService userService;
 
-    public RegistrationPageController(AuthContextService authContextService, UserService userService) {
+    public RegistrationController(AuthContextService authContextService, UserService userService) {
         this.authContextService = authContextService;
         this.userService = userService;
     }

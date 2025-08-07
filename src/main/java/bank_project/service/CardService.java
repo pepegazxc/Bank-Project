@@ -2,9 +2,9 @@ package bank_project.service;
 
 import bank_project.dto.request.CardRequest;
 import bank_project.dto.view.ViewCardDto;
-import bank_project.entity.CardsEntity;
+import bank_project.entity.Cards;
 import bank_project.entity.UserCardEntity;
-import bank_project.entity.UserEntity;
+import bank_project.entity.User;
 import bank_project.repository.jpa.CardRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
@@ -43,7 +43,7 @@ public class CardService {
     }
 
     public List<ViewCardDto> getAllCards(){
-        List<CardsEntity> cards = cardRepository.findAll();
+        List<Cards> cards = cardRepository.findAll();
         return cards.stream()
                 .map(card -> new ViewCardDto(
                         card.getCardName(),
@@ -62,7 +62,7 @@ public class CardService {
 
         redisService.deleteUserCache(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Long userId = savedUser.getId();
@@ -70,7 +70,7 @@ public class CardService {
         UserCardEntity savedUserCard = userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        CardsEntity savedCards = cardRepository.findCardIdByCardName(cardRequest.getCardType())
+        Cards savedCards = cardRepository.findCardIdByCardName(cardRequest.getCardType())
                 .orElseThrow(() -> new RuntimeException("Card not found"));
 
         while (true) {
@@ -125,7 +125,7 @@ public class CardService {
 
         redisService.deleteUserCache(username);
 
-        UserEntity savedUser = userRepository.findByUserName(username)
+        User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Long userId = savedUser.getId();

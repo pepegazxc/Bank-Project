@@ -1,7 +1,7 @@
 package bank_project.service;
 
-import bank_project.dto.cache.AllUserCacheDto;
-import bank_project.entity.UserEntity;
+import bank_project.dto.cache.CachedAllUserDto;
+import bank_project.entity.User;
 import bank_project.repository.jpa.TokenRepository;
 import bank_project.repository.redis.UserInfoRepository;
 import bank_project.security.token.SessionToken;
@@ -31,16 +31,16 @@ public class SessionTokenService {
         return passwordEncoder.encode(sessionToken.createToken());
     }
 
-    public Optional<UserEntity> assignTokenToLoggedUser(String userName){
+    public Optional<User> assignTokenToLoggedUser(String userName){
         return tokenRepository.findTokenByUserName(userName);
     }
 
     public void checkToken(String username){
-        UserEntity savedUser = tokenRepository.findTokenByUserName(username)
+        User savedUser = tokenRepository.findTokenByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         String dbToken = savedUser.getToken();
-        AllUserCacheDto cache = userInfoRepository.getUserInfo(username)
+        CachedAllUserDto cache = userInfoRepository.getUserInfo(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (cache != null) {

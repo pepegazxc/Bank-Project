@@ -2,7 +2,7 @@ package bank_project.controller;
 
 import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
 import bank_project.dto.request.request.transfer.BetweenUsersCashRequest;
-import bank_project.service.CashService;
+import bank_project.service.TransferService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 
 @Controller
-public class ReplenishmentPageController {
+public class ReplenishmentController {
 
-    private final CashService cashService;
+    private final TransferService transferService;
 
-    public ReplenishmentPageController(CashService cashService) {
-        this.cashService = cashService;
+    public ReplenishmentController(TransferService transferService) {
+        this.transferService = transferService;
     }
 
     @GetMapping("/replenishment")
@@ -36,7 +36,7 @@ public class ReplenishmentPageController {
 
         String username = auth.getName();
         try{
-            cashService.betweenAccountAndCard(request, username);
+            transferService.betweenAccountAndCard(request, username);
             model.addAttribute("success", "Операция прошла успешно!");
             return "redirect:/replenishment";
         }catch (Exception e){
@@ -53,7 +53,7 @@ public class ReplenishmentPageController {
         }
         String username = auth.getName();
         try{
-            cashService.betweenCardAndAccount(request, username);
+            transferService.betweenCardAndAccount(request, username);
             model.addAttribute("success", "Операция прошла успешно");
             return "redirect:/replenishment";
         }catch (Exception e){
@@ -70,7 +70,7 @@ public class ReplenishmentPageController {
         }
         String username = auth.getName();
         try{
-            cashService.betweenUsersWithPhone(request, username);
+            transferService.betweenUsersWithPhone(request, username);
             model.addAttribute("success", "Операция прошла успешно");
             return "redirect:/replenishment";
         }catch (Exception e){
@@ -87,7 +87,7 @@ public class ReplenishmentPageController {
         }
         String username = auth.getName();
         try{
-            cashService.betweenUserWithCard(request, username);
+            transferService.betweenUserWithCard(request, username);
             model.addAttribute("success", "Операция прошла успешно");
             return "redirect:/replenishment";
         }catch (Exception e){

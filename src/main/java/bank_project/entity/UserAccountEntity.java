@@ -18,11 +18,11 @@ public class UserAccountEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
-    private AccountsEntity accountId;
+    private Accounts accountId;
 
     private BigDecimal balance;
 
@@ -31,7 +31,7 @@ public class UserAccountEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "goal_temp_id")
-    private GoalTemplatesEntity goalTempId;
+    private GoalTemplates goalTempId;
 
     @Column(name = "cipher_number")
     private String number;
@@ -39,7 +39,7 @@ public class UserAccountEntity implements Serializable {
     public static class Builder {
         UserAccountEntity account = new UserAccountEntity();
 
-        public Builder userId(UserEntity userId) {
+        public Builder userId(User userId) {
             account.userId = userId;
             return this;
         }

@@ -1,16 +1,16 @@
 package bank_project.mapper;
 
-import bank_project.dto.cache.AllUserCacheDto;
-import bank_project.dto.cache.UserAccountCacheDto;
-import bank_project.dto.cache.UserCacheDto;
+import bank_project.dto.cache.CachedAllUserDto;
+import bank_project.dto.cache.CachedUserAccountDto;
+import bank_project.dto.cache.CachedUserDto;
 import bank_project.dto.cache.UserCardCacheDto;
 import bank_project.entity.UserAccountEntity;
 import bank_project.entity.UserCardEntity;
-import bank_project.entity.UserEntity;
+import bank_project.entity.User;
 
 public class UserMapper {
-    public static UserCacheDto toCacheDto(UserEntity user) {
-        return new UserCacheDto(
+    public static CachedUserDto toCacheDto(User user) {
+        return new CachedUserDto(
                 user.getName(),
                 user.getSurname(),
                 user.getPatronymic(),
@@ -22,19 +22,19 @@ public class UserMapper {
                 user.getPostalCode()
         );
     }
-    public static AllUserCacheDto toAllCacheDto(UserEntity user,
-                                                UserCardEntity userCard,
-                                                UserAccountEntity userAccount
+    public static CachedAllUserDto toAllCacheDto(User user,
+                                                 UserCardEntity userCard,
+                                                 UserAccountEntity userAccount
     ) {
-        UserCacheDto userDto = toCacheDto(user);
+        CachedUserDto userDto = toCacheDto(user);
         UserCardCacheDto userCardCacheDto =  null;
         if (userCard != null) {
             userCardCacheDto = UserCardMapper.toUserCardCacheDto(userCard);
         }
-        UserAccountCacheDto userAccountCacheDto =  null;
+        CachedUserAccountDto cachedUserAccountDto =  null;
         if (userAccount != null) {
-            userAccountCacheDto = UserAccountMapper.toUserAccountCacheDto(userAccount);
+            cachedUserAccountDto = UserAccountMapper.toUserAccountCacheDto(userAccount);
         }
-        return new AllUserCacheDto(userDto, userCardCacheDto, userAccountCacheDto);
+        return new CachedAllUserDto(userDto, userCardCacheDto, cachedUserAccountDto);
     }
 }

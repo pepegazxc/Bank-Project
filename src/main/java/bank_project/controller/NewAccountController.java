@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @Controller
-public class NewAccountPageController {
+public class NewAccountController {
 
     private final AccountService accountService;
 
-    public NewAccountPageController(AccountService accountService) {
+    public NewAccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 

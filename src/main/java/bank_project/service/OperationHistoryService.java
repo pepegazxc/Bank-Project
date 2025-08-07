@@ -1,7 +1,7 @@
 package bank_project.service;
 
-import bank_project.entity.UserEntity;
-import bank_project.entity.UserOperationHistoryEntity;
+import bank_project.entity.User;
+import bank_project.entity.UserOperationHistory;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,9 @@ public class OperationHistoryService {
     private EntityManager em;
 
     @Transactional
-    public void saveUserOperation(UserEntity userId, UserOperationHistoryEntity.OperationType operationType, BigDecimal amount) {
+    public void saveUserOperation(User userId, UserOperationHistory.OperationType operationType, BigDecimal amount) {
 
-        UserOperationHistoryEntity operationHistory = new UserOperationHistoryEntity.Builder()
+        UserOperationHistory operationHistory = new UserOperationHistory.Builder()
                 .userId(userId)
                 .operationType(operationType)
                 .amount(amount)
