@@ -1,6 +1,7 @@
 package bank_project.controller;
 
 import bank_project.dto.request.CardRequest;
+import bank_project.dto.view.ViewCardDto;
 import bank_project.service.CardService;
 import bank_project.service.SessionTokenService;
 import jakarta.validation.Valid;
@@ -11,15 +12,26 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.List;
+
 @Controller
-public class CardOrderBlankController {
+public class CardController {
 
     private final CardService cardService;
     private final SessionTokenService sessionTokenService;
 
-    public CardOrderBlankController(CardService cardService, SessionTokenService sessionTokenService) {
+    public CardController(CardService cardService, SessionTokenService sessionTokenService) {
         this.cardService = cardService;
         this.sessionTokenService = sessionTokenService;
+    }
+
+    @GetMapping("/card-order")
+    public String cardOrderPage(Authentication auth, Model model) {
+        String username=auth.getName();
+        model.addAttribute("username",username);
+        List<ViewCardDto> card = cardService.getAllCards();
+        model.addAttribute("card",card);
+        return "card-order-page";
     }
 
     @GetMapping("/card-order-blank")
@@ -123,4 +135,5 @@ public class CardOrderBlankController {
         }
         return "card-order-blank-type-1";
     }
+
 }
