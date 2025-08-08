@@ -4,7 +4,7 @@ import bank_project.dto.cache.CachedAllUserDto;
 import bank_project.dto.cache.CachedUserAccountDto;
 import bank_project.dto.cache.CachedUserDto;
 import bank_project.dto.cache.UserCardCacheDto;
-import bank_project.entity.UserAccountEntity;
+import bank_project.entity.UserAccount;
 import bank_project.entity.UserCardEntity;
 import bank_project.entity.User;
 
@@ -24,7 +24,7 @@ public class UserMapper {
     }
     public static CachedAllUserDto toAllCacheDto(User user,
                                                  UserCardEntity userCard,
-                                                 UserAccountEntity userAccount
+                                                 UserAccount userAccount
     ) {
         CachedUserDto userDto = toCacheDto(user);
         UserCardCacheDto userCardCacheDto =  null;

@@ -1,7 +1,7 @@
 package bank_project.service;
 
 import bank_project.dto.cache.*;
-import bank_project.entity.UserAccountEntity;
+import bank_project.entity.UserAccount;
 import bank_project.entity.UserCardEntity;
 import bank_project.entity.User;
 import bank_project.entity.UserOperationHistory;
@@ -56,7 +56,7 @@ public class RedisService {
 
         UserCardEntity savedCard = userCardRepository.findByUserId(Id)
                 .orElseThrow(() -> new RuntimeException("Card not found after save"));
-        UserAccountEntity savedAccount = userAccountRepository.findByUserId(Id)
+        UserAccount savedAccount = userAccountRepository.findByUserId(Id)
                 .orElseThrow(() -> new RuntimeException("Account not found after save"));
         CachedAllUserDto data = UserMapper.toAllCacheDto(savedUser, savedCard, savedAccount);
 

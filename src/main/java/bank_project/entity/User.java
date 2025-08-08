@@ -56,7 +56,7 @@ public class User implements UserDetails, Serializable {
     private Set<UserCardEntity> userCard = new HashSet<>();
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserAccountEntity> userAccount = new HashSet<>();
+    private Set<UserAccount> userAccount = new HashSet<>();
 
     @Override
     public String getUsername() {

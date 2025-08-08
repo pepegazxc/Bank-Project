@@ -2,7 +2,7 @@ package bank_project.service;
 
 import bank_project.dto.request.ChangeInfoRequest;
 import bank_project.dto.request.RegistrationRequest;
-import bank_project.entity.UserAccountEntity;
+import bank_project.entity.UserAccount;
 import bank_project.entity.UserCardEntity;
 import bank_project.entity.User;
 import bank_project.repository.jpa.UserRepository;
@@ -73,7 +73,7 @@ public class UserService implements UserDetailsService {
 
         user.getUserCard().add(userCard);
 
-        UserAccountEntity userAccount = new UserAccountEntity.Builder()
+        UserAccount userAccount = new UserAccount.Builder()
                 .userId(user).build();
 
         user.getUserAccount().add(userAccount);

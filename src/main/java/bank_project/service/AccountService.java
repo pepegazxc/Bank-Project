@@ -4,7 +4,7 @@ import bank_project.dto.request.AccountRequest;
 import bank_project.dto.view.ViewAccountDto;
 import bank_project.entity.Accounts;
 import bank_project.entity.GoalTemplates;
-import bank_project.entity.UserAccountEntity;
+import bank_project.entity.UserAccount;
 import bank_project.entity.User;
 import bank_project.repository.jpa.AccountRepository;
 import bank_project.repository.jpa.GoalTemplateRepository;
@@ -60,62 +60,29 @@ public class AccountService {
     }
 
     @Transactional
-    public UserAccountEntity openNewAccount(AccountRequest request, String username) {
+    public UserAccount openNewAccount(AccountRequest request, String username) {
         sessionTokenService.checkToken(username);
-
-        Random random = new Random();
-
         redisService.deleteUserCache(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
 
         Long userId = savedUser.getId();
 
-        Accounts accounts = accountRepository.findAccountIdByAccount(request.getAccountType())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Accounts accounts = findAccount(request);
+        UserAccount savedAccount = findUserAccount(userId);
 
-        UserAccountEntity savedAccount = userAccountRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        String accountNumber = generateUniqueAccountNumber();
+        fillNewAccountFields(savedAccount, accountNumber, request, accounts);
 
-        while(true) {
-            String accountNumber = "52" + String.format("%014d", Math.abs(random.nextLong()) % 1_000_000_000_000_00L);
-            if (userAccountRepository.findByNumber(cipher.encrypt(accountNumber)).isEmpty()) {
-                if (savedAccount.getNumber() == null) {
-                    savedAccount.setNumber(cipher.encrypt(accountNumber));
-                }
-                if (savedAccount.getAccountId() == null) {
-                    savedAccount.setAccountId(accounts);
-                }
-                if (savedAccount.getBalance() == null) {
-                    savedAccount.setBalance(BigDecimal.valueOf(0.0));
-                }
-                if (savedAccount.getGoalTempId() == null) {
-                    if (request.getGoal() != null) {
-                        GoalTemplates goal = goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
-                                .orElseThrow(() -> new RuntimeException("Goal not found"));
+        entityManager.flush();
+        log.info("User {} has opened new account", username);
 
-                        savedAccount.setGoalTempId(goal);
-                    }
-                }
-                if(savedAccount.getCustomGoal() == null) {
-                    if (request.getCustomGoal() != null) {
-                        savedAccount.setCustomGoal(request.getCustomGoal());
-                    }
-                }
-
-                entityManager.flush();
-                log.info("User {} has opened new account", username);
-
-                redisService.addUserCache(username);
-
-                return savedAccount;
-            }
-        }
+        redisService.addUserCache(username);
+        return savedAccount;
     }
 
     @Transactional
-    public UserAccountEntity deleteAccount(String username){
+    public UserAccount deleteAccount(String username){
         sessionTokenService.checkToken(username);
 
         redisService.deleteUserCache(username);
@@ -125,7 +92,7 @@ public class AccountService {
 
         Long userId = savedUser.getId();
 
-        UserAccountEntity savedAccount = userAccountRepository.findByUserId(userId)
+        UserAccount savedAccount = userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         savedAccount.setAccountId(null);
@@ -140,5 +107,71 @@ public class AccountService {
         redisService.addUserCache(username);
 
         return savedAccount;
+    }
+
+    private User findUser(String username) {
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return user;
+    }
+
+    private Accounts findAccount(AccountRequest request) {
+        Accounts accounts = accountRepository.findAccountIdByAccount(request.getAccountType())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        return accounts;
+    }
+
+    private UserAccount findUserAccount(Long userId) {
+        UserAccount userAccount =  userAccountRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userAccount;
+    }
+
+    private String generateAccountNumber(){
+        Random random = new Random();
+        String accountNumber = "52" + String.format("%014d", Math.abs(random.nextLong()) % 1_000_000_000_000_00L);
+        return accountNumber;
+    }
+
+    private UserAccount fillNewAccountFields(UserAccount savedAccount, String accountNumber, AccountRequest request, Accounts accounts) {
+        while(true) {
+            if (savedAccount.getNumber() == null) {
+                savedAccount.setNumber(cipher.encrypt(accountNumber));
+            }
+            if (savedAccount.getAccountId() == null) {
+                savedAccount.setAccountId(accounts);
+            }
+            if (savedAccount.getBalance() == null) {
+                savedAccount.setBalance(BigDecimal.valueOf(0.0));
+            }
+            if (savedAccount.getGoalTempId() == null && request.getGoal() != null) {
+                savedAccount.setGoalTempId(findGoal(request));
+
+            }
+            if(savedAccount.getCustomGoal() == null && request.getCustomGoal() != null) {
+                savedAccount.setCustomGoal(request.getCustomGoal());
+            }
+            return savedAccount;
+        }
+    }
+
+    private Boolean checkingTheUniquenessOfAccountNumber(String accountNumber) {
+        if (userAccountRepository.findByNumber(cipher.encrypt(accountNumber)).isEmpty()){
+            return true;
+        }
+        return false;
+    }
+
+    private String generateUniqueAccountNumber() {
+        String number;
+        do{
+            number = generateAccountNumber();
+        }while (!checkingTheUniquenessOfAccountNumber(number));
+        return number;
+    }
+
+    private GoalTemplates findGoal(AccountRequest request) {
+        return goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
+                .orElseThrow(() -> new RuntimeException("Goal not found"));
     }
 }

@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-@Slf4j
 public class CachedUserHistoryRepository {
 
     private final RedisTemplate redisTemplate;
@@ -27,11 +26,9 @@ public class CachedUserHistoryRepository {
 
     public Optional<List<CachedUserOperationHistoryDto>> getUserOperationHistory(String username) {
         String key = "user:operationHistory:" + username;
-        log.info("Key: {} created for user {}", key, username);
 
 
         List<Object> rawList = redisTemplate.opsForList().range(key, 0,49);
-        log.info("List with history info for user {}", username);
 
         if(rawList == null || rawList.isEmpty()) {
             throw new RuntimeException("UserOperationHistoryCacheDto is empty");
@@ -41,7 +38,6 @@ public class CachedUserHistoryRepository {
                 .map(item -> objectMapper.convertValue(item, CachedUserOperationHistoryDto.class))
                 .collect(Collectors.toList());
 
-        log.info("Info has filtred in useriperationgistoryrepostiroy");
 
 
         Collections.reverse(result);

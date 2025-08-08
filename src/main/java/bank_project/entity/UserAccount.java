@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Table(name = "user_account")
 @Getter
 @Setter
-public class UserAccountEntity implements Serializable {
+public class UserAccount implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +37,7 @@ public class UserAccountEntity implements Serializable {
     private String number;
 
     public static class Builder {
-        UserAccountEntity account = new UserAccountEntity();
+        UserAccount account = new UserAccount();
 
         public Builder userId(User userId) {
             account.userId = userId;
@@ -56,7 +56,7 @@ public class UserAccountEntity implements Serializable {
             account.number = number;
             return this;
         }
-        public UserAccountEntity build() {
+        public UserAccount build() {
             return account;
         }
     }

@@ -2,7 +2,7 @@ package bank_project.service;
 
 import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
 import bank_project.dto.request.request.transfer.BetweenUsersCashRequest;
-import bank_project.entity.UserAccountEntity;
+import bank_project.entity.UserAccount;
 import bank_project.entity.UserCardEntity;
 import bank_project.entity.User;
 import bank_project.entity.UserOperationHistory;
@@ -59,7 +59,7 @@ public class TransferService {
 
         UserCardEntity savedCard = userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
-        UserAccountEntity savedAccount = userAccountRepository.findByUserId(userId)
+        UserAccount savedAccount = userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
 
         if (request.getToCardCache() == null || request.getToCardCache().compareTo(BigDecimal.ZERO) <= 0){
@@ -101,7 +101,7 @@ public class TransferService {
 
         UserCardEntity savedCard = userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
-        UserAccountEntity savedAccount = userAccountRepository.findByUserId(userId)
+        UserAccount savedAccount = userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
 
         if (request.getToAccountCache() == null || request.getToAccountCache().compareTo(BigDecimal.ZERO) <= 0){
