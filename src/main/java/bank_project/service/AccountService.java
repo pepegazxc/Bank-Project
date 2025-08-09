@@ -84,22 +84,15 @@ public class AccountService {
     @Transactional
     public UserAccount deleteAccount(String username){
         sessionTokenService.checkToken(username);
-
         redisService.deleteUserCache(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
 
         Long userId = savedUser.getId();
 
-        UserAccount savedAccount = userAccountRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserAccount savedAccount = findUserAccount(userId);
 
-        savedAccount.setAccountId(null);
-        savedAccount.setBalance(null);
-        savedAccount.setGoalTempId(null);
-        savedAccount.setCustomGoal(null);
-        savedAccount.setNumber(null);
+        setExistAccountFields(savedAccount);
 
         entityManager.flush();
         log.info("User {} has deleted account", username);
@@ -134,25 +127,22 @@ public class AccountService {
     }
 
     private UserAccount fillNewAccountFields(UserAccount savedAccount, String accountNumber, AccountRequest request, Accounts accounts) {
-        while(true) {
-            if (savedAccount.getNumber() == null) {
-                savedAccount.setNumber(cipher.encrypt(accountNumber));
-            }
-            if (savedAccount.getAccountId() == null) {
-                savedAccount.setAccountId(accounts);
-            }
-            if (savedAccount.getBalance() == null) {
-                savedAccount.setBalance(BigDecimal.valueOf(0.0));
-            }
-            if (savedAccount.getGoalTempId() == null && request.getGoal() != null) {
-                savedAccount.setGoalTempId(findGoal(request));
-
-            }
-            if(savedAccount.getCustomGoal() == null && request.getCustomGoal() != null) {
-                savedAccount.setCustomGoal(request.getCustomGoal());
-            }
-            return savedAccount;
+        if (savedAccount.getNumber() == null) {
+            savedAccount.setNumber(cipher.encrypt(accountNumber));
         }
+        if (savedAccount.getAccountId() == null) {
+            savedAccount.setAccountId(accounts);
+        }
+        if (savedAccount.getBalance() == null) {
+            savedAccount.setBalance(BigDecimal.valueOf(0.0));
+        }
+        if (savedAccount.getGoalTempId() == null && request.getGoal() != null) {
+            savedAccount.setGoalTempId(findGoal(request));
+        }
+        if(savedAccount.getCustomGoal() == null && request.getCustomGoal() != null) {
+            savedAccount.setCustomGoal(request.getCustomGoal());
+        }
+        return savedAccount;
     }
 
     private Boolean checkingTheUniquenessOfAccountNumber(String accountNumber) {
@@ -173,5 +163,14 @@ public class AccountService {
     private GoalTemplates findGoal(AccountRequest request) {
         return goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
                 .orElseThrow(() -> new RuntimeException("Goal not found"));
+    }
+
+    private UserAccount setExistAccountFields(UserAccount account){
+        account.setAccountId(null);
+        account.setBalance(null);
+        account.setGoalTempId(null);
+        account.setCustomGoal(null);
+        account.setNumber(null);
+        return account;
     }
 }
