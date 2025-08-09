@@ -3,7 +3,7 @@ package bank_project.service;
 import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
 import bank_project.dto.request.request.transfer.BetweenUsersCashRequest;
 import bank_project.entity.UserAccount;
-import bank_project.entity.UserCardEntity;
+import bank_project.entity.UserCard;
 import bank_project.entity.User;
 import bank_project.entity.UserOperationHistory;
 import bank_project.repository.jpa.UserAccountRepository;
@@ -57,7 +57,7 @@ public class TransferService {
 
         Long userId = savedUser.getId();
 
-        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+        UserCard savedCard = userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
         UserAccount savedAccount = userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
@@ -99,7 +99,7 @@ public class TransferService {
 
         Long userId = savedUser.getId();
 
-        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+        UserCard savedCard = userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
         UserAccount savedAccount = userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
@@ -150,9 +150,9 @@ public class TransferService {
             throw new RuntimeException("Cant transfer money to yourself");
         }
 
-        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+        UserCard savedCard = userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
-        UserCardEntity recipientCard = userCardRepository.findByUserId(recipientUserId)
+        UserCard recipientCard = userCardRepository.findByUserId(recipientUserId)
                 .orElseThrow(() -> new RuntimeException("Cant find recipient card"));
 
         if (request.getValue() == null || request.getValue().compareTo(BigDecimal.ZERO) <= 0) {
@@ -189,7 +189,7 @@ public class TransferService {
 
         User savedUser = userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        UserCardEntity recipientUser = findUserByDecryptCardNumber(request);
+        UserCard recipientUser = findUserByDecryptCardNumber(request);
 
         Long userId = savedUser.getId();
 
@@ -197,7 +197,7 @@ public class TransferService {
             throw new RuntimeException("Cant transfer money to yourself");
         }
 
-        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
+        UserCard savedCard = userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
 
         if (request.getValue() == null || request.getValue().compareTo(BigDecimal.ZERO) <= 0) {
@@ -235,7 +235,7 @@ public class TransferService {
                 .orElseThrow(() -> new RuntimeException("Recipient user not found by phone number"));
     }
 
-    private UserCardEntity findUserByDecryptCardNumber(BetweenUsersCashRequest request){
+    private UserCard findUserByDecryptCardNumber(BetweenUsersCashRequest request){
         return userCardRepository.findAll().stream()
                 .filter(card ->
                 {

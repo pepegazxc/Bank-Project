@@ -53,7 +53,7 @@ public class User implements UserDetails, Serializable {
     private String postalCode;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserCardEntity> userCard = new HashSet<>();
+    private Set<UserCard> userCard = new HashSet<>();
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserAccount> userAccount = new HashSet<>();

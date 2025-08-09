@@ -1,10 +1,10 @@
 package bank_project.mapper;
 
 import bank_project.dto.cache.UserCardCacheDto;
-import bank_project.entity.UserCardEntity;
+import bank_project.entity.UserCard;
 
 public class UserCardMapper {
-    public static UserCardCacheDto toUserCardCacheDto(UserCardEntity card){
+    public static UserCardCacheDto toUserCardCacheDto(UserCard card){
         return new UserCardCacheDto(
                 card.getCipherNumber(),
                 card.getCipherThreeNumbers(),

@@ -2,7 +2,7 @@ package bank_project.service;
 
 import bank_project.dto.cache.*;
 import bank_project.entity.UserAccount;
-import bank_project.entity.UserCardEntity;
+import bank_project.entity.UserCard;
 import bank_project.entity.User;
 import bank_project.entity.UserOperationHistory;
 import bank_project.mapper.UserHistoryMapper;
@@ -54,7 +54,7 @@ public class RedisService {
 
         Long Id = savedUser.getId();
 
-        UserCardEntity savedCard = userCardRepository.findByUserId(Id)
+        UserCard savedCard = userCardRepository.findByUserId(Id)
                 .orElseThrow(() -> new RuntimeException("Card not found after save"));
         UserAccount savedAccount = userAccountRepository.findByUserId(Id)
                 .orElseThrow(() -> new RuntimeException("Account not found after save"));

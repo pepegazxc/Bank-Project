@@ -3,7 +3,7 @@ package bank_project.service;
 import bank_project.dto.request.CardRequest;
 import bank_project.dto.view.ViewCardDto;
 import bank_project.entity.Cards;
-import bank_project.entity.UserCardEntity;
+import bank_project.entity.UserCard;
 import bank_project.entity.User;
 import bank_project.repository.jpa.CardRepository;
 import bank_project.repository.jpa.UserCardRepository;
@@ -55,102 +55,152 @@ public class CardService {
     }
 
     @Transactional
-    public UserCardEntity openNewCard(String username, CardRequest cardRequest){
+    public UserCard openNewCard(String username, CardRequest cardRequest){
         sessionTokenService.checkToken(username);
-
-        Random rand = new Random();
-
         redisService.deleteUserCache(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
 
         Long userId = savedUser.getId();
 
-        UserCardEntity savedUserCard = userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserCard savedUserCard = findUserCard(userId);
+        Cards savedCards = findCards(cardRequest);
 
-        Cards savedCards = cardRepository.findCardIdByCardName(cardRequest.getCardType())
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+        String cardNumber = generateUniqueCardNumber();
+        String cardCvv = generateCardCvv();
+        String cardExpirationDate = generateCardExpirationDate();
+        fillNewCardFields(savedUserCard, savedCards, cardNumber, cardExpirationDate, cardCvv);
 
-        while (true) {
-            String cardNumber = "42" + String.format("%014d", Math.abs(rand.nextLong()) % 1_000_000_000_000_00L );
-            String cardThreeNumber = String.format("%03d", Math.abs(rand.nextInt()) % 1000);
 
-            int month = rand.nextInt(12) + 1;
-            int year = LocalDate.now().getYear() + rand.nextInt(5) + 6;
-            int day = rand.nextInt(28) + 1;
-            String cardExpirationDate = String.format("%02d/%02d/%04d", day, month, year);
+        entityManager.flush();
+        log.info("User {} has opened new card", username);
 
-            if (userCardRepository.findByCipherNumber(cipher.encrypt(cardNumber)).isEmpty() &&
-                    userCardRepository.findByCipherThreeNumbers(cipher.encrypt(cardThreeNumber)).isEmpty() &&
-            userCardRepository.findByCipherExpirationDate(cipher.encrypt(cardExpirationDate)).isEmpty()) {
-
-                if (savedUserCard.getCardId() == null) {
-                    savedUserCard.setCardId(savedCards);
-                }
-                if (savedUserCard.getCipherNumber() == null) {
-                    savedUserCard.setCipherNumber(cipher.encrypt(cardNumber));
-                }
-                if(savedUserCard.getCipherThreeNumbers() == null) {
-                    savedUserCard.setCipherThreeNumbers(cipher.encrypt(cardThreeNumber));
-                }
-                if (savedUserCard.getCipherExpirationDate() == null) {
-                    savedUserCard.setCipherExpirationDate(cipher.encrypt(cardExpirationDate));
-                }
-                if (savedUserCard.getBalance() == null) {
-                    savedUserCard.setBalance(BigDecimal.valueOf(0.0));
-                }
-                if (savedUserCard.getCashback() == null) {
-                    savedUserCard.setCashback(BigDecimal.valueOf(0.0));
-                }
-                if (savedUserCard.getIsActive() == null) {
-                    savedUserCard.setIsActive(true);
-                }
-
-                entityManager.flush();
-                log.info("User {} has opened new card", username);
-
-                redisService.addUserCache(username);
-
-                return savedUserCard;
-            }
-
-        }
+        redisService.addUserCache(username);
+        return savedUserCard;
     }
 
     @Transactional
-    public UserCardEntity deleteCard(String username){
+    public UserCard deleteCard(String username){
         sessionTokenService.checkToken(username);
-
         redisService.deleteUserCache(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+        User savedUser = findUser(username);
         Long userId = savedUser.getId();
+        UserCard savedCard = findUserCard(userId);
 
-        UserCardEntity savedCard = userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        savedCard.setIsActive(false);
-
-        if (!savedCard.getIsActive()) {
-            savedCard.setCipherThreeNumbers(null);
-            savedCard.setCipherExpirationDate(null);
-            savedCard.setCardId(null);
-            savedCard.setCashback(null);
-            savedCard.setCipherNumber(null);
-            savedCard.setCipherExpirationDate(null);
-            savedCard.setBalance(null);
-            savedCard.setIsActive(null);
-        }
+        setFieldsToExistingCard(savedCard);
 
         entityManager.flush();
         log.info("User {} has deleted card", username);
 
         redisService.addUserCache(username);
 
+        return savedCard;
+    }
+
+    private User findUser(String username){
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    private UserCard findUserCard(Long userId){
+        return userCardRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    private Cards findCards(CardRequest cardRequest){
+        return cardRepository.findCardIdByCardName(cardRequest.getCardType())
+                .orElseThrow(() -> new RuntimeException("Card not found"));
+    }
+
+    private String generateCardNumber(){
+        Random rand = new Random();
+        String cardNumber = "42" + String.format("%014d", Math.abs(rand.nextLong()) % 1_000_000_000_000_00L );
+        return cardNumber;
+    }
+
+    private String generateCardExpirationDate(){
+        Random rand = new Random();
+
+        int month = rand.nextInt(12) + 1;
+        int year = LocalDate.now().getYear() + rand.nextInt(5) + 6;
+        int day = rand.nextInt(28) + 1;
+        String cardExpirationDate = String.format("%02d/%02d/%04d", day, month, year);
+
+        return cardExpirationDate;
+    }
+
+    private String generateCardCvv(){
+        Random rand = new Random();
+        String cardThreeNumber = String.format("%03d", Math.abs(rand.nextInt()) % 1000);
+        return cardThreeNumber;
+    }
+
+    private Boolean checkingTheUniquenessOfCardNumber(String cardNumber) {
+        return userCardRepository.findByCipherNumber(cipher.encrypt(cardNumber)).isEmpty();
+    }
+
+    private Boolean checkingTheUniquenessOfCardExpirationDate(String cardExpirationDate) {
+        return userCardRepository.findByCipherExpirationDate(cipher.encrypt(cardExpirationDate)).isEmpty();
+    }
+
+    private Boolean checkingTheUniquenessOfCardCvv(String cardCvv) {
+        return userCardRepository.findByCipherThreeNumbers(cipher.encrypt(cardCvv)).isEmpty();
+    }
+
+    private String generateUniqueCardNumber(){
+        String cardNumber;
+        do{
+            cardNumber = generateCardNumber();
+        }while (!checkingTheUniquenessOfCardNumber(cardNumber));
+        return cardNumber;
+    }
+
+    private String generateUniqueCardExpirationDate(){
+        String cardExpirationDate;
+        do{
+            cardExpirationDate = generateCardExpirationDate();
+        }while (!checkingTheUniquenessOfCardExpirationDate(cardExpirationDate));
+        return cardExpirationDate;
+    }
+    private String generateUniqueCardCvv(){
+        String cardCvv;
+        do{
+            cardCvv = generateCardCvv();
+        }while(!checkingTheUniquenessOfCardCvv(cardCvv));
+        return cardCvv;
+    }
+    private UserCard fillNewCardFields(UserCard savedUserCard, Cards savedCards, String cardNumber, String cardExpirationDate, String cardCvv){
+        if (savedUserCard.getCardId() == null) {
+            savedUserCard.setCardId(savedCards);
+        }
+        if (savedUserCard.getCipherNumber() == null) {
+            savedUserCard.setCipherNumber(cipher.encrypt(cardNumber));
+        }
+        if(savedUserCard.getCipherThreeNumbers() == null) {
+            savedUserCard.setCipherThreeNumbers(cipher.encrypt(cardCvv));
+        }
+        if (savedUserCard.getCipherExpirationDate() == null) {
+            savedUserCard.setCipherExpirationDate(cipher.encrypt(cardExpirationDate));
+        }
+        if (savedUserCard.getBalance() == null) {
+            savedUserCard.setBalance(BigDecimal.valueOf(0.0));
+        }
+        if (savedUserCard.getCashback() == null) {
+            savedUserCard.setCashback(BigDecimal.valueOf(0.0));
+        }
+        if (savedUserCard.getIsActive() == null) {
+            savedUserCard.setIsActive(true);
+        }
+        return savedUserCard;
+    }
+    private UserCard setFieldsToExistingCard(UserCard savedCard){
+        savedCard.setCipherThreeNumbers(null);
+        savedCard.setCipherExpirationDate(null);
+        savedCard.setCardId(null);
+        savedCard.setCashback(null);
+        savedCard.setCipherNumber(null);
+        savedCard.setBalance(null);
+        savedCard.setIsActive(null);
         return savedCard;
     }
 }

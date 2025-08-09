@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Table(name = "user_card")
 @Getter
 @Setter
-public class UserCardEntity implements Serializable {
+public class UserCard implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,39 +41,39 @@ public class UserCardEntity implements Serializable {
     private Boolean isActive;
 
     public static class Builder {
-        UserCardEntity userCardEntity = new UserCardEntity();
+        UserCard userCard = new UserCard();
 
         public Builder userId(User userId) {
-            userCardEntity.userId = userId;
+            userCard.userId = userId;
             return this;
         }
 
         public Builder cipherNumber(String cipherNumber) {
-            userCardEntity.setCipherNumber(cipherNumber);
+            userCard.setCipherNumber(cipherNumber);
             return this;
         }
         public Builder cipherThreeNumbers(String cipherThreeNumbers) {
-            userCardEntity.setCipherThreeNumbers(cipherThreeNumbers);
+            userCard.setCipherThreeNumbers(cipherThreeNumbers);
             return this;
         }
         public Builder cipherExpirationDate(String cipherExpirationDate) {
-            userCardEntity.setCipherExpirationDate(cipherExpirationDate);
+            userCard.setCipherExpirationDate(cipherExpirationDate);
             return this;
         }
         public Builder balance(BigDecimal balance) {
-            userCardEntity.setBalance(balance);
+            userCard.setBalance(balance);
             return this;
         }
         public Builder cashback(BigDecimal cashback) {
-            userCardEntity.setCashback(cashback);
+            userCard.setCashback(cashback);
             return this;
         }
         public Builder isActive(Boolean isActive) {
-            userCardEntity.setIsActive(isActive);
+            userCard.setIsActive(isActive);
             return this;
         }
-        public UserCardEntity build() {
-            return userCardEntity;
+        public UserCard build() {
+            return userCard;
         }
     }
 

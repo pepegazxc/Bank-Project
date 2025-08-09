@@ -3,7 +3,7 @@ package bank_project.service;
 import bank_project.dto.request.ChangeInfoRequest;
 import bank_project.dto.request.RegistrationRequest;
 import bank_project.entity.UserAccount;
-import bank_project.entity.UserCardEntity;
+import bank_project.entity.UserCard;
 import bank_project.entity.User;
 import bank_project.repository.jpa.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -68,7 +68,7 @@ public class UserService implements UserDetailsService {
                 .token(sessionTokenService.hashToken())
                 .build();
 
-        UserCardEntity userCard = new UserCardEntity.Builder()
+        UserCard userCard = new UserCard.Builder()
                 .userId(user).build();
 
         user.getUserCard().add(userCard);
