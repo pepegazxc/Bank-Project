@@ -41,8 +41,7 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new UsernameNotFoundException("User with username" + userName + "not found"));
+        User user = findUser(userName);
         log.info("Logged user: {}", user.getUsername());
 
         sessionTokenService.assignTokenToLoggedUser(userName);
@@ -89,43 +88,56 @@ public class UserService implements UserDetailsService {
     public User changeUserInfo(String username, ChangeInfoRequest request){
         sessionTokenService.checkToken(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
+        User savedUser = findUser(username);
 
         redisService.deleteUserCache(username);
 
-        if (passwordEncoder.matches(request.getPasswordForConfirm(), savedUser.getPassword())) {
-            log.info("User {} password for confirmation is valid", username);
+        changeUserInfo(request, savedUser);
 
-            if (request.getPostalCode() != null && !request.getPostalCode().isEmpty()) {
-                savedUser.setPostalCode(request.getPostalCode());
-                log.info("User {} has changed postal code ", username);
-            }
-            if (request.getPassport() != null && !request.getPassport().isEmpty()) {
-                savedUser.setPassport(cipherService.encrypt(request.getPassport()));
-                log.info("User {} has changed passport ", username);
-            }
-            if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
-                savedUser.setPhoneNumber(cipherService.encrypt(request.getPhoneNumber()));
-                log.info("User {} has changed phone number ", username);
-            }
-            if (request.getEmail() != null && !request.getEmail().isEmpty()) {
-                savedUser.setEmail(cipherService.encrypt(request.getEmail()));
-                log.info("User {} has changed email ", username );
-            }
-            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-                savedUser.setPassword(passwordEncoder.encode(request.getPassword()));
-                log.info("User {} has changed password ", username);
-            }
+        entityManager.flush();
+        log.info("User {} has changed info in db", savedUser.getUsername());
 
-            entityManager.flush();
-            log.info("User {} has changed info in db", savedUser.getUsername());
+        redisService.addUserCache(savedUser.getUsername());
 
-            redisService.addUserCache(savedUser.getUsername());
+        return savedUser;
+    }
 
-            return savedUser;
+    private User findUser(String username){
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
+    }
+    private User changeUserInfo(ChangeInfoRequest request, User savedUser){
+        checkPassword(request, savedUser);
+
+        if (request.getPostalCode() != null && !request.getPostalCode().isEmpty()) {
+            savedUser.setPostalCode(request.getPostalCode());
+            log.info("User {} has changed postal code ", savedUser.getUsername());
         }
-        throw new UsernameNotFoundException("User with username" + username + "not found");
+        if (request.getPassport() != null && !request.getPassport().isEmpty()) {
+            savedUser.setPassport(cipherService.encrypt(request.getPassport()));
+            log.info("User {} has changed passport ", savedUser.getUsername());
+        }
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().isEmpty()) {
+            savedUser.setPhoneNumber(cipherService.encrypt(request.getPhoneNumber()));
+            log.info("User {} has changed phone number ", savedUser.getUsername());
+        }
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            savedUser.setEmail(cipherService.encrypt(request.getEmail()));
+            log.info("User {} has changed email ", savedUser.getUsername() );
+        }
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            savedUser.setPassword(passwordEncoder.encode(request.getPassword()));
+            log.info("User {} has changed password ", savedUser.getUsername());
+        }
+
+        return savedUser;
+    }
+    private void checkPassword(ChangeInfoRequest request, User savedUser){
+        if(passwordEncoder.matches(request.getPasswordForConfirm(), savedUser.getPassword())) {
+            log.info("User {} password for confirmation is valid", savedUser.getUsername());
+        }else{
+            throw new UsernameNotFoundException("User with username" + savedUser.getUsername() + "not found");
+        }
     }
 
 }
