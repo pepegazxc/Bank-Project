@@ -1,9 +1,9 @@
 package bank_project.service;
 
 import bank_project.dto.cache.*;
+import bank_project.entity.User;
 import bank_project.entity.UserAccount;
 import bank_project.entity.UserCard;
-import bank_project.entity.User;
 import bank_project.entity.UserOperationHistory;
 import bank_project.mapper.UserHistoryMapper;
 import bank_project.mapper.UserMapper;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,147 +48,153 @@ public class RedisService {
     }
 
     public void addUserCache(String userName) {
-        User savedUser = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new RuntimeException("User not found after save"));
+        User savedUser = findUser(userName);
 
-        Long Id = savedUser.getId();
+        Long userId = savedUser.getId();
 
-        UserCard savedCard = userCardRepository.findByUserId(Id)
-                .orElseThrow(() -> new RuntimeException("Card not found after save"));
-        UserAccount savedAccount = userAccountRepository.findByUserId(Id)
-                .orElseThrow(() -> new RuntimeException("Account not found after save"));
+        UserCard savedCard = findUserCard(userId);
+        UserAccount savedAccount = findUserAccount(userId);
+
         CachedAllUserDto data = UserMapper.toAllCacheDto(savedUser, savedCard, savedAccount);
 
         redisTemplate.opsForValue().set("user:" + userName, data);
-
         log.info("User {} has added info in cache", userName);
     }
 
     public CachedAllUserDto getUserInfo(String userName) {
         sessionTokenService.checkToken(userName);
 
-        Optional<CachedAllUserDto> allCache = userInfoRepository.getUserInfo(userName);
-        if (allCache.isPresent()) {
-            CachedAllUserDto data = allCache.get();
+        CachedAllUserDto cache = findAllCache(userName);
 
-            CachedUserDto userCache = data.getUser();
-
-            String decryptPhoneNumber = cipherService.decrypt(userCache.getPhoneNumber());
-            String decryptEmail = cipherService.decrypt(userCache.getEmail());
-            String decryptPassport = cipherService.decrypt(userCache.getPassport());
-
-            CachedUserDto user = new CachedUserDto(
-                    userCache.getName(),
-                    userCache.getSurname(),
-                    userCache.getPatronymic(),
-                    userCache.getUserName(),
-                    decryptPhoneNumber,
-                    decryptEmail,
-                    decryptPassport,
-                    userCache.getToken(),
-                    userCache.getPostalCode()
-            );
-
-            UserCardCacheDto userCardCache = data.getCard();
-
-            String decryptCardNumber = cipherService.decrypt(userCardCache.getCardNumber());
-            String decryptCardThreeNumbers = cipherService.decrypt(userCardCache.getCardThreeNumbers());
-            String decryptCardExpirationDate = cipherService.decrypt(userCardCache.getCardExpirationDate());
-
-            UserCardCacheDto userCard = new UserCardCacheDto(
-                    decryptCardNumber,
-                    decryptCardThreeNumbers,
-                    decryptCardExpirationDate,
-                    userCardCache.getCardBalance(),
-                    userCardCache.getCashback(),
-                    userCardCache.getCardTypeId(),
-                    userCardCache.isActive()
-            );
-
-            CachedUserAccountDto userAccountCache = data.getAccount();
-
-            String decryptAccountNumber = cipherService.decrypt(userAccountCache.getCipherAccountNumber());
-
-            CachedUserAccountDto userAccount = new CachedUserAccountDto(
-                    userAccountCache.getAccountBalance(),
-                    userAccountCache.getAccountName(),
-                    userAccountCache.getCustomGoal(),
-                    decryptAccountNumber
-            );
-
-            return new CachedAllUserDto(
-                    user,
-                    userCard,
-                    userAccount
-            );
-
-        }else {
-            throw new RuntimeException("User not found after getUserInfo");
-        }
+        return new CachedAllUserDto(
+                setUserInfo(cache.getUser()),
+                setUserCardInfo(cache.getCard()),
+                setUserAccountInfo(cache.getAccount())
+        );
     }
 
     public void deleteUserCache(String username) {
         String key = "user:" + username;
         redisTemplate.delete(key);
-
         log.info("User {} has deleted info in cache", username);
     }
 
     public void addUserHistory(String username) {
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found after save"));
+        String key = "user:operationHistory:" + username;
 
-        UserOperationHistory savedHistory = userHistoryRepository.findTopByUserIdOrderByIdDesc(savedUser)
-                .orElseThrow(() -> new RuntimeException("History not found after save"));
+        User savedUser = findUser(username);
+        UserOperationHistory savedHistory = findUserOperationHistoryFromDb(savedUser);
 
         CachedUserOperationHistoryDto historyCache = UserHistoryMapper.toHistoryDto(savedHistory);
 
-        String key = "user:operationHistory:" + username;
         redisTemplate.opsForList().leftPush(key, historyCache);
         redisTemplate.opsForList().trim(key, 0, 49);
     }
 
     public void loadUserHistory(String username) {
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found after save"));
+        String key = "user:operationHistory:" + username;
 
-        List<UserOperationHistory> historyList = userHistoryRepository.findAllByUserId(savedUser)
-                .orElseThrow(() -> new RuntimeException("History not found after save"));
+        User savedUser = findUser(username);
 
-        if (!historyList.isEmpty()) {
-            List<CachedUserOperationHistoryDto> cache = historyList.stream()
-                    .map(UserHistoryMapper::toHistoryDto)
-                    .collect(Collectors.toList());
+        List<UserOperationHistory> historyList = findUserOperationHistoryListFromDb(savedUser);
+        List<CachedUserOperationHistoryDto> cache = mappedHistoryToCache(historyList);
 
-
-            String key = "user:operationHistory:" + username;
-
-            for (CachedUserOperationHistoryDto history : cache) {
-                redisTemplate.opsForList().rightPush(key, history);
-            }
-
-            redisTemplate.opsForList().trim(key, Math.max(0, cache.size() - 50), cache.size() - 1);
+        for (CachedUserOperationHistoryDto history : cache) {
+            redisTemplate.opsForList().rightPush(key, history);
         }
+        redisTemplate.opsForList().trim(key, Math.max(0, cache.size() - 50), cache.size() - 1);
     }
 
     public List<CachedUserOperationHistoryDto> getOperationHistory(String username) {
         sessionTokenService.checkToken(username);
-        log.info("User {} has valid token", username);
 
-        List<CachedUserOperationHistoryDto>  cache = cachedUserHistoryRepository.getUserOperationHistory(username)
-                .orElseThrow(() -> new RuntimeException("History not found after save"));
-        log.info("User {} has saved history in cache" , username);
+        List<CachedUserOperationHistoryDto>  cache = findUserOperationHistoryListFormCache(username);
+        List<CachedUserOperationHistoryDto> result = setOperationHistory(cache);
 
-        List<CachedUserOperationHistoryDto> result = cache.stream()
-                .filter(Objects::nonNull)
-                .toList();
-        log.info("User {} has {} operation history in filtred cache", username, result.size());
-
-        if(result.isEmpty()) {
-            throw new RuntimeException("History not found after save");
-        }
+        isListOfOperationHistoryPresent(result);
 
         return result;
 
     }
+
+    private User findUser(String username) {
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found after save"));
+    }
+    private UserCard findUserCard(Long userId) {
+        return userCardRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Card not found after save"));
+    }
+    private UserAccount findUserAccount(Long userId) {
+        return userAccountRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Account not found after save"));
+    }
+    private UserOperationHistory findUserOperationHistoryFromDb(User savedUser) {
+        return userHistoryRepository.findTopByUserIdOrderByIdDesc(savedUser)
+                .orElseThrow(() -> new RuntimeException("History not found after save"));
+    }
+    private List<UserOperationHistory> findUserOperationHistoryListFromDb(User savedUser) {
+        return userHistoryRepository.findAllByUserId(savedUser)
+                .orElseThrow(() -> new RuntimeException("History not found after save"));
+    }
+    private List<CachedUserOperationHistoryDto> findUserOperationHistoryListFormCache(String username) {
+        return cachedUserHistoryRepository.getUserOperationHistory(username)
+                .orElseThrow(() -> new RuntimeException("History not found after save"));
+    }
+    private List<CachedUserOperationHistoryDto> setOperationHistory(List<CachedUserOperationHistoryDto> cache) {
+        return cache.stream()
+                .filter(Objects::nonNull)
+                .toList();
+    }
+    private List<CachedUserOperationHistoryDto> mappedHistoryToCache(List<UserOperationHistory> history) {
+        if (!history.isEmpty()) {
+            return history.stream()
+                    .map(UserHistoryMapper::toHistoryDto)
+                    .collect(Collectors.toList());
+        }else {
+            throw new RuntimeException("History is empty");
+        }
+    }
+    private Boolean isListOfOperationHistoryPresent(List<CachedUserOperationHistoryDto> result){
+        if (result.isEmpty()) {
+            throw new RuntimeException("List is empty");
+        }else {return true;}
+    }
+    private CachedUserDto setUserInfo(CachedUserDto userCache) {
+        return new CachedUserDto(
+                userCache.getName(),
+                userCache.getSurname(),
+                userCache.getPatronymic(),
+                userCache.getUserName(),
+                cipherService.decrypt(userCache.getPhoneNumber()),
+                cipherService.decrypt(userCache.getEmail()),
+                cipherService.decrypt(userCache.getPassport()),
+                userCache.getToken(),
+                userCache.getPostalCode()
+        );
+    }
+    private CachedUserCardDto setUserCardInfo(CachedUserCardDto userCardCache) {
+        return  new CachedUserCardDto(
+                cipherService.decrypt(userCardCache.getCardNumber()),
+                cipherService.decrypt(userCardCache.getCardThreeNumbers()),
+                cipherService.decrypt(userCardCache.getCardExpirationDate()),
+                userCardCache.getCardBalance(),
+                userCardCache.getCashback(),
+                userCardCache.getCardTypeId(),
+                userCardCache.isActive()
+        );
+    }
+    private CachedUserAccountDto setUserAccountInfo(CachedUserAccountDto userAccountCache){
+        return new CachedUserAccountDto(
+                userAccountCache.getAccountBalance(),
+                userAccountCache.getAccountName(),
+                userAccountCache.getCustomGoal(),
+                cipherService.decrypt(userAccountCache.getCipherAccountNumber())
+        );
+    }
+    private CachedAllUserDto findAllCache(String username){
+        return userInfoRepository.getUserInfo(username)
+                .orElseThrow(() -> new RuntimeException("User not found after save"));
+    }
+
 }

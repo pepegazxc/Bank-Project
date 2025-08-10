@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.io.Serializable
 import java.math.BigDecimal
 
-data class UserCardCacheDto @JsonCreator constructor(
+data class CachedUserCardDto @JsonCreator constructor(
     @JsonProperty("cardNumber") val cardNumber: String?,
     @JsonProperty("cardThreeNumbers") val cardThreeNumbers: String?,
     @JsonProperty("cardExpirationDate") val cardExpirationDate: String?,

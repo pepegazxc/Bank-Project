@@ -6,6 +6,6 @@ import java.io.Serializable
 
 data class CachedAllUserDto @JsonCreator constructor(
     @JsonProperty("user") val user: CachedUserDto?,
-    @JsonProperty("card") val card: UserCardCacheDto?,
+    @JsonProperty("card") val card: CachedUserCardDto?,
     @JsonProperty("account") val account: CachedUserAccountDto?
 ) : Serializable
