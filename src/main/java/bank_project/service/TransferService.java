@@ -2,10 +2,12 @@ package bank_project.service;
 
 import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
 import bank_project.dto.request.request.transfer.BetweenUsersCashRequest;
+import bank_project.dto.request.request.transfer.TransferRequest;
 import bank_project.entity.UserAccount;
 import bank_project.entity.UserCard;
 import bank_project.entity.User;
 import bank_project.entity.UserOperationHistory;
+import bank_project.entity.interfaces.BalanceHolder;
 import bank_project.repository.jpa.UserAccountRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
@@ -52,36 +54,22 @@ public class TransferService {
 
         redisService.deleteUserCache(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
 
         Long userId = savedUser.getId();
 
-        UserCard savedCard = userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
-        UserAccount savedAccount = userAccountRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
+        UserCard savedCard = findUserCard(userId);
+        UserAccount savedAccount = findUserAccount(userId);
 
-        if (request.getToCardCache() == null || request.getToCardCache().compareTo(BigDecimal.ZERO) <= 0){
-            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
-        }
-        if (savedAccount.getBalance().compareTo(request.getToCardCache()) < 0) {
-            throw new RuntimeException("Not enough balance on account");
-        }
+        validateRequest(request, savedAccount);
 
-        BigDecimal newAccountBalance = savedAccount.getBalance().subtract(request.getToCardCache());
-        savedAccount.setBalance(newAccountBalance);
-
-        BigDecimal newCardBalance = savedCard.getBalance().add(request.getToCardCache());
-        savedCard.setBalance(newCardBalance);
+        transferBalance(savedAccount, savedCard, request);
 
         entityManager.flush();
         log.info("User {} has transferred money between from account to card", username);
 
         redisService.addUserCache(username);
-
-        operationHistoryService.saveUserOperation(savedUser, operationType, request.getToCardCache());
-
+        saveOperationInHistory(savedUser, operationType, request);
         redisService.addUserHistory(username);
     }
 
@@ -94,36 +82,22 @@ public class TransferService {
 
         redisService.deleteUserCache(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
 
         Long userId = savedUser.getId();
 
-        UserCard savedCard = userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
-        UserAccount savedAccount = userAccountRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
+        UserCard savedCard = findUserCard(userId);
+        UserAccount savedAccount = findUserAccount(userId);
 
-        if (request.getToAccountCache() == null || request.getToAccountCache().compareTo(BigDecimal.ZERO) <= 0){
-            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
-        }
-        if (savedCard.getBalance().compareTo(request.getToAccountCache()) < 0) {
-            throw new RuntimeException("Not enough balance on account");
-        }
+        validateRequest(request, savedCard);
 
-        BigDecimal newAccountBalance = savedCard.getBalance().subtract(request.getToAccountCache());
-        savedCard.setBalance(newAccountBalance);
-
-        BigDecimal newCardBalance = savedAccount.getBalance().add(request.getToAccountCache());
-        savedAccount.setBalance(newCardBalance);
+        transferBalance(savedCard, savedAccount, request);
 
         entityManager.flush();
         log.info("User {} has transferred money between from card to account", username);
 
         redisService.addUserCache(username);
-
-        operationHistoryService.saveUserOperation(savedUser, operationType, request.getToAccountCache());
-
+        saveOperationInHistory(savedUser, operationType, request);
         redisService.addUserHistory(username);
     }
 
@@ -136,45 +110,27 @@ public class TransferService {
 
         redisService.deleteUserCache(username);
 
-        if(request.getPhoneNumber() == null) {
-            throw new RuntimeException("You must provide a phone number");
-        }
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
         User recipientUser = findUserByDecryptPhoneNumber(request);
 
         Long userId = savedUser.getId();
         Long recipientUserId = recipientUser.getId();
 
-        if (recipientUserId.equals(userId)) {
-            throw new RuntimeException("Cant transfer money to yourself");
-        }
+        checkForRecipientId(userId, recipientUserId);
 
-        UserCard savedCard = userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
-        UserCard recipientCard = userCardRepository.findByUserId(recipientUserId)
-                .orElseThrow(() -> new RuntimeException("Cant find recipient card"));
+        UserCard savedCard = findUserCard(userId);
+        BigDecimal availableBalance = savedCard.getBalance();
+        UserCard recipientCard = findUserCard(recipientUserId);
 
-        if (request.getValue() == null || request.getValue().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
-        }
-        if(savedCard.getBalance().compareTo(request.getValue()) < 0) {
-            throw new RuntimeException("Not enough balance on card");
-        }
+        checkForTransferAmount(request, availableBalance);
 
-        BigDecimal newCardUserBalance = savedCard.getBalance().subtract(request.getValue());
-        savedCard.setBalance(newCardUserBalance);
-
-        BigDecimal newRecipientCardBalance = recipientCard.getBalance().add(request.getValue());
-        recipientCard.setBalance(newRecipientCardBalance);
+        transferBalance(savedCard, recipientCard, request);
 
         entityManager.flush();
         log.info("User {} has transferred money to {} with phone number", username, recipientUser.getUsername());
 
         redisService.addUserCache(username);
-
-        operationHistoryService.saveUserOperation(savedUser, operationType, request.getValue());
-
+        saveOperationInHistory(savedUser, operationType, request);
         redisService.addUserHistory(username);
     }
 
@@ -187,39 +143,80 @@ public class TransferService {
 
         redisService.deleteUserCache(username);
 
-        User savedUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
         UserCard recipientUser = findUserByDecryptCardNumber(request);
-
         Long userId = savedUser.getId();
+        Long recipientUserId = recipientUser.getId();
 
-        if (recipientUser.getUserId().equals(userId)) {
-            throw new RuntimeException("Cant transfer money to yourself");
-        }
+        checkForRecipientId(userId, recipientUserId);
 
-        UserCard savedCard = userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
+        UserCard savedCard = findUserCard(userId);
+        BigDecimal availableBalance = savedCard.getBalance();
 
-        if (request.getValue() == null || request.getValue().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
-        }
-        if (savedCard.getBalance().compareTo(request.getValue()) < 0) {
-            throw new RuntimeException("Not enough balance on card");
-        }
+        checkForTransferAmount(request, availableBalance);
 
-        BigDecimal newCardUserBalance = savedCard.getBalance().subtract(request.getValue());
-        savedCard.setBalance(newCardUserBalance);
-        BigDecimal newCardRecipientBalance = recipientUser.getBalance().add(request.getValue());
-        recipientUser.setBalance(newCardRecipientBalance);
+        transferBalance(savedCard, recipientUser, request);
 
         entityManager.flush();
         log.info("User {} has transferred money to user {} with card", username, recipientUser.getUserId().getUsername());
 
         redisService.addUserCache(username);
-
-        operationHistoryService.saveUserOperation(savedUser, operationType, request.getValue());
-
+        saveOperationInHistory(savedUser, operationType, request);
         redisService.addUserHistory(username);
+    }
+
+    private void transferBalance(BalanceHolder user, BalanceHolder recipient, TransferRequest request) {
+        user.setBalance(user.getBalance().subtract(request.getTransferRequest()));
+        recipient.setBalance(recipient.getBalance().add(request.getTransferRequest()));
+    }
+
+    private User findUser(String username){
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    private UserCard findUserCard(Long userId){
+        return userCardRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
+    }
+    private UserAccount findUserAccount(Long userId){
+        return userAccountRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
+    }
+    private void validateRequest(BetweenAccountsCashRequest request, UserAccount savedAccount){
+        if (request.getToCardCache() == null || request.getToCardCache().compareTo(BigDecimal.ZERO) <= 0){
+            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+        }
+        if (savedAccount.getBalance().compareTo(request.getToCardCache()) < 0) {
+            throw new RuntimeException("Not enough balance on account");
+        }
+    }
+    private void validateRequest(BetweenAccountsCashRequest request, UserCard savedCard){
+        if (request.getToAccountCache() == null || request.getToAccountCache().compareTo(BigDecimal.ZERO) <= 0){
+            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+        }
+        if (savedCard.getBalance().compareTo(request.getToAccountCache()) < 0) {
+            throw new RuntimeException("Not enough balance on account");
+        }
+    }
+    private void saveOperationInHistory(User savedUser, UserOperationHistory.OperationType operationType, TransferRequest request) {
+        if (operationType == UserOperationHistory.OperationType.AccountToCard){
+            operationHistoryService.saveUserOperation(savedUser, operationType, request.getTransferRequest());
+        }
+    }
+    private void checkForRecipientId(Long userId, Long recipientId){
+        if (recipientId.equals(userId)) {
+            throw new RuntimeException("Cant transfer money to yourself");
+        }
+    }
+    private void checkForTransferAmount(TransferRequest request, BigDecimal availableBalance){
+        BigDecimal amount = request.getTransferRequest();
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+        }
+        if (availableBalance.compareTo(amount) < 0) {
+            throw new RuntimeException("Not enough balance on account");
+        }
+
     }
 
     private User findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){

@@ -13,4 +13,8 @@ data class BetweenUsersCashRequest (
     @field:NotNull
     @field:Positive
     val value: BigDecimal
-)
+): TransferRequest{
+    override fun getTransferRequest(): BigDecimal {
+        return value
+    }
+}

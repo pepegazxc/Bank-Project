@@ -1,8 +1,11 @@
 package bank_project.entity;
 
+import bank_project.entity.interfaces.BalanceHolder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.DialectOverride;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,7 +14,7 @@ import java.math.BigDecimal;
 @Table(name = "user_card")
 @Getter
 @Setter
-public class UserCard implements Serializable {
+public class UserCard implements Serializable, BalanceHolder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -75,6 +78,18 @@ public class UserCard implements Serializable {
         public UserCard build() {
             return userCard;
         }
+    }
+
+    @NotNull
+    @Override
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+
+    @Override
+    public void setBalance(@NotNull BigDecimal balance) {
+        this.balance = balance;
     }
 
 }

@@ -8,4 +8,8 @@ data class BetweenAccountsCashRequest (
     val toCardCache: BigDecimal?,
     @field:Positive
     val toAccountCache: BigDecimal?,
-)
+)  : TransferRequest {
+    override fun getTransferRequest(): BigDecimal {
+        return toCardCache ?: toAccountCache ?: BigDecimal.ZERO
+    }
+}
