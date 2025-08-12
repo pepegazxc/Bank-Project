@@ -36,19 +36,28 @@ public class SessionTokenService {
     }
 
     public void checkToken(String username){
-        User savedUser = tokenRepository.findTokenByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User savedUser = findUser(username);
 
         String dbToken = savedUser.getToken();
-        CachedAllUserDto cache = userInfoRepository.getUserInfo(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        CachedAllUserDto cache = findCachedUser(username);
 
+        checkForToken(cache, dbToken, username);
+    }
+
+    private User findUser(String username){
+        return tokenRepository.findTokenByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    private CachedAllUserDto findCachedUser(String username){
+        return userInfoRepository.getUserInfo(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    private void checkForToken(CachedAllUserDto cache, String dbToken, String username){
         if (cache != null) {
             String redisToken = cache.getUser().getToken();
 
             if (dbToken.equals(redisToken)) {
                 log.info("User {} token validation successful", username);
-                return;
             } else {
                 throw new RuntimeException("Invalid Token");
             }

@@ -3,6 +3,7 @@ package bank_project.controller;
 import bank_project.dto.cache.CachedAllUserDto;
 import bank_project.dto.request.ChangeInfoRequest;
 import bank_project.service.*;
+import exception.custom.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,44 +29,31 @@ public class UserController {
     }
 
     @GetMapping("/home")
-    public String userPage(Authentication auth, Model model) {
+    public String userPage(Authentication auth, Model model) throws ControllerException, EmptyDtoException {
         String username = auth.getName();
-        try {
-            CachedAllUserDto allCache = redisService.getUserInfo(username);
-            model.addAttribute("user", allCache);
-            return "user-page";
-        }catch(Exception e) {
-            CachedAllUserDto emptyUser = new CachedAllUserDto(null, null, null);
-            model.addAttribute("user", emptyUser);
-            model.addAttribute("errorMessage", "Ошибка авторизации, попробуйте перезайти: " + e.getMessage());
-            return "user-page";
-        }
+        CachedAllUserDto allCache = redisService.getUserInfo(username);
+        model.addAttribute("user", allCache);
+        return "user-page";
     }
 
     @DeleteMapping("/home/delete-card")
-    public String deleteCard(Authentication auth, Model model) {
+    public String deleteCard(Authentication auth, Model model)
+            throws ControllerException, UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
+
         String username = auth.getName();
-        try {
-            cardService.deleteCard(username);
-            model.addAttribute("cardDeleted", "Карта успешно деактивирована!");
-            return "redirect:/home";
-        }catch(Exception e) {
-            model.addAttribute("errorMessageCard", e.getMessage());
-            return "redirect:/home";
-        }
+        cardService.deleteCard(username);
+        model.addAttribute("cardDeleted", "Карта успешно деактивирована!");
+        return "redirect:/home";
     }
 
     @DeleteMapping("/home/delete-account")
-    public String deleteAccount (Authentication auth, Model model) {
+    public String deleteAccount (Authentication auth, Model model)
+            throws ControllerException, UserNotFoundException, UserAccountNotFoundException, UserCardNotFoundException {
+
         String username = auth.getName();
-        try{
-            accountService.deleteAccount(username);
-            model.addAttribute("accountDeleted", "Аккаунт успешно удален!");
-            return "redirect:/home";
-        }catch(Exception e) {
-            model.addAttribute("errorMessageAccount", e.getMessage());
-            return "redirect:/home";
-        }
+        accountService.deleteAccount(username);
+        model.addAttribute("accountDeleted", "Аккаунт успешно удален!");
+        return "redirect:/home";
     }
 
     @GetMapping("/edit-info")
@@ -74,15 +62,12 @@ public class UserController {
     }
 
     @PatchMapping("/edit-info")
-    public String editUserInfoPage(ChangeInfoRequest request, Model model, Authentication auth) {
+    public String editUserInfoPage(ChangeInfoRequest request, Model model, Authentication auth)
+            throws ControllerException, IncorrectPasswordException, UserCardNotFoundException, UserAccountNotFoundException {
         String username = auth.getName();
-        try {
-            authContextService.updateUserAuthentication(
-                    userService.changeUserInfo(username, request)
-            );
-        }catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-        }
+        authContextService.updateUserAuthentication(
+                userService.changeUserInfo(username, request)
+        );
         return "redirect:/home";
     }
 }

@@ -3,6 +3,8 @@ package bank_project.controller;
 import bank_project.dto.request.RegistrationRequest;
 import bank_project.service.AuthContextService;
 import bank_project.service.UserService;
+import exception.custom.UserAccountNotFoundException;
+import exception.custom.UserCardNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -28,7 +30,8 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String registerNewUser(@Valid RegistrationRequest request, BindingResult bindingResult, Model model, HttpServletRequest httpRequest) {
+    public String registerNewUser(@Valid RegistrationRequest request, BindingResult bindingResult, Model model, HttpServletRequest httpRequest)
+            throws UserCardNotFoundException, UserAccountNotFoundException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "registration-page";

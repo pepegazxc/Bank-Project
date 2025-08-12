@@ -11,8 +11,10 @@ import bank_project.entity.interfaces.BalanceHolder;
 import bank_project.repository.jpa.UserAccountRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
+import exception.custom.*;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.RecognitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +48,9 @@ public class TransferService {
     }
 
     @Transactional
-    public void betweenAccountAndCard(BetweenAccountsCashRequest request, String username){
+    public void betweenAccountAndCard(BetweenAccountsCashRequest request, String username)
+            throws UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, UserOperationHistoryNotFoundException, AmountTransferException, InsufficientBalanceException {
+
         sessionTokenService.checkToken(username);
 
         UserOperationHistory.OperationType operationType =
@@ -74,7 +78,8 @@ public class TransferService {
     }
 
     @Transactional
-    public void betweenCardAndAccount(BetweenAccountsCashRequest request, String username){
+    public void betweenCardAndAccount(BetweenAccountsCashRequest request, String username)
+            throws UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, UserOperationHistoryNotFoundException, AmountTransferException, InsufficientBalanceException {
         sessionTokenService.checkToken(username);
 
         UserOperationHistory.OperationType operationType =
@@ -102,7 +107,8 @@ public class TransferService {
     }
 
     @Transactional
-    public void betweenUsersWithPhone(BetweenUsersCashRequest request, String username){
+    public void betweenUsersWithPhone(BetweenUsersCashRequest request, String username)
+            throws UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, UserOperationHistoryNotFoundException, AmountTransferException, InsufficientBalanceException, RecipientNotFoundException {
         sessionTokenService.checkToken(username);
 
         UserOperationHistory.OperationType operationType =
@@ -135,7 +141,8 @@ public class TransferService {
     }
 
     @Transactional
-    public void betweenUserWithCard(BetweenUsersCashRequest request, String username){
+    public void betweenUserWithCard(BetweenUsersCashRequest request, String username)
+            throws UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, UserOperationHistoryNotFoundException, AmountTransferException, InsufficientBalanceException, RecipientNotFoundException {
         sessionTokenService.checkToken(username);
 
         UserOperationHistory.OperationType operationType =
@@ -170,32 +177,32 @@ public class TransferService {
         recipient.setBalance(recipient.getBalance().add(request.getTransferRequest()));
     }
 
-    private User findUser(String username){
+    private User findUser(String username) throws UserNotFoundException {
         return userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
-    private UserCard findUserCard(Long userId){
+    private UserCard findUserCard(Long userId) throws UserCardNotFoundException {
         return userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Card not found Please open new card"));
+                .orElseThrow(() -> new UserCardNotFoundException("Card not found Please open new card"));
     }
-    private UserAccount findUserAccount(Long userId){
+    private UserAccount findUserAccount(Long userId) throws UserAccountNotFoundException {
         return userAccountRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Account not found. Please open new account"));
+                .orElseThrow(() -> new UserAccountNotFoundException("Account not found. Please open new account"));
     }
-    private void validateRequest(BetweenAccountsCashRequest request, UserAccount savedAccount){
+    private void validateRequest(BetweenAccountsCashRequest request, UserAccount savedAccount) throws AmountTransferException, InsufficientBalanceException {
         if (request.getToCardCache() == null || request.getToCardCache().compareTo(BigDecimal.ZERO) <= 0){
-            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+            throw new AmountTransferException("Nice joke, but amount must be greater than 0 :)");
         }
         if (savedAccount.getBalance().compareTo(request.getToCardCache()) < 0) {
-            throw new RuntimeException("Not enough balance on account");
+            throw new InsufficientBalanceException("Not enough balance on account");
         }
     }
-    private void validateRequest(BetweenAccountsCashRequest request, UserCard savedCard){
+    private void validateRequest(BetweenAccountsCashRequest request, UserCard savedCard) throws AmountTransferException, InsufficientBalanceException {
         if (request.getToAccountCache() == null || request.getToAccountCache().compareTo(BigDecimal.ZERO) <= 0){
-            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+            throw new AmountTransferException("Nice joke, but amount must be greater than 0 :)");
         }
         if (savedCard.getBalance().compareTo(request.getToAccountCache()) < 0) {
-            throw new RuntimeException("Not enough balance on account");
+            throw new InsufficientBalanceException("Not enough balance on account");
         }
     }
     private void saveOperationInHistory(User savedUser, UserOperationHistory.OperationType operationType, TransferRequest request) {
@@ -208,18 +215,18 @@ public class TransferService {
             throw new RuntimeException("Cant transfer money to yourself");
         }
     }
-    private void checkForTransferAmount(TransferRequest request, BigDecimal availableBalance){
+    private void checkForTransferAmount(TransferRequest request, BigDecimal availableBalance) throws InsufficientBalanceException, AmountTransferException {
         BigDecimal amount = request.getTransferRequest();
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Nice joke, but amount must be greater than 0 :)");
+            throw new AmountTransferException("Nice joke, but amount must be greater than 0 :)");
         }
         if (availableBalance.compareTo(amount) < 0) {
-            throw new RuntimeException("Not enough balance on account");
+            throw new InsufficientBalanceException("Not enough balance on account");
         }
 
     }
 
-    private User findUserByDecryptPhoneNumber(BetweenUsersCashRequest request){
+    private User findUserByDecryptPhoneNumber(BetweenUsersCashRequest request) throws RecipientNotFoundException {
         return userRepository.findAll().stream()
                 .filter(user -> {
                     try{
@@ -229,10 +236,10 @@ public class TransferService {
                     }
                 })
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Recipient user not found by phone number"));
+                .orElseThrow(() -> new RecipientNotFoundException("Recipient user not found by phone number"));
     }
 
-    private UserCard findUserByDecryptCardNumber(BetweenUsersCashRequest request){
+    private UserCard findUserByDecryptCardNumber(BetweenUsersCashRequest request) throws RecipientNotFoundException {
         return userCardRepository.findAll().stream()
                 .filter(card ->
                 {
@@ -243,6 +250,6 @@ public class TransferService {
                     }
                 })
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Card not found by card number"));
+                .orElseThrow(() -> new RecipientNotFoundException("Card not found by card number"));
     }
 }

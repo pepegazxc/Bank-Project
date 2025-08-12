@@ -3,6 +3,7 @@ package bank_project.controller;
 import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
 import bank_project.dto.request.request.transfer.BetweenUsersCashRequest;
 import bank_project.service.TransferService;
+import exception.custom.*;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -28,71 +29,55 @@ public class ReplenishmentController {
     }
 
     @PatchMapping("/replenishment/transfer/between-account-and-card")
-    public String transferBetweenAccountAndCard(@Valid BetweenAccountsCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+    public String transferBetweenAccountAndCard(@Valid BetweenAccountsCashRequest request, Authentication auth, Model model, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, UserOperationHistoryNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, AmountTransferException, InsufficientBalanceException {
         if(bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "replenishment-page";
         }
 
         String username = auth.getName();
-        try{
-            transferService.betweenAccountAndCard(request, username);
-            model.addAttribute("success", "Операция прошла успешно!");
-            return "redirect:/replenishment";
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        transferService.betweenAccountAndCard(request, username);
+        model.addAttribute("success", "Операция прошла успешно!");
         return "redirect:/replenishment";
     }
 
     @PatchMapping("/replenishment/transfer/between-card-and-account")
-    public String transferBetweenCardAndAccount(@Valid BetweenAccountsCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+    public String transferBetweenCardAndAccount(@Valid BetweenAccountsCashRequest request, Authentication auth, Model model, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, UserOperationHistoryNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, AmountTransferException, InsufficientBalanceException {
         if(bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "replenishment-page";
         }
         String username = auth.getName();
-        try{
-            transferService.betweenCardAndAccount(request, username);
-            model.addAttribute("success", "Операция прошла успешно");
-            return "redirect:/replenishment";
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        transferService.betweenCardAndAccount(request, username);
+        model.addAttribute("success", "Операция прошла успешно");
         return "redirect:/replenishment";
     }
 
     @PatchMapping("/replenishment/transfer/between-users/with-phoneNumber")
-    public String transferBetweenUsersWithPhoneNumber(@Valid BetweenUsersCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+    public String transferBetweenUsersWithPhoneNumber(@Valid BetweenUsersCashRequest request, Authentication auth, Model model, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, UserOperationHistoryNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, AmountTransferException, InsufficientBalanceException, RecipientNotFoundException {
         if(bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "replenishment-page";
         }
         String username = auth.getName();
-        try{
-            transferService.betweenUsersWithPhone(request, username);
-            model.addAttribute("success", "Операция прошла успешно");
-            return "redirect:/replenishment";
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        transferService.betweenUsersWithPhone(request, username);
+        model.addAttribute("success", "Операция прошла успешно");
         return "redirect:/replenishment";
     }
 
     @PatchMapping("/replenishment/transfer/between-users/with-cardNumber")
-    public String transferBetweenUsersWithCardNumber(@Valid BetweenUsersCashRequest request, Authentication auth, Model model, BindingResult bindingResult) {
+    public String transferBetweenUsersWithCardNumber(@Valid BetweenUsersCashRequest request, Authentication auth, Model model, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, UserOperationHistoryNotFoundException, UserCardNotFoundException, UserAccountNotFoundException, AmountTransferException, InsufficientBalanceException, RecipientNotFoundException {
         if(bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "replenishment-page";
         }
         String username = auth.getName();
-        try{
-            transferService.betweenUserWithCard(request, username);
-            model.addAttribute("success", "Операция прошла успешно");
-            return "redirect:/replenishment";
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        transferService.betweenUserWithCard(request, username);
+        model.addAttribute("success", "Операция прошла успешно");
         return "redirect:/replenishment";
     }
 }

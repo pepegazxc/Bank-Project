@@ -80,7 +80,6 @@ public class UserCard implements Serializable, BalanceHolder {
         }
     }
 
-    @NotNull
     @Override
     public BigDecimal getBalance() {
         return balance;
@@ -88,7 +87,7 @@ public class UserCard implements Serializable, BalanceHolder {
 
 
     @Override
-    public void setBalance(@NotNull BigDecimal balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

@@ -2,6 +2,8 @@ package bank_project.controller;
 
 import bank_project.dto.cache.CachedUserOperationHistoryDto;
 import bank_project.service.RedisService;
+import exception.custom.ControllerException;
+import exception.custom.EmptyDtoException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,17 +21,10 @@ public class HistoryController {
     }
 
     @GetMapping("/operation-history")
-    public String operationHistory(Authentication auth, Model model) {
+    public String operationHistory(Authentication auth, Model model) throws ControllerException, EmptyDtoException {
         String username = auth.getName();
-        try {
-            List<CachedUserOperationHistoryDto> history = redisService.getOperationHistory(username);
-            model.addAttribute("history", history);
-            return "history-page";
-        }catch (Exception e){
-            List<CachedUserOperationHistoryDto> history = List.of();
-            model.addAttribute("history", history);
-            model.addAttribute("error", e.getMessage());
-            return "history-page";
-        }
+        List<CachedUserOperationHistoryDto> history = redisService.getOperationHistory(username);
+        model.addAttribute("history", history);
+        return "history-page";
     }
 }

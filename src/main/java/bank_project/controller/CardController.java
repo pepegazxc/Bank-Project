@@ -4,6 +4,7 @@ import bank_project.dto.request.CardRequest;
 import bank_project.dto.view.ViewCardDto;
 import bank_project.service.CardService;
 import bank_project.service.SessionTokenService;
+import exception.custom.*;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -40,100 +41,85 @@ public class CardController {
     }
 
     @PostMapping("/card-order-blank")
-    public String cardOrderBlank(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+    public String cardOrderBlank(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, CardsNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank";
         }
         String username = auth.getName();
-        try{
-            sessionTokenService.checkToken(username);
-            cardService.openNewCard(username, cardRequest);
-            return "redirect:/home";
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "card-order-blank";
+
+        sessionTokenService.checkToken(username);
+        cardService.openNewCard(username, cardRequest);
+        return "redirect:/home";
     }
 
     @GetMapping("/order-card-type-4")
     public String cardType4() {return "card-order-blank-type-4";}
 
     @PostMapping("/card-order-type-4")
-    public String cardOrderTypeFour(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+    public String cardOrderTypeFour(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, CardsNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-4";
         }
         String username = auth.getName();
-        try{
-            sessionTokenService.checkToken(username);
-            cardService.openNewCard(username, cardRequest);
-            return "redirect:/home";
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "card-order-blank-type-4";
+
+        sessionTokenService.checkToken(username);
+        cardService.openNewCard(username, cardRequest);
+        return "redirect:/home";
     }
 
     @GetMapping("/order-card-type-3")
     public String cardType3() {return "card-order-blank-type-3";}
 
     @PostMapping("/card-order-type-3")
-    public String cardOrderTypeThree(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+    public String cardOrderTypeThree(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, CardsNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-3";
         }
         String username = auth.getName();
-        try{
-            sessionTokenService.checkToken(username);
-            cardService.openNewCard(username, cardRequest);
-            return "redirect:/home";
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "card-order-blank-type-3";
+
+        sessionTokenService.checkToken(username);
+        cardService.openNewCard(username, cardRequest);
+        return "redirect:/home";
     }
 
     @GetMapping("/order-card-type-2")
     public String cardType2() {return "card-order-blank-type-2";}
 
     @PostMapping("/card-order-type-2")
-    public String cardOrderTypeTwo(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+    public String cardOrderTypeTwo(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, CardsNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-2";
         }
         String username = auth.getName();
-        try{
-            sessionTokenService.checkToken(username);
-            cardService.openNewCard(username, cardRequest);
-            return "redirect:/home";
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "card-order-blank-type-2";
+
+        sessionTokenService.checkToken(username);
+        cardService.openNewCard(username, cardRequest);
+        return "redirect:/home";
     }
 
     @GetMapping("/order-card-type-1")
     public String cardType1() {return "card-order-blank-type-1";}
 
     @PostMapping("/card-order-type-1")
-    public String cardOrderTypeOne(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult) {
+    public String cardOrderTypeOne(@Valid CardRequest cardRequest, Model model, Authentication auth, BindingResult bindingResult)
+            throws ControllerException, UserNotFoundException, CardsNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getAllErrors());
             return "card-order-blank-type-1";
         }
         String username = auth.getName();
-        try{
-            sessionTokenService.checkToken(username);
-            cardService.openNewCard(username, cardRequest);
-            return "redirect:/home";
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "card-order-blank-type-1";
+
+        sessionTokenService.checkToken(username);
+        cardService.openNewCard(username, cardRequest);
+        return "redirect:/home";
     }
 
 }

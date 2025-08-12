@@ -13,6 +13,7 @@ import bank_project.repository.jpa.UserHistoryRepository;
 import bank_project.repository.jpa.UserRepository;
 import bank_project.repository.redis.CachedUserHistoryRepository;
 import bank_project.repository.redis.UserInfoRepository;
+import exception.custom.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,7 @@ public class RedisService {
     }
 
     public void addUserCache(String userName) {
+
         User savedUser = findUser(userName);
 
         Long userId = savedUser.getId();
@@ -61,7 +63,7 @@ public class RedisService {
         log.info("User {} has added info in cache", userName);
     }
 
-    public CachedAllUserDto getUserInfo(String userName) {
+    public CachedAllUserDto getUserInfo(String userName) throws EmptyDtoException {
         sessionTokenService.checkToken(userName);
 
         CachedAllUserDto cache = findAllCache(userName);
@@ -92,6 +94,7 @@ public class RedisService {
     }
 
     public void loadUserHistory(String username) {
+
         String key = "user:operationHistory:" + username;
 
         User savedUser = findUser(username);
@@ -105,27 +108,25 @@ public class RedisService {
         redisTemplate.opsForList().trim(key, Math.max(0, cache.size() - 50), cache.size() - 1);
     }
 
-    public List<CachedUserOperationHistoryDto> getOperationHistory(String username) {
+    public List<CachedUserOperationHistoryDto> getOperationHistory(String username) throws EmptyDtoException {
         sessionTokenService.checkToken(username);
 
         List<CachedUserOperationHistoryDto>  cache = findUserOperationHistoryListFormCache(username);
         List<CachedUserOperationHistoryDto> result = setOperationHistory(cache);
 
-        isListOfOperationHistoryPresent(result);
-
         return result;
 
     }
 
-    private User findUser(String username) {
+    private User findUser(String username){
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("User not found after save"));
     }
-    private UserCard findUserCard(Long userId) {
+    private UserCard findUserCard(Long userId)  {
         return userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Card not found after save"));
     }
-    private UserAccount findUserAccount(Long userId) {
+    private UserAccount findUserAccount(Long userId){
         return userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Account not found after save"));
     }
@@ -133,13 +134,13 @@ public class RedisService {
         return userHistoryRepository.findTopByUserIdOrderByIdDesc(savedUser)
                 .orElseThrow(() -> new RuntimeException("History not found after save"));
     }
-    private List<UserOperationHistory> findUserOperationHistoryListFromDb(User savedUser) {
+    private List<UserOperationHistory> findUserOperationHistoryListFromDb(User savedUser)  {
         return userHistoryRepository.findAllByUserId(savedUser)
                 .orElseThrow(() -> new RuntimeException("History not found after save"));
     }
-    private List<CachedUserOperationHistoryDto> findUserOperationHistoryListFormCache(String username) {
+    private List<CachedUserOperationHistoryDto> findUserOperationHistoryListFormCache(String username) throws EmptyDtoException {
         return cachedUserHistoryRepository.getUserOperationHistory(username)
-                .orElseThrow(() -> new RuntimeException("History not found after save"));
+                .orElseThrow(() -> new EmptyDtoException("History not found after save"));
     }
     private List<CachedUserOperationHistoryDto> setOperationHistory(List<CachedUserOperationHistoryDto> cache) {
         return cache.stream()
@@ -147,18 +148,9 @@ public class RedisService {
                 .toList();
     }
     private List<CachedUserOperationHistoryDto> mappedHistoryToCache(List<UserOperationHistory> history) {
-        if (!history.isEmpty()) {
             return history.stream()
                     .map(UserHistoryMapper::toHistoryDto)
                     .collect(Collectors.toList());
-        }else {
-            throw new RuntimeException("History is empty");
-        }
-    }
-    private Boolean isListOfOperationHistoryPresent(List<CachedUserOperationHistoryDto> result){
-        if (result.isEmpty()) {
-            throw new RuntimeException("List is empty");
-        }else {return true;}
     }
     private CachedUserDto setUserInfo(CachedUserDto userCache) {
         return new CachedUserDto(
@@ -192,9 +184,9 @@ public class RedisService {
                 cipherService.decrypt(userAccountCache.getCipherAccountNumber())
         );
     }
-    private CachedAllUserDto findAllCache(String username){
+    private CachedAllUserDto findAllCache(String username) throws EmptyDtoException {
         return userInfoRepository.getUserInfo(username)
-                .orElseThrow(() -> new RuntimeException("User not found after save"));
+                .orElseThrow(() -> new EmptyDtoException("User not found after save"));
     }
 
 }

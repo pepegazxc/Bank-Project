@@ -8,6 +8,10 @@ import bank_project.entity.User;
 import bank_project.repository.jpa.CardRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
+import exception.custom.CardsNotFoundException;
+import exception.custom.UserAccountNotFoundException;
+import exception.custom.UserCardNotFoundException;
+import exception.custom.UserNotFoundException;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +59,9 @@ public class CardService {
     }
 
     @Transactional
-    public UserCard openNewCard(String username, CardRequest cardRequest){
+    public UserCard openNewCard(String username, CardRequest cardRequest)
+            throws CardsNotFoundException, UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
+
         sessionTokenService.checkToken(username);
         redisService.deleteUserCache(username);
 
@@ -80,7 +86,8 @@ public class CardService {
     }
 
     @Transactional
-    public UserCard deleteCard(String username){
+    public UserCard deleteCard(String username)
+            throws UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
         sessionTokenService.checkToken(username);
         redisService.deleteUserCache(username);
 
@@ -98,18 +105,18 @@ public class CardService {
         return savedCard;
     }
 
-    private User findUser(String username){
+    private User findUser(String username) throws UserNotFoundException {
         return userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
-    private UserCard findUserCard(Long userId){
+    private UserCard findUserCard(Long userId) throws UserCardNotFoundException {
         return userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserCardNotFoundException("User not found"));
     }
 
-    private Cards findCards(CardRequest cardRequest){
+    private Cards findCards(CardRequest cardRequest) throws CardsNotFoundException {
         return cardRepository.findCardIdByCardName(cardRequest.getCardType())
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() -> new CardsNotFoundException("Card not found"));
     }
 
     private String generateCardNumber(){

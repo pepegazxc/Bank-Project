@@ -6,6 +6,9 @@ import bank_project.entity.UserAccount;
 import bank_project.entity.UserCard;
 import bank_project.entity.User;
 import bank_project.repository.jpa.UserRepository;
+import exception.custom.IncorrectPasswordException;
+import exception.custom.UserAccountNotFoundException;
+import exception.custom.UserCardNotFoundException;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +57,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void registerNewUser(RegistrationRequest registrationRequest) {
+    public void registerNewUser(RegistrationRequest registrationRequest) throws UserCardNotFoundException, UserAccountNotFoundException {
         User user = new User.Builder()
                 .name(registrationRequest.getName())
                 .surname(registrationRequest.getSurname())
@@ -85,7 +88,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User changeUserInfo(String username, ChangeInfoRequest request){
+    public User changeUserInfo(String username, ChangeInfoRequest request)
+            throws UserCardNotFoundException, UserAccountNotFoundException, IncorrectPasswordException {
         sessionTokenService.checkToken(username);
 
         User savedUser = findUser(username);
@@ -106,7 +110,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
     }
-    private User changeUserInfo(ChangeInfoRequest request, User savedUser){
+    private User changeUserInfo(ChangeInfoRequest request, User savedUser) throws IncorrectPasswordException {
         checkPassword(request, savedUser);
 
         if (request.getPostalCode() != null && !request.getPostalCode().isEmpty()) {
@@ -132,11 +136,11 @@ public class UserService implements UserDetailsService {
 
         return savedUser;
     }
-    private void checkPassword(ChangeInfoRequest request, User savedUser){
+    private void checkPassword(ChangeInfoRequest request, User savedUser) throws IncorrectPasswordException {
         if(passwordEncoder.matches(request.getPasswordForConfirm(), savedUser.getPassword())) {
             log.info("User {} password for confirmation is valid", savedUser.getUsername());
         }else{
-            throw new UsernameNotFoundException("User with username" + savedUser.getUsername() + "not found");
+            throw new IncorrectPasswordException("User with username" + savedUser.getUsername() + "not found");
         }
     }
 
