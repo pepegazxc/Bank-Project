@@ -6,9 +6,7 @@ import bank_project.entity.UserAccount;
 import bank_project.entity.UserCard;
 import bank_project.entity.User;
 import bank_project.repository.jpa.UserRepository;
-import exception.custom.IncorrectPasswordException;
-import exception.custom.UserAccountNotFoundException;
-import exception.custom.UserCardNotFoundException;
+import bank_project.exception.custom.*;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String userName) {
         User user = findUser(userName);
         log.info("Logged user: {}", user.getUsername());
 
@@ -57,7 +55,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void registerNewUser(RegistrationRequest registrationRequest) throws UserCardNotFoundException, UserAccountNotFoundException {
+    public void registerNewUser(RegistrationRequest registrationRequest)  {
         User user = new User.Builder()
                 .name(registrationRequest.getName())
                 .surname(registrationRequest.getSurname())
@@ -88,8 +86,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User changeUserInfo(String username, ChangeInfoRequest request)
-            throws UserCardNotFoundException, UserAccountNotFoundException, IncorrectPasswordException {
+    public User changeUserInfo(String username, ChangeInfoRequest request){
         sessionTokenService.checkToken(username);
 
         User savedUser = findUser(username);
@@ -108,9 +105,9 @@ public class UserService implements UserDetailsService {
 
     private User findUser(String username){
         return userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + "not found"));
+                .orElseThrow(() -> new UserNotFoundException("User with username " + username + "not found"));
     }
-    private User changeUserInfo(ChangeInfoRequest request, User savedUser) throws IncorrectPasswordException {
+    private User changeUserInfo(ChangeInfoRequest request, User savedUser)  {
         checkPassword(request, savedUser);
 
         if (request.getPostalCode() != null && !request.getPostalCode().isEmpty()) {

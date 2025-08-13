@@ -4,13 +4,16 @@ import bank_project.dto.request.AccountRequest;
 import bank_project.dto.view.ViewAccountDto;
 import bank_project.entity.Accounts;
 import bank_project.entity.GoalTemplates;
-import bank_project.entity.UserAccount;
 import bank_project.entity.User;
+import bank_project.entity.UserAccount;
+import bank_project.exception.custom.AccountsNotFoundException;
+import bank_project.exception.custom.GoalTemplatesNotFoundException;
+import bank_project.exception.custom.UserAccountNotFoundException;
+import bank_project.exception.custom.UserNotFoundException;
 import bank_project.repository.jpa.AccountRepository;
 import bank_project.repository.jpa.GoalTemplateRepository;
 import bank_project.repository.jpa.UserAccountRepository;
 import bank_project.repository.jpa.UserRepository;
-import exception.custom.*;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +64,7 @@ public class AccountService {
     }
 
     @Transactional
-    public UserAccount openNewAccount(AccountRequest request, String username)
-            throws UserNotFoundException, AccountsNotFoundException, UserAccountNotFoundException, GoalTemplatesNotFoundException, UserCardNotFoundException {
+    public UserAccount openNewAccount(AccountRequest request, String username) {
 
         sessionTokenService.checkToken(username);
         redisService.deleteUserCache(username);
@@ -85,8 +87,7 @@ public class AccountService {
     }
 
     @Transactional
-    public UserAccount deleteAccount(String username)
-            throws UserNotFoundException, UserAccountNotFoundException, UserCardNotFoundException {
+    public UserAccount deleteAccount(String username) {
         sessionTokenService.checkToken(username);
         redisService.deleteUserCache(username);
 
@@ -106,19 +107,19 @@ public class AccountService {
         return savedAccount;
     }
 
-    private User findUser(String username) throws UserNotFoundException {
+    private User findUser(String username)  {
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return user;
     }
 
-    private Accounts findAccount(AccountRequest request) throws AccountsNotFoundException {
+    private Accounts findAccount(AccountRequest request)  {
         Accounts accounts = accountRepository.findAccountIdByAccount(request.getAccountType())
                 .orElseThrow(() -> new AccountsNotFoundException("Account not found"));
         return accounts;
     }
 
-    private UserAccount findUserAccount(Long userId) throws UserAccountNotFoundException {
+    private UserAccount findUserAccount(Long userId) {
         UserAccount userAccount =  userAccountRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserAccountNotFoundException("User not found"));
         return userAccount;
@@ -164,7 +165,7 @@ public class AccountService {
         return number;
     }
 
-    private GoalTemplates findGoal(AccountRequest request) throws GoalTemplatesNotFoundException {
+    private GoalTemplates findGoal(AccountRequest request)  {
         return goalTemplateRepository.findGoalTemplatesIdByGoalName(request.getGoal())
                 .orElseThrow(() -> new GoalTemplatesNotFoundException("Goal not found"));
     }

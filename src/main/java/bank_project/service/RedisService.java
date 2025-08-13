@@ -13,7 +13,7 @@ import bank_project.repository.jpa.UserHistoryRepository;
 import bank_project.repository.jpa.UserRepository;
 import bank_project.repository.redis.CachedUserHistoryRepository;
 import bank_project.repository.redis.UserInfoRepository;
-import exception.custom.*;
+import bank_project.exception.custom.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -63,7 +63,7 @@ public class RedisService {
         log.info("User {} has added info in cache", userName);
     }
 
-    public CachedAllUserDto getUserInfo(String userName) throws EmptyDtoException {
+    public CachedAllUserDto getUserInfo(String userName)  {
         sessionTokenService.checkToken(userName);
 
         CachedAllUserDto cache = findAllCache(userName);
@@ -108,7 +108,7 @@ public class RedisService {
         redisTemplate.opsForList().trim(key, Math.max(0, cache.size() - 50), cache.size() - 1);
     }
 
-    public List<CachedUserOperationHistoryDto> getOperationHistory(String username) throws EmptyDtoException {
+    public List<CachedUserOperationHistoryDto> getOperationHistory(String username) {
         sessionTokenService.checkToken(username);
 
         List<CachedUserOperationHistoryDto>  cache = findUserOperationHistoryListFormCache(username);
@@ -120,23 +120,23 @@ public class RedisService {
 
     private User findUser(String username){
         return userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found after save"));
+                .orElseThrow(() -> new UserNotFoundException("User not found after save"));
     }
     private UserCard findUserCard(Long userId)  {
         return userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Card not found after save"));
+                .orElseThrow(() -> new UserCardNotFoundException("Card not found after save"));
     }
     private UserAccount findUserAccount(Long userId){
         return userAccountRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Account not found after save"));
+                .orElseThrow(() -> new UserAccountNotFoundException("Account not found after save"));
     }
     private UserOperationHistory findUserOperationHistoryFromDb(User savedUser) {
         return userHistoryRepository.findTopByUserIdOrderByIdDesc(savedUser)
-                .orElseThrow(() -> new RuntimeException("History not found after save"));
+                .orElseThrow(() -> new UserOperationHistoryNotFoundException("History not found after save"));
     }
     private List<UserOperationHistory> findUserOperationHistoryListFromDb(User savedUser)  {
         return userHistoryRepository.findAllByUserId(savedUser)
-                .orElseThrow(() -> new RuntimeException("History not found after save"));
+                .orElseThrow(() -> new UserOperationHistoryNotFoundException("History not found after save"));
     }
     private List<CachedUserOperationHistoryDto> findUserOperationHistoryListFormCache(String username) throws EmptyDtoException {
         return cachedUserHistoryRepository.getUserOperationHistory(username)

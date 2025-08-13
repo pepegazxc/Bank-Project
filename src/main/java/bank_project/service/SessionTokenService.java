@@ -2,6 +2,9 @@ package bank_project.service;
 
 import bank_project.dto.cache.CachedAllUserDto;
 import bank_project.entity.User;
+import bank_project.exception.custom.EmptyDtoException;
+import bank_project.exception.custom.TokenVerificationException;
+import bank_project.exception.custom.UserNotFoundException;
 import bank_project.repository.jpa.TokenRepository;
 import bank_project.repository.redis.UserInfoRepository;
 import bank_project.security.token.SessionToken;
@@ -46,11 +49,11 @@ public class SessionTokenService {
 
     private User findUser(String username){
         return tokenRepository.findTokenByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
     private CachedAllUserDto findCachedUser(String username){
         return userInfoRepository.getUserInfo(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EmptyDtoException("User not found"));
     }
     private void checkForToken(CachedAllUserDto cache, String dbToken, String username){
         if (cache != null) {
@@ -59,7 +62,7 @@ public class SessionTokenService {
             if (dbToken.equals(redisToken)) {
                 log.info("User {} token validation successful", username);
             } else {
-                throw new RuntimeException("Invalid Token");
+                throw new TokenVerificationException("Invalid Token");
             }
         }
     }

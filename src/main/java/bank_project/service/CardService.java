@@ -3,15 +3,12 @@ package bank_project.service;
 import bank_project.dto.request.CardRequest;
 import bank_project.dto.view.ViewCardDto;
 import bank_project.entity.Cards;
-import bank_project.entity.UserCard;
 import bank_project.entity.User;
+import bank_project.entity.UserCard;
+import bank_project.exception.custom.*;
 import bank_project.repository.jpa.CardRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
-import exception.custom.CardsNotFoundException;
-import exception.custom.UserAccountNotFoundException;
-import exception.custom.UserCardNotFoundException;
-import exception.custom.UserNotFoundException;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +56,7 @@ public class CardService {
     }
 
     @Transactional
-    public UserCard openNewCard(String username, CardRequest cardRequest)
-            throws CardsNotFoundException, UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
+    public UserCard openNewCard(String username, CardRequest cardRequest) {
 
         sessionTokenService.checkToken(username);
         redisService.deleteUserCache(username);
@@ -73,8 +69,8 @@ public class CardService {
         Cards savedCards = findCards(cardRequest);
 
         String cardNumber = generateUniqueCardNumber();
-        String cardCvv = generateCardCvv();
-        String cardExpirationDate = generateCardExpirationDate();
+        String cardCvv = generateUniqueCardCvv();
+        String cardExpirationDate = generateUniqueCardExpirationDate();
         fillNewCardFields(savedUserCard, savedCards, cardNumber, cardExpirationDate, cardCvv);
 
 
@@ -86,8 +82,7 @@ public class CardService {
     }
 
     @Transactional
-    public UserCard deleteCard(String username)
-            throws UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
+    public UserCard deleteCard(String username) {
         sessionTokenService.checkToken(username);
         redisService.deleteUserCache(username);
 
@@ -105,16 +100,16 @@ public class CardService {
         return savedCard;
     }
 
-    private User findUser(String username) throws UserNotFoundException {
+    private User findUser(String username)  {
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
-    private UserCard findUserCard(Long userId) throws UserCardNotFoundException {
+    private UserCard findUserCard(Long userId)  {
         return userCardRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserCardNotFoundException("User not found"));
     }
 
-    private Cards findCards(CardRequest cardRequest) throws CardsNotFoundException {
+    private Cards findCards(CardRequest cardRequest)  {
         return cardRepository.findCardIdByCardName(cardRequest.getCardType())
                 .orElseThrow(() -> new CardsNotFoundException("Card not found"));
     }

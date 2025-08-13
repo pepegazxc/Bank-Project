@@ -3,7 +3,7 @@ package bank_project.controller;
 import bank_project.dto.cache.CachedAllUserDto;
 import bank_project.dto.request.ChangeInfoRequest;
 import bank_project.service.*;
-import exception.custom.*;
+import bank_project.exception.custom.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/home")
-    public String userPage(Authentication auth, Model model) throws ControllerException, EmptyDtoException {
+    public String userPage(Authentication auth, Model model) throws ControllerException {
         String username = auth.getName();
         CachedAllUserDto allCache = redisService.getUserInfo(username);
         model.addAttribute("user", allCache);
@@ -38,7 +38,7 @@ public class UserController {
 
     @DeleteMapping("/home/delete-card")
     public String deleteCard(Authentication auth, Model model)
-            throws ControllerException, UserNotFoundException, UserCardNotFoundException, UserAccountNotFoundException {
+            throws ControllerException {
 
         String username = auth.getName();
         cardService.deleteCard(username);
@@ -48,7 +48,7 @@ public class UserController {
 
     @DeleteMapping("/home/delete-account")
     public String deleteAccount (Authentication auth, Model model)
-            throws ControllerException, UserNotFoundException, UserAccountNotFoundException, UserCardNotFoundException {
+            throws ControllerException{
 
         String username = auth.getName();
         accountService.deleteAccount(username);
@@ -63,7 +63,7 @@ public class UserController {
 
     @PatchMapping("/edit-info")
     public String editUserInfoPage(ChangeInfoRequest request, Model model, Authentication auth)
-            throws ControllerException, IncorrectPasswordException, UserCardNotFoundException, UserAccountNotFoundException {
+            throws ControllerException {
         String username = auth.getName();
         authContextService.updateUserAuthentication(
                 userService.changeUserInfo(username, request)

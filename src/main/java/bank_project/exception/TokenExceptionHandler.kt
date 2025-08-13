@@ -1,15 +1,16 @@
-package exception
+package bank_project.exception
 
-import exception.custom.ControllerException
+import exception.custom.AmountTransferException
+import exception.custom.TokenVerificationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
-class ControllerExceptionHandler {
+class TokenExceptionHandler {
 
-    @ExceptionHandler(ControllerException::class)
-    fun handleControllerException(ex: ControllerException) =
+    @ExceptionHandler(TokenVerificationException::class)
+    fun handleTokenVerificationException(ex: TokenVerificationException) =
         ResponseEntity(mapOf("message" to ex.message.orEmpty()), HttpStatus.CONFLICT)
 }

@@ -1,4 +1,4 @@
-package exception
+package bank_project.exception
 
 import exception.custom.EmptyDtoException
 import org.springframework.http.HttpStatus

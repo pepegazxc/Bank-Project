@@ -3,7 +3,7 @@ package bank_project.controller;
 import bank_project.dto.request.AccountRequest;
 import bank_project.dto.view.ViewAccountDto;
 import bank_project.service.AccountService;
-import exception.custom.*;
+import bank_project.exception.custom.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,8 +28,7 @@ public class AccountController {
     }
 
     @PostMapping("/account-order-blank")
-    public String accountOrderBlankPage(Authentication authentication, AccountRequest request)
-            throws ControllerException, UserNotFoundException, GoalTemplatesNotFoundException, AccountsNotFoundException, UserAccountNotFoundException, UserCardNotFoundException {
+    public String accountOrderBlankPage(Authentication authentication, AccountRequest request) throws ControllerException{
         String username = authentication.getName();
         accountService.openNewAccount(request,username);
         return "redirect:/home";
