@@ -1,7 +1,6 @@
 package bank_project.exception
 
-import exception.custom.AmountTransferException
-import exception.custom.TokenVerificationException
+import bank_project.exception.custom.TokenVerificationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice

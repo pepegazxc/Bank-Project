@@ -1,6 +1,6 @@
 package bank_project.exception
 
-import exception.custom.ControllerException
+import bank_project.exception.custom.ControllerException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
