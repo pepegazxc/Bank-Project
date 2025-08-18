@@ -4,6 +4,8 @@ import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
 import bank_project.entity.User;
 import bank_project.entity.UserAccount;
 import bank_project.entity.UserCard;
+import bank_project.exception.custom.InsufficientBalanceException;
+import bank_project.exception.custom.TransferMoneyException;
 import bank_project.repository.jpa.UserAccountRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
@@ -23,6 +25,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,5 +79,36 @@ public class TransferServiceTest {
         verify(sessionTokenService, times(1)).checkToken(username);
         verify(redisService, times(1)).addUserCache(username);
         verify(redisService, times(1)).addUserHistory(username);
+    }
+
+    @Test
+    public void testBetweenAccountAndCard_failedTransfer() {
+        String username = "test";
+        BetweenAccountsCashRequest request = new BetweenAccountsCashRequest(
+                BigDecimal.valueOf(100),
+                null
+        );
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        UserCard fakeCard = new UserCard();
+        UserAccount fakeAccount = new UserAccount();
+
+
+
+        when(userAccountRepository.findByUserId(1L)).thenReturn(Optional.of(fakeAccount));
+        when(userCardRepository.findByUserId(1L)).thenReturn(Optional.of(fakeCard));
+        when(userRepository.findByUserName(username)).thenReturn(Optional.of(fakeUser));
+        doNothing().when(sessionTokenService).checkToken(username);
+
+        fakeCard.setBalance(BigDecimal.ZERO);
+        fakeAccount.setBalance(BigDecimal.ZERO);
+
+        Exception expectedException =
+                assertThrows(InsufficientBalanceException.class, () -> transferService.betweenAccountAndCard(request, username));
+
+       assertEquals("Not enough balance on account", expectedException.getMessage());
+
+        verify(sessionTokenService, times(1)).checkToken(username);
+        verify(redisService, times(1)).deleteUserCache(username);
     }
 }
