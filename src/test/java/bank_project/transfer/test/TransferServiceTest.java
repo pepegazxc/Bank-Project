@@ -1,18 +1,17 @@
 package bank_project.transfer.test;
 
 import bank_project.dto.request.request.transfer.BetweenAccountsCashRequest;
+import bank_project.dto.request.request.transfer.BetweenUsersCashRequest;
 import bank_project.entity.User;
 import bank_project.entity.UserAccount;
 import bank_project.entity.UserCard;
 import bank_project.exception.custom.InsufficientBalanceException;
+import bank_project.exception.custom.RecipientNotFoundException;
 import bank_project.exception.custom.TransferMoneyException;
 import bank_project.repository.jpa.UserAccountRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
-import bank_project.service.OperationHistoryService;
-import bank_project.service.RedisService;
-import bank_project.service.SessionTokenService;
-import bank_project.service.TransferService;
+import bank_project.service.*;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +39,7 @@ public class TransferServiceTest {
     @Mock private  RedisService redisService;
     @Mock private EntityManager entityManager;
     @Mock private OperationHistoryService operation;
+    @Mock private CipherService cipher;
 
     @InjectMocks
     private TransferService transferService;
@@ -104,9 +105,84 @@ public class TransferServiceTest {
         fakeAccount.setBalance(BigDecimal.ZERO);
 
         Exception expectedException =
-                assertThrows(InsufficientBalanceException.class, () -> transferService.betweenAccountAndCard(request, username));
+                assertThrows(InsufficientBalanceException.class,
+                        () -> transferService.betweenAccountAndCard(request, username)
+                );
 
        assertEquals("Not enough balance on account", expectedException.getMessage());
+
+        verify(sessionTokenService, times(1)).checkToken(username);
+        verify(redisService, times(1)).deleteUserCache(username);
+    }
+
+    @Test
+    public void testBetweenUserWithPhone_successfulTransfer() {
+        String username = "test";
+        BetweenUsersCashRequest request = new BetweenUsersCashRequest(
+                "testPhoneNumber",
+                null,
+                BigDecimal.valueOf(100)
+        );
+
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        User fakeUserRecipient = new User();
+        fakeUserRecipient.setId(2L);
+        fakeUserRecipient.setPhoneNumber("testPhoneNumber");
+        UserCard fakeCard = new UserCard();
+        fakeCard.setBalance(BigDecimal.valueOf(100));
+        UserCard fakeCardRecipient = new UserCard();
+        fakeCardRecipient.setBalance(BigDecimal.ZERO);
+
+        when(userRepository.findByUserName(username)).thenReturn(Optional.of(fakeUser));
+        when(userRepository.findAll()).thenReturn(List.of(fakeUserRecipient));
+        when(cipher.decrypt("testPhoneNumber")).thenReturn("testPhoneNumber");
+        when(userCardRepository.findByUserId(1L)).thenReturn(Optional.of(fakeCard));
+        when(userCardRepository.findByUserId(2L)).thenReturn(Optional.of(fakeCardRecipient));
+
+        transferService.betweenUsersWithPhone(
+                request,
+                username
+        );
+
+        assert(fakeCard.getBalance().compareTo(BigDecimal.ZERO) == 0);
+        assert(fakeCardRecipient.getBalance().compareTo(BigDecimal.valueOf(100)) == 0);
+
+        verify(sessionTokenService, times(1)).checkToken(username);
+        verify(redisService, times(1)).deleteUserCache(username);
+        verify(redisService, times(1)).addUserCache(username);
+        verify(redisService, times(1)).addUserHistory(username);
+    }
+
+    @Test
+    public void testBetweenUserWithPhone_failedTransfer_IncorrectPhoneNumber() {
+        String username = "test";
+        BetweenUsersCashRequest request = new BetweenUsersCashRequest(
+                "incorrectPhoneNumber",
+                null,
+                BigDecimal.valueOf(100)
+        );
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        User fakeUserRecipient = new User();
+        fakeUserRecipient.setId(2L);
+        fakeUserRecipient.setPhoneNumber("testPhoneNumber");
+        UserCard fakeCard = new UserCard();
+        fakeCard.setBalance(BigDecimal.valueOf(100));
+        UserCard fakeCardRecipient = new UserCard();
+        fakeCardRecipient.setBalance(BigDecimal.ZERO);
+
+        when(userRepository.findByUserName(username)).thenReturn(Optional.of(fakeUser));
+        when(userRepository.findAll()).thenReturn(List.of(fakeUserRecipient));
+        when(cipher.decrypt("testPhoneNumber")).thenReturn("testPhoneNumber");
+
+
+        Exception exception =
+                assertThrows(RecipientNotFoundException.class,
+                        () -> transferService.betweenUsersWithPhone(request, username)
+                );
+
+        assertEquals("Recipient user not found by phone number", exception.getMessage());
 
         verify(sessionTokenService, times(1)).checkToken(username);
         verify(redisService, times(1)).deleteUserCache(username);
