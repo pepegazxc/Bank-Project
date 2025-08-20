@@ -4,6 +4,7 @@ import bank_project.dto.request.CardRequest;
 import bank_project.entity.Cards;
 import bank_project.entity.User;
 import bank_project.entity.UserCard;
+import bank_project.exception.custom.CardsNotFoundException;
 import bank_project.repository.jpa.CardRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
@@ -22,7 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,6 +79,39 @@ public class CardServiceTest {
         verify(redis).addUserCache(username);
     }
 
+    @Test
+    public void testOpenNewCard_failedCompletion_incorrectCardType(){
+        String username = "test";
+        CardRequest request = new CardRequest(
+                username,
+                "test",
+                "test",
+                "test",
+                "test",
+                "test",
+                "test",
+                "test"
+        );
 
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        UserCard fakeUserCard = new UserCard();
+        Cards fakeCards = new Cards();
+        fakeCards.setCardName("test");
 
+        doNothing().when(sessionTokenService).checkToken(username);
+        when(userRepository.findByUserName(username)).thenReturn(Optional.of(fakeUser));
+        when(userCardRepository.findByUserId(1L)).thenReturn(Optional.of(fakeUserCard));
+        when(cardRepository.findCardIdByCardName("test")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(
+                CardsNotFoundException.class,
+                () -> cardService.openNewCard(username, request)
+        );
+
+        assertEquals("Card not found", exception.getMessage());
+
+        verify(sessionTokenService).checkToken(username);
+        verify(redis).deleteUserCache(username);
+    }
 }
