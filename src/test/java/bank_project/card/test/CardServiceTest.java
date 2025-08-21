@@ -5,6 +5,7 @@ import bank_project.entity.Cards;
 import bank_project.entity.User;
 import bank_project.entity.UserCard;
 import bank_project.exception.custom.CardsNotFoundException;
+import bank_project.exception.custom.UserCardNotFoundException;
 import bank_project.repository.jpa.CardRepository;
 import bank_project.repository.jpa.UserCardRepository;
 import bank_project.repository.jpa.UserRepository;
@@ -110,6 +111,56 @@ public class CardServiceTest {
         );
 
         assertEquals("Card not found", exception.getMessage());
+
+        verify(sessionTokenService).checkToken(username);
+        verify(redis).deleteUserCache(username);
+    }
+
+    @Test
+    public void testDeleteCard_successfulCompletion(){
+        String username = "test";
+
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        UserCard fakeUserCard = new UserCard();
+
+        doNothing().when(sessionTokenService).checkToken(username);
+        when(userRepository.findByUserName(username)).thenReturn(Optional.of(fakeUser));
+        when(userCardRepository.findByUserId(1L)).thenReturn(Optional.of(fakeUserCard));
+
+        UserCard result = cardService.deleteCard(username);
+
+        assertNull(result.getCardId());
+        assertNull(result.getBalance());
+        assertNull(result.getCashback());
+        assertNull(result.getCipherNumber());
+        assertNull(result.getIsActive());
+        assertNull(result.getCipherExpirationDate());
+        assertNull(result.getCipherThreeNumbers());
+
+        verify(sessionTokenService).checkToken(username);
+        verify(redis).deleteUserCache(username);
+        verify(redis).addUserCache(username);
+    }
+
+    @Test
+    public void testDeleteCard_failedCompletion_cardNotFound(){
+        String username = "test";
+
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        UserCard fakeUserCard = new UserCard();
+
+        doNothing().when(sessionTokenService).checkToken(username);
+        when(userRepository.findByUserName(username)).thenReturn(Optional.of(fakeUser));
+        when(userCardRepository.findByUserId(1L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(
+                UserCardNotFoundException.class,
+                () -> cardService.deleteCard(username)
+        );
+
+        assertEquals("Users card not found", exception.getMessage());
 
         verify(sessionTokenService).checkToken(username);
         verify(redis).deleteUserCache(username);

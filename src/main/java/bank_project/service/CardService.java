@@ -106,7 +106,7 @@ public class CardService {
     }
     private UserCard findUserCard(Long userId)  {
         return userCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserCardNotFoundException("User not found"));
+                .orElseThrow(() -> new UserCardNotFoundException("Users card not found"));
     }
 
     private Cards findCards(CardRequest cardRequest)  {
