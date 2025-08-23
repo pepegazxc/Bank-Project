@@ -121,7 +121,7 @@ public class AccountService {
 
     private UserAccount findUserAccount(Long userId) {
         UserAccount userAccount =  userAccountRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserAccountNotFoundException("User not found"));
+                .orElseThrow(() -> new UserAccountNotFoundException("Users account not found"));
         return userAccount;
     }
 
